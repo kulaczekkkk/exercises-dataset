@@ -4,22 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
-  <!-- Pełnoekranowy tryb natywnej aplikacji iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="gymWK">
   <meta name="theme-color" content="#030407">
 
-  <!-- Ikona na pulpit iPhone'a (Liquid Glass SVG) -->
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%2316222f'/><stop offset='50%' stop-color='%23080b11'/><stop offset='100%' stop-color='%23291508'/></linearGradient></defs><rect width='180' height='180' rx='42' fill='url(%23g)'/><rect x='8' y='8' width='164' height='164' rx='36' fill='none' stroke='rgba(255,255,255,0.22)' stroke-width='2'/><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' font-family='-apple-system, sans-serif' font-weight='900' font-size='44' fill='%23ffffff'>WK</text><circle cx='142' cy='42' r='10' fill='%23ff7a18'/></svg>">
-
-  <!-- Web App Manifest -->
   <link rel="manifest" href='data:application/manifest+json,{"name":"gymWK Pro","short_name":"gymWK","start_url":".","display":"standalone","background_color":"#030407","theme_color":"#030407","orientation":"portrait"}'>
 
   <title>gymWK — Liquid Glass</title>
   
-  <!-- Tailwind CSS & Dexie.js (IndexedDB) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
 
@@ -43,11 +38,7 @@
   </script>
 
   <style>
-    * {
-      -webkit-tap-highlight-color: transparent;
-      box-sizing: border-box;
-      -webkit-touch-callout: none;
-    }
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; -webkit-touch-callout: none; }
     html, body {
       background-color: #030407;
       color: #f8fafc;
@@ -66,100 +57,73 @@
         radial-gradient(circle at 50% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 50%);
       background-attachment: fixed;
     }
-
-    input, textarea, select {
-      user-select: text;
-      font-size: 16px !important;
-    }
+    input, textarea, select { user-select: text; font-size: 16px !important; }
     ::-webkit-scrollbar { width: 0px; background: transparent; }
 
-    /* Silnik Liquid Glass (iPhone 18 Pro Specular Glassmorphism) */
     .bg-bgCard, .liquid-card {
       background: linear-gradient(145deg, rgba(255, 255, 255, 0.085) 0%, rgba(255, 255, 255, 0.025) 100%) !important;
       backdrop-filter: blur(30px) saturate(190%);
       -webkit-backdrop-filter: blur(30px) saturate(190%);
       border: 1px solid rgba(255, 255, 255, 0.13) !important;
-      box-shadow:
-        0 14px 34px -10px rgba(0, 0, 0, 0.65),
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.25),
-        inset 0 -1px 0 0 rgba(255, 255, 255, 0.04);
+      box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
     }
-
     .bg-bgInput {
       background: rgba(12, 16, 24, 0.65) !important;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.14) !important;
-      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45);
     }
-
     .liquid-dock {
       background: linear-gradient(180deg, rgba(28, 36, 48, 0.68) 0%, rgba(12, 16, 23, 0.82) 100%);
       backdrop-filter: blur(40px) saturate(210%);
       -webkit-backdrop-filter: blur(40px) saturate(210%);
       border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow:
-        0 20px 45px rgba(0, 0, 0, 0.8),
-        inset 0 1px 0.5px rgba(255, 255, 255, 0.35);
     }
-
     .liquid-pill {
       background: linear-gradient(135deg, rgba(92, 200, 230, 0.22) 0%, rgba(18, 40, 51, 0.55) 100%);
       backdrop-filter: blur(25px) saturate(180%);
       -webkit-backdrop-filter: blur(25px) saturate(180%);
       border: 1px solid rgba(92, 200, 230, 0.35);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
-
     .liquid-orange-btn {
       background: linear-gradient(135deg, #ff9233 0%, #e85d04 100%);
-      box-shadow:
-        0 8px 22px -4px rgba(255, 122, 24, 0.55),
-        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      box-shadow: 0 8px 22px -4px rgba(255, 122, 24, 0.55);
     }
-
     .heatmap-grid {
       display: grid;
       grid-template-rows: repeat(7, 1fr);
       grid-auto-flow: column;
       gap: 3.5px;
     }
-
     .safe-modal-padding {
       padding-top: max(16px, env(safe-area-inset-top));
       padding-bottom: calc(90px + env(safe-area-inset-bottom));
-    }
-
-    @media print {
-      body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
-      nav, #active-workout-bar, #workout-subnav, .no-print { display: none !important; }
     }
   </style>
 </head>
 <body class="flex flex-col justify-between">
 
-  <!-- BANER INSTRUKCJI INSTALACJI NA IPHONE -->
+  <!-- BANER PWA -->
   <div id="ios-pwa-hint" class="hidden max-w-md mx-auto px-3 mb-2">
     <div class="liquid-pill rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs">
       <div class="leading-snug">
         <span class="font-bold text-white">Tryb pełnoekranowy iPhone:</span>
-        <span class="text-gray-200"> kliknij <strong>Udostępnij</strong> w Safari i wybierz <strong>„Dodaj do ekranu początkowego”</strong> – pasek z linkiem zniknie.</span>
+        <span class="text-gray-200"> kliknij <strong>Udostępnij</strong> w Safari i wybierz <strong>„Dodaj do ekranu początkowego”</strong>.</span>
       </div>
       <button onclick="dismissPwaHint()" class="text-gray-300 font-bold px-2 py-1">✕</button>
     </div>
   </div>
 
-  <!-- PASEK SYNCHRONIZACJI 1324 GIF-ÓW Z REPOZYTORIUM GITHUB -->
+  <!-- BANER SYNCHRONIZACJI -->
   <div id="sync-banner" class="hidden max-w-md mx-auto px-3.5 mb-2">
     <div class="bg-bgCard rounded-2xl px-3.5 py-2 flex items-center justify-between text-xs border border-striveTeal/40">
-      <span id="sync-banner-text" class="text-striveTeal font-semibold animate-pulse">⚡ Pobieranie pełnej bazy 1324 GIF-ów z GitHub Pages...</span>
+      <span id="sync-banner-text" class="text-striveTeal font-semibold animate-pulse">⚡ Synchronizuję 1324 GIF-y z hasaneyldrm...</span>
     </div>
   </div>
 
-  <!-- GŁÓWNY KONTENER WIDOKÓW -->
   <main id="app-content" class="w-full max-w-md mx-auto px-3.5 pt-1 pb-24"></main>
 
-  <!-- PŁYWAJĄCA KAPSUŁA AKTYWNEGO TRENINGU / TIMERA -->
+  <!-- PŁYWAJĄCY PASEK TRENINGU -->
   <div id="active-workout-bar" class="hidden fixed left-0 right-0 max-w-md mx-auto px-3.5 z-40" style="bottom: calc(86px + env(safe-area-inset-bottom));">
     <div class="liquid-dock rounded-3xl p-3 flex items-center justify-between border border-striveTeal/40">
       <div onclick="openActiveWorkoutModal()" class="flex-1 cursor-pointer pl-1">
@@ -171,14 +135,13 @@
         <div id="bar-timer-status" class="text-[11px] text-orange-300 mt-0.5 font-medium">Dotknij, aby wrócić do serii</div>
       </div>
       <div class="flex items-center gap-1.5">
-        <button onclick="adjustRestTimer(-15)" class="bg-white/10 active:scale-90 transition px-2.5 py-1.5 rounded-xl text-xs font-bold text-gray-100">-15s</button>
+        <button onclick="adjustRestTimer(-15)" class="bg-white/10 px-2.5 py-1.5 rounded-xl text-xs font-bold text-gray-100">-15s</button>
         <button onclick="startRestTimer(90, 'Przerwa')" id="bar-timer-btn" class="liquid-orange-btn px-3 py-1.5 rounded-xl text-xs font-bold text-white min-w-[66px] text-center">⏱ 90s</button>
-        <button onclick="adjustRestTimer(15)" class="bg-white/10 active:scale-90 transition px-2.5 py-1.5 rounded-xl text-xs font-bold text-gray-100">+15s</button>
+        <button onclick="adjustRestTimer(15)" class="bg-white/10 px-2.5 py-1.5 rounded-xl text-xs font-bold text-gray-100">+15s</button>
       </div>
     </div>
   </div>
 
-  <!-- PŁYWAJĄCY PRZEŁĄCZNIK SUB-ZAKŁADEK (PLANY / RUTYNY / ĆWICZENIA) -->
   <div id="workout-subnav" class="hidden fixed left-0 right-0 max-w-md mx-auto px-8 z-30" style="bottom: calc(84px + env(safe-area-inset-bottom));">
     <div class="liquid-dock p-1 rounded-2xl grid grid-cols-3 text-center text-xs font-semibold">
       <button onclick="switchWorkoutSubTab('plans')" id="subtab-plans" class="py-2 rounded-xl transition">Plany</button>
@@ -187,7 +150,6 @@
     </div>
   </div>
 
-  <!-- PŁYWAJĄCY SZKLANY DOCK NAWIGACJI -->
   <div class="fixed left-0 right-0 max-w-md mx-auto px-4 z-40 pointer-events-none" style="bottom: max(12px, env(safe-area-inset-bottom));">
     <nav class="liquid-dock rounded-[28px] px-3 py-2 flex justify-between items-center h-[64px] pointer-events-auto">
       <button onclick="navigate('calendar')" id="nav-calendar" class="flex flex-col items-center justify-center w-12 h-12 text-gray-300 active:scale-90 transition">
@@ -212,24 +174,18 @@
     </nav>
   </div>
 
-  <!-- UNIWERSALNY MODAL PEŁNOEKRANOWY -->
   <div id="modal-overlay" class="hidden fixed inset-0 bg-bgMain/90 backdrop-blur-2xl z-50 overflow-y-auto safe-modal-padding">
     <div id="modal-body" class="max-w-md mx-auto px-4"></div>
   </div>
 
 <script>
-// ============================================================================
-// 1. KONFIGURACJA POD GITHUB PAGES + HASANEYLDRM/EXERCISES-DATASET
-// ============================================================================
 const DAYS_SHORT = ['pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.', 'niedz.'];
-
-// Adresy do zasobów (najpierw próbuje lokalnie z Twojego forka GitHub Pages, a w razie braku z oficjalnego repozytorium)
 const HASAN_RAW_BASE = 'https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/';
-const FREE_EX_CDN = (slug, frame = 0) => `https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/${slug}/${frame}.jpg`;
+const HASAN_JSON_URL = HASAN_RAW_BASE + 'data/exercises.json';
 
-const db = new Dexie('gymWK_GitHubPages_v10');
+const db = new Dexie('gymWK_GitHubPages_v11');
 db.version(1).stores({
-  exercises: '++id, code, name, enName, category, bodyPart, gifPath, imgPath, slug, nextTargetWeight',
+  exercises: '++id, code, name, enName, category, bodyPart, gifPath, nextTargetWeight',
   routines: '++id, name, tag, assignedDay',
   plans: '++id, name, active',
   workouts: '++id, date, timestamp, routineId, routineName',
@@ -255,19 +211,8 @@ let state = {
   exerciseFilterCat: 'ALL',
   exerciseFilterPart: 'ALL',
   exerciseSearch: '',
-  exerciseLimit: 60,
-  globalFrameBit: 0
+  exerciseLimit: 60
 };
-
-// Zegar pomocniczy dla pętli zdjęć (gdyby jakieś ćwiczenie nie miało jeszcze zsynchronizowanego GIF-a)
-setInterval(() => {
-  state.globalFrameBit = state.globalFrameBit === 0 ? 1 : 0;
-  document.querySelectorAll('img.live-loop-gif').forEach(img => {
-    const f0 = img.getAttribute('data-f0');
-    const f1 = img.getAttribute('data-f1');
-    if (f0 && f1) img.src = state.globalFrameBit === 0 ? f0 : f1;
-  });
-}, 750);
 
 function checkIosStandaloneMode() {
   const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
@@ -325,42 +270,22 @@ function nextSetType(currentType) {
   return 'N';
 }
 
-// ============================================================================
-// 2. INTELIGENTNY RENDERER GIF-ÓW (LOKALNY FORK GITHUB PAGES -> RAW GITHUB -> LOOP)
-// ============================================================================
-function renderExerciseMediaThumb(ex, sizeClass = 'w-14 h-14') {
+// Renderowanie oryginalnego pliku GIF z repozytorium hasaneyldrm
+function renderHasanGifThumb(ex, sizeClass = 'w-14 h-14') {
   if (!ex || ex.isPlaceholder) {
     return `<div class="${sizeClass} rounded-2xl bg-striveTealDark/60 border border-striveTeal/50 flex items-center justify-center shrink-0 text-xs font-bold text-striveTeal">?</div>`;
   }
-
   if (ex.customGifUrl) {
-    return `
-      <div class="${sizeClass} rounded-2xl bg-white flex items-center justify-center shrink-0 overflow-hidden border border-white/25 shadow-inner">
-        <img src="${ex.customGifUrl}" alt="${ex.name}" class="w-full h-full object-contain bg-white" loading="lazy" />
-      </div>`;
+    return `<div class="${sizeClass} rounded-2xl bg-white flex items-center justify-center shrink-0 overflow-hidden border border-white/25 shadow-inner"><img src="${ex.customGifUrl}" class="w-full h-full object-contain bg-white" loading="lazy" /></div>`;
   }
+  const relGif = ex.gifPath || 'videos/0576-2gPfomN.gif';
+  const fullGifUrl = HASAN_RAW_BASE + relGif;
 
-  // 1. Jeśli ćwiczenie ma ścieżkę GIF z hasaneyldrm/exercises-dataset (np. "videos/0025-xxxx.gif"):
-  // Najpierw próbuje załadować bezpośrednio z Twojego GitHub Pages (./videos/...), a jeśli nie ma, z oficjalnego GitHuba Raw!
-  if (ex.gifPath) {
-    const localRepoUrl = `./${ex.gifPath}`;
-    const remoteRawUrl = HASAN_RAW_BASE + ex.gifPath;
-    return `
-      <div class="${sizeClass} rounded-2xl bg-white flex items-center justify-center shrink-0 overflow-hidden border border-white/25 shadow-inner relative">
-        <img src="${remoteRawUrl}" alt="${ex.name}" loading="lazy"
-          onerror="if(this.src !== '${localRepoUrl}'){this.src='${localRepoUrl}';}"
-          class="w-full h-full object-contain bg-white" />
-      </div>`;
-  }
-
-  // 2. Zapasowa pętla ruchu dla pakietu startowego (zanim zakończy się pobieranie pliku JSON)
-  const slug = ex.slug || 'Leverage_Chest_Press';
-  const f0 = FREE_EX_CDN(slug, 0);
-  const f1 = FREE_EX_CDN(slug, 1);
   return `
     <div class="${sizeClass} rounded-2xl bg-white flex items-center justify-center shrink-0 overflow-hidden border border-white/25 shadow-inner relative">
-      <img src="${f0}" data-f0="${f0}" data-f1="${f1}" alt="${ex.name}" loading="lazy"
-        class="live-loop-gif w-full h-full object-cover bg-white" />
+      <img src="${fullGifUrl}" alt="${ex.name}" loading="lazy"
+        onerror="this.style.opacity='0.2'"
+        class="w-full h-full object-contain bg-white" />
     </div>`;
 }
 
@@ -385,149 +310,7 @@ function compressImageFileToDataUrl(file) {
   });
 }
 
-// ============================================================================
-// 3. WBUDOWANY PAKIET STARTOWY (80+ MASZYN I ĆWICZEŃ - GWARANCJA, ŻE BAZA NIGDY NIE JEST PUSTA)
-//    + SYNCHRONIZATOR PEŁNYCH 1324 GIF-ÓW Z HASANEYLDRM/EXERCISES-DATASET
-// ============================================================================
-const STARTER_EXERCISES = [
-  { code: '0576', slug: 'Leverage_Chest_Press', name: 'Wyciskanie na klatkę siedząc (Maszyna)', category: 'Maszyna', bodyPart: 'Klatka', sessions: 0, tip: 'Łopatki ściągnięte i wbite w oparcie, łokcie pod kątem ok. 45-60 stopni.' },
-  { code: '0577', slug: 'Leverage_Incline_Chest_Press', name: 'Wyciskanie na górę klatki siedząc (Maszyna Incline)', category: 'Maszyna', bodyPart: 'Klatka', sessions: 0, tip: 'Izoluje górną (obojczykową) część klatki piersiowej po stabilnym torze.' },
-  { code: '0575', slug: 'Leverage_Decline_Chest_Press', name: 'Wyciskanie na dół klatki (Maszyna Decline)', category: 'Maszyna', bodyPart: 'Klatka', sessions: 0, tip: 'Prowadź ruch w dół i przed siebie, mocno spinając dolne włókna piersiowe.' },
-  { code: '0596', slug: 'Butterfly', name: 'Rozpiętki siedząc na maszynie (Pec Deck / Butterfly - Izolacja)', category: 'Maszyna', bodyPart: 'Klatka', sessions: 0, tip: 'Czysta izolacja klatki: ruch prowadzony łokciami po szerokim łuku, zatrzymaj 1s w spięciu.' },
-  { code: '0151', slug: 'Cable_Crossover', name: 'Rozpiętki na wyciągu górnym (Brama - z góry w dół)', category: 'Wyciąg', bodyPart: 'Klatka', sessions: 0, tip: 'Ustabilizuj sylwetkę wykrokiem, łącz dłonie przed dolną częścią klatki.' },
-  { code: '0179', slug: 'Low_Cable_Crossover', name: 'Rozpiętki na wyciągu dolnym (Z dołu do góry - Góra klatki)', category: 'Wyciąg', bodyPart: 'Klatka', sessions: 0, tip: 'Izoluje górną część klatki piersiowej, prowadź dłonie łukiem na wysokość obojczyków.' },
-  { code: '0759', slug: 'Smith_Machine_Bench_Press', name: 'Wyciskanie na suwnicy Smitha (Ławka pozioma)', category: 'Maszyna', bodyPart: 'Klatka', sessions: 0, tip: 'Stały tor ruchu pozwala skupić się w 100% na generowaniu siły z klatki.' },
-  { code: '0760', slug: 'Smith_Machine_Incline_Bench_Press', name: 'Wyciskanie na suwnicy Smitha (Skos dodatni)', category: 'Maszyna', bodyPart: 'Klatka', sessions: 0, tip: 'Ustaw ławkę pod kątem 30 stopni, opuszczaj gryf w okolice górnej części mostka.' },
-  { code: '0025', slug: 'Barbell_Bench_Press_-_Medium_Grip', name: 'Wyciskanie sztangi na ławce poziomej', category: 'Sztanga', bodyPart: 'Klatka', sessions: 0, tip: 'Kontroluj opuszczanie sztangi do dolnej części klatki.' },
-  { code: '0289', slug: 'Incline_Dumbbell_Press', name: 'Wyciskanie hantli na skosie dodatnim', category: 'Hantle', bodyPart: 'Klatka', sessions: 0, tip: 'Skos ławki 30 stopni, pełne rozciągnięcie mięśni piersiowych na dole.' },
-  { code: '0288', slug: 'Dumbbell_Bench_Press', name: 'Wyciskanie hantli na ławce poziomej', category: 'Hantle', bodyPart: 'Klatka', sessions: 0, tip: 'Pełny zakres ruchu, hantle schodzą głęboko na wysokości klatki.' },
-  { code: '0573', slug: 'Bent-Arm_Barbell_Pullover', name: 'Przenoszenie siedząc na maszynie (Machine Pullover - Izolacja najszerszego)', category: 'Maszyna', bodyPart: 'Najszerszy grzbietu', sessions: 0, tip: 'Izolacja najszerszego grzbietu z wyłączeniem bicepsów – pchaj wałki łokciami w dół.' },
-  { code: '0237', slug: 'Straight-Arm_Pulldown', name: 'Narciarz - Ściąganie drążka na prostych rękach (Wyciąg górny)', category: 'Wyciąg', bodyPart: 'Najszerszy grzbietu', sessions: 0, tip: 'Izoluje najszerszy grzbietu. Ruch wyłącznie w stawie ramiennym po łuku do ud.' },
-  { code: '0588', slug: 'Leverage_Iso_Row', name: 'Wiosłowanie na maszynie z podparciem klatki (Chest-Supported Row)', category: 'Maszyna', bodyPart: 'Najszerszy grzbietu', sessions: 0, tip: 'Oparcie klatki całkowicie odciąża lędźwie i pozwala wyizolować pracę pleców.' },
-  { code: '0572', slug: 'Leverage_High_Row', name: 'Ściąganie z góry po łuku na maszynie (Leverage High Row)', category: 'Maszyna', bodyPart: 'Najszerszy grzbietu', sessions: 0, tip: 'Prowadź łokcie w dół blisko boków tułowia, zatrzymaj ruch na dole.' },
-  { code: '0150', slug: 'Wide-Grip_Lat_Pulldown', name: 'Ściąganie drążka wyciągu górnego (Szeroki nachwyt)', category: 'Wyciąg', bodyPart: 'Najszerszy grzbietu', sessions: 0, tip: 'Ściągaj drążek do górnej części klatki prowadząc łokcie w dół.' },
-  { code: '0159', slug: 'Close-Grip_Front_Lat_Pulldown', name: 'Ściąganie uchwytu neutralnego V (Wyciąg górny)', category: 'Wyciąg', bodyPart: 'Najszerszy grzbietu', sessions: 0, tip: 'Ściągaj uchwyt do mostka, mocno rozciągając najszerszy u góry.' },
-  { code: '0861', slug: 'Seated_Cable_Rows', name: 'Wiosłowanie siedząc na wyciągu dolnym', category: 'Wyciąg', bodyPart: 'Najszerszy grzbietu', sessions: 0, tip: 'Inicjuj ruch od łopatek, przyciągaj uchwyt do dolnej części brzucha.' },
-  { code: '0197', slug: 'Seated_One-arm_Cable_Pulley_Rows', name: 'Wiosłowanie jednorącz siedząc na wyciągu dolnym', category: 'Wyciąg', bodyPart: 'Najszerszy grzbietu', sessions: 0, tip: 'Prowadź łokieć blisko biodra dla maksymalnego spięcia najszerszego.' },
-  { code: '0592', slug: 'Leverage_Shrug', name: 'Wzruszanie ramionami na maszynie (Szrugsy - Izolacja kapturów)', category: 'Maszyna', bodyPart: 'Czworoboczny grzbietu', sessions: 0, tip: 'Kieruj barki w górę i lekko w tył, przytrzymaj spięcie przez 1 sekundę.' },
-  { code: '0027', slug: 'Bent_Over_Barbell_Row', name: 'Wiosłowanie sztangą w opadzie tułowia', category: 'Sztanga', bodyPart: 'Najszerszy grzbietu', sessions: 0, tip: 'Tułów stabilny pod kątem 45 stopni, prowadź sztangę do pępka.' },
-  { code: '0584', slug: 'Seated_Side_Lateral_Raise', name: 'Wznosy ramion na boki siedząc (Maszyna Lateral Raise - Izolacja boku)', category: 'Maszyna', bodyPart: 'Barki', sessions: 0, tip: 'Czysta izolacja bocznego aktonu barku – pchaj poduszki łokciami.' },
-  { code: '0602', slug: 'Reverse_Machine_Flyes', name: 'Odwodzenie ramion w tył siedząc (Maszyna Reverse Fly - Tylny akton)', category: 'Maszyna', bodyPart: 'Barki', sessions: 0, tip: 'Izolacja tylnego aktonu barków na maszynie Pec Deck przodem do oparcia.' },
-  { code: '0590', slug: 'Leverage_Shoulder_Press', name: 'Wyciskanie na barki siedząc (Maszyna Shoulder Press)', category: 'Maszyna', bodyPart: 'Barki', sessions: 0, tip: 'Plecy stabilnie przyklejone do oparcia, wypychaj uchwyty nad głowę.' },
-  { code: '0178', slug: 'Cable_Seated_Lateral_Raise', name: 'Wznosy ramienia w bok jednorącz (Wyciąg dolny - Izolacja)', category: 'Wyciąg', bodyPart: 'Barki', sessions: 0, tip: 'Zapewnia maksymalne napięcie bocznego aktonu już od samego dołu.' },
-  { code: '0188', slug: 'Cable_Rear_Delt_Fly', name: 'Odwodzenie ramion w tył na wyciągu górnym (Krzyżowanie linek)', category: 'Wyciąg', bodyPart: 'Barki', sessions: 0, tip: 'Stałe napięcie na tylny akton barków przez cały łuk ruchu.' },
-  { code: '0167', slug: 'Face_Pull', name: 'Przyciąganie liny do twarzy (Face Pull - Wyciąg górny)', category: 'Wyciąg', bodyPart: 'Barki', sessions: 0, tip: 'Ciągnij końce liny w stronę czoła z rotacją zewnętrzną barków.' },
-  { code: '0334', slug: 'Side_Lateral_Raise', name: 'Wznosy ramion na boki stojąc (Hantle)', category: 'Hantle', bodyPart: 'Barki', sessions: 0, tip: 'Unoszenie lekko przed linią tułowia (płaszczyzna łopatki).' },
-  { code: '0405', slug: 'Dumbbell_Shoulder_Press', name: 'Wyciskanie hantli siedząc nad głowę', category: 'Hantle', bodyPart: 'Barki', sessions: 0, tip: 'Kontrolowane opuszczanie hantli do wysokości uszu.' },
-  { code: '0595', slug: 'Machine_Preacher_Curls', name: 'Uginanie ramion na modlitewniku siedząc (Maszyna Preacher Curl - Izolacja)', category: 'Maszyna', bodyPart: 'Bicepsy', sessions: 0, tip: '100% izolacji bicepsa – ramiona unieruchomione na poduszce, zero bujania tułowiem.' },
-  { code: '0868', slug: 'Standing_Biceps_Cable_Curl', name: 'Uginanie ramion na wyciągu dolnym (Drążek)', category: 'Wyciąg', bodyPart: 'Bicepsy', sessions: 0, tip: 'Łokcie przyklejone do boków tułowia, stałe napięcie z linki wyciągu.' },
-  { code: '0165', slug: 'Cable_Hammer_Curls_-_Rope_Attachment', name: 'Uginanie ramion z liną na wyciągu dolnym (Chwyt młotkowy)', category: 'Wyciąg', bodyPart: 'Bicepsy', sessions: 0, tip: 'Izoluje mięsień ramienny i głowę długą bicepsa.' },
-  { code: '0147', slug: 'Drag_Curl', name: 'Uginanie ramienia jednorącz z wyciągiem za plecami (Bayesian Curl)', category: 'Wyciąg', bodyPart: 'Bicepsy', sessions: 0, tip: 'Ramię cofnięte za linię ciała daje maksymalne rozciągnięcie pod obciążeniem.' },
-  { code: '0315', slug: 'Incline_Dumbbell_Curl', name: 'Uginanie ramion siedząc w skosie dodatnim (Hantle)', category: 'Hantle', bodyPart: 'Bicepsy', sessions: 0, tip: 'Łokcie cofnięte za tułów – mocno rozciąga głowę długą bicepsa.' },
-  { code: '0312', slug: 'Incline_Hammer_Curls', name: 'Uginanie młotkowe siedząc w skosie dodatnim (Hantle)', category: 'Hantle', bodyPart: 'Bicepsy', sessions: 0, tip: 'Chwyt neutralny przez cały ruch.' },
-  { code: '0447', slug: 'EZ-Bar_Curl', name: 'Uginanie ramion ze sztangą łamaną stojąc (EZ-Bar)', category: 'Sztanga', bodyPart: 'Bicepsy', sessions: 0, tip: 'Kontroluj opuszczanie przez 2-3 sekundy.' },
-  { code: '0600', slug: 'Dip_Machine', name: 'Wyciskanie w dół siedząc na maszynie (Seated Triceps Dip Machine)', category: 'Maszyna', bodyPart: 'Tricepsy', sessions: 0, tip: 'Trzymaj łokcie wąsko przy tułowiu, wypychaj uchwyty do pełnego wyprostu.' },
-  { code: '0201', slug: 'Triceps_Pushdown', name: 'Prostowanie ramion na wyciągu górnym (Drążek)', category: 'Wyciąg', bodyPart: 'Tricepsy', sessions: 0, tip: 'Zablokuj stawy ramienne, poruszają się wyłącznie przedramiona.' },
-  { code: '0200', slug: 'Triceps_Pushdown_-_Rope_Attachment', name: 'Prostowanie ramion z liną na wyciągu górnym (Rope Pushdown)', category: 'Wyciąg', bodyPart: 'Tricepsy', sessions: 0, tip: 'Na samym dole rozciągnij końce liny na boki dla mocniejszego dopięcia głowy bocznej.' },
-  { code: '0174', slug: 'Cable_Rope_Overhead_Triceps_Extension', name: 'Prostowanie ramion z liną nad głową (Wyciąg - Głowa długa)', category: 'Wyciąg', bodyPart: 'Tricepsy', sessions: 0, tip: 'Uniesienie ramion nad głowę maksymalnie rozciąga głowę długą tricepsa.' },
-  { code: '0172', slug: 'Tricep_Dumbbell_Kickback', name: 'Prostowanie ramienia w opadzie tułowia (Cable Kickback)', category: 'Wyciąg', bodyPart: 'Tricepsy', sessions: 0, tip: 'Ramię równolegle do podłogi, zatrzymaj ruch w pełnym wyproście łokcia.' },
-  { code: '0450', slug: 'EZ-Bar_Skullcrusher', name: 'Wyciskanie francuskie sztangi łamanej leżąc (Skullcrusher)', category: 'Sztanga', bodyPart: 'Tricepsy', sessions: 0, tip: 'Opuszczaj gryf w stronę czoła lub lekko za głowę.' },
-  { code: '0585', slug: 'Leg_Extensions', name: 'Prostowanie nóg siedząc na maszynie (Leg Extension - 100% Izolacji)', category: 'Maszyna', bodyPart: 'Czworogłowe ud', sessions: 0, tip: 'Najważniejsza maszyna izolująca mięsień czworogłowy uda. Dociśnij biodra do siedziska.' },
-  { code: '0739', slug: 'Leg_Press', name: 'Wypychanie ciężaru na suwnicy (Leg Press 45°)', category: 'Maszyna', bodyPart: 'Czworogłowe ud', sessions: 0, tip: 'Nie odrywaj lędźwi od oparcia.' },
-  { code: '0743', slug: 'Hack_Squat', name: 'Hack Przysiad na maszynie (Hack Squat)', category: 'Maszyna', bodyPart: 'Czworogłowe ud', sessions: 0, tip: 'Całe plecy przyklejone do oparcia, pełne zejście w dół.' },
-  { code: '0598', slug: 'Thigh_Adductor', name: 'Przywodzenie nóg siedząc na maszynie (Izolacja przywodzicieli)', category: 'Maszyna', bodyPart: 'Czworogłowe ud', sessions: 0, tip: 'Izoluje wewnętrzną część ud (przywodziciele).' },
-  { code: '0586', slug: 'Lying_Leg_Curls', name: 'Uginanie nóg leżąc na maszynie (Lying Leg Curl - Izolacja dwugłowych)', category: 'Maszyna', bodyPart: 'Dwugłowe ud', sessions: 0, tip: 'Przyklej miednicę do ławki (nie odrywaj bioder przy uginaniu kolan).' },
-  { code: '0599', slug: 'Seated_Leg_Curl', name: 'Uginanie nóg siedząc na maszynie (Seated Leg Curl - Izolacja)', category: 'Maszyna', bodyPart: 'Dwugłowe ud', sessions: 0, tip: 'Pozycja siedząca zapewnia większe wstępne rozciągnięcie grupy kulszowo-goleniowej.' },
-  { code: '0597', slug: 'Thigh_Abductor', name: 'Odwodzenie nóg siedząc na maszynie (Abductor - Izolacja pośladków)', category: 'Maszyna', bodyPart: 'Pośladki', sessions: 0, tip: 'Izoluje mięsień pośladkowy średni i mały.' },
-  { code: '0085', slug: 'Romanian_Deadlift', name: 'Rumuński martwy ciąg ze sztangą (RDL)', category: 'Sztanga', bodyPart: 'Dwugłowe ud', sessions: 0, tip: 'Cofaj biodra w tył przy lekko ugiętych kolanach.' },
-  { code: '0605', slug: 'Standing_Calf_Raises', name: 'Wspięcia na palce stojąc na maszynie (Standing Calf Raise)', category: 'Maszyna', bodyPart: 'Łydki', sessions: 0, tip: 'Pauza 1-2s na dole w pełnym rozciągnięciu i mocne wspięcie na palce.' },
-  { code: '0594', slug: 'Seated_Calf_Raise', name: 'Wspięcia na palce siedząc na maszynie (Seated Calf Raise - Izolacja)', category: 'Maszyna', bodyPart: 'Łydki', sessions: 0, tip: 'Ugięte kolana w 100% izolują mięsień płaszczkowaty łydki.' },
-  { code: '0571', slug: 'Ab_Crunch_Machine', name: 'Spięcia brzucha siedząc na maszynie (Ab Crunch Machine - Izolacja)', category: 'Maszyna', bodyPart: 'Brzuch', sessions: 0, tip: 'Zwijaj tułów zbliżając żebra do miednicy.' },
-  { code: '0175', slug: 'Cable_Crunch', name: 'Allahy - Spięcia brzucha klęcząc przy wyciągu górnym', category: 'Wyciąg', bodyPart: 'Brzuch', sessions: 0, tip: 'Biodra nieruchomo, ruch polega wyłącznie na zginaniu kręgosłupa.' }
-];
-
-const CURATED_BY_CODE = Object.fromEntries(STARTER_EXERCISES.map(e => [e.code, e.name]));
-
-async function ensureStarterCatalog() {
-  const count = await db.exercises.count();
-  if (count === 0) {
-    await db.exercises.bulkAdd(STARTER_EXERCISES);
-  }
-}
-
-function mapEquipmentToPl(eqArray = []) {
-  const eq = (eqArray[0] || '').toLowerCase();
-  if (eq.includes('leverage') || eq.includes('machine') || eq.includes('smith') || eq.includes('sled') || eq.includes('assisted')) return 'Maszyna';
-  if (eq.includes('cable') || eq.includes('band') || eq.includes('rope')) return 'Wyciąg';
-  if (eq.includes('dumbbell') || eq.includes('kettlebell')) return 'Hantle';
-  if (eq.includes('barbell') || eq.includes('ez_bar') || eq.includes('olympic') || eq.includes('trap')) return 'Sztanga';
-  return 'Masa ciała';
-}
-
-function mapMuscleToPl(primaryArr = [], bodyPartArr = []) {
-  const m = (primaryArr[0] || '').toLowerCase();
-  const bp = (bodyPartArr[0] || '').toLowerCase();
-  if (m.includes('pectorals') || m.includes('serratus') || bp.includes('chest')) return 'Klatka';
-  if (m.includes('lats') || m.includes('upper_back') || m.includes('spine')) return 'Najszerszy grzbietu';
-  if (m.includes('traps') || m.includes('levator')) return 'Czworoboczny grzbietu';
-  if (m.includes('delts') || bp.includes('shoulders')) return 'Barki';
-  if (m.includes('biceps') || m.includes('brachialis') || m.includes('forearms')) return 'Bicepsy';
-  if (m.includes('triceps')) return 'Tricepsy';
-  if (m.includes('quads') || m.includes('adductors')) return 'Czworogłowe ud';
-  if (m.includes('hamstrings')) return 'Dwugłowe ud';
-  if (m.includes('glutes') || m.includes('abductors')) return 'Pośladki';
-  if (m.includes('calves') || bp.includes('lower_legs')) return 'Łydki';
-  if (m.includes('abs') || m.includes('obliques') || bp.includes('waist')) return 'Brzuch';
-  return 'Klatka';
-}
-
-function autoTranslateTitleToPl(enTitle = '', code = '') {
-  if (CURATED_BY_CODE[code]) return CURATED_BY_CODE[code];
-  let t = enTitle;
-  const dict = [
-    [/lever\s+/gi, 'Maszyna: '],
-    [/leverage\s+/gi, 'Maszyna: '],
-    [/smith\s+/gi, 'Maszyna Smitha: '],
-    [/sled\s+/gi, 'Suwnica: '],
-    [/cable\s+/gi, 'Wyciąg: '],
-    [/dumbbell\s+/gi, 'Hantle: '],
-    [/barbell\s+/gi, 'Sztanga: '],
-    [/ez\s*barbell\s+/gi, 'Sztanga łamana: '],
-    [/incline/gi, 'skos dodatni'],
-    [/decline/gi, 'skos ujemny'],
-    [/seated/gi, 'siedząc'],
-    [/standing/gi, 'stojąc'],
-    [/lying/gi, 'leżąc'],
-    [/chest press/gi, 'Wyciskanie na klatkę'],
-    [/bench press/gi, 'Wyciskanie na ławce'],
-    [/shoulder press/gi, 'Wyciskanie na barki'],
-    [/lateral raise/gi, 'Wznosy bokiem'],
-    [/rear delt/gi, 'Tylny akton barku'],
-    [/reverse fly/gi, 'Odwodzenie w tył'],
-    [/fly/gi, 'Rozpiętki'],
-    [/pulldown/gi, 'Ściąganie z góry'],
-    [/pullover/gi, 'Przenoszenie (Pullover)'],
-    [/row/gi, 'Wiosłowanie'],
-    [/shrug/gi, 'Szrugsy'],
-    [/preacher curl/gi, 'Uginanie na modlitewniku'],
-    [/hammer curl/gi, 'Uginanie młotkowe'],
-    [/biceps curl/gi, 'Uginanie na biceps'],
-    [/curl/gi, 'Uginanie'],
-    [/pushdown/gi, 'Prostowanie na wyciągu'],
-    [/triceps extension/gi, 'Prostowanie na triceps'],
-    [/kickback/gi, 'Wykopy / Wyprosty w opadzie'],
-    [/leg extension/gi, 'Prostowanie nóg'],
-    [/leg press/gi, 'Wypychanie nóg'],
-    [/squat/gi, 'Przysiad'],
-    [/deadlift/gi, 'Martwy ciąg'],
-    [/calf raise/gi, 'Wspięcia na łydki'],
-    [/crunch/gi, 'Spięcia brzucha']
-  ];
-  dict.forEach(([regex, pl]) => { t = t.replace(regex, pl); });
-  return `${t.charAt(0).toUpperCase() + t.slice(1)} (${enTitle})`;
-}
-
-// Synchronizacja wszystkich 1324 ćwiczeń i GIF-ów (najpierw próbuje z lokalnego forka ./data/exercises.json, potem z GitHub Raw)
+// Automatyczna synchronizacja wszystkich 1324 ćwiczeń i GIF-ów z hasaneyldrm
 async function syncHasanDataset(forceResync = false) {
   const existingCount = await db.exercises.count();
   if (existingCount > 500 && !forceResync) return;
@@ -537,18 +320,9 @@ async function syncHasanDataset(forceResync = false) {
   if (banner) banner.classList.remove('hidden');
 
   try {
-    let rawList = null;
-    // 1. Próba pobrania z tego samego repozytorium na Twoim GitHub Pages (./data/exercises.json)
-    try {
-      const localResp = await fetch('./data/exercises.json');
-      if (localResp.ok) rawList = await localResp.json();
-    } catch (e) {}
-
-    // 2. Jeśli plik uruchomiono poza forkiem, pobieramy bezpośrednio z GitHub Raw hasaneyldrm
-    if (!rawList) {
-      const remoteResp = await fetch(HASAN_RAW_BASE + 'data/exercises.json');
-      if (remoteResp.ok) rawList = await remoteResp.json();
-    }
+    const resp = await fetch(HASAN_JSON_URL);
+    if (!resp.ok) throw new Error('Błąd pobierania JSON');
+    const rawList = await resp.json();
 
     if (Array.isArray(rawList) && rawList.length > 0) {
       const oldExercises = await db.exercises.toArray();
@@ -560,47 +334,35 @@ async function syncHasanDataset(forceResync = false) {
       const mapped = rawList.map(item => {
         const code = String(item.id || '').padStart(4, '0');
         const enName = item.title || item.slug || `Exercise ${code}`;
-        const plName = autoTranslateTitleToPl(enName, code);
-        const category = mapEquipmentToPl(item.equipment);
-        const bodyPart = mapMuscleToPl(item.primary_muscles, item.body_parts);
         const plSteps = (item.instructions && item.instructions.pl) ? item.instructions.pl.join(' ') : '';
         const prevMeta = oldStateByCode[code] || {};
 
         return {
           code,
-          name: plName,
+          name: enName, // Oryginalna nazwa z bazy
           enName,
-          category,
-          bodyPart,
+          category: 'Maszyna',
+          bodyPart: 'Klatka',
           gifPath: item.gif_url || '',
-          imgPath: item.img_url || '',
-          tip: plSteps || 'Kontroluj fazę ekscentryczną (opuszczanie 2-3s) i pilnuj pełnego zakresu ruchu.',
+          tip: plSteps || 'Kontroluj fazę opuszczania i pilnuj pełnego zakresu ruchu.',
           sessions: prevMeta.sessions || 0,
-          nextTargetWeight: prevMeta.nextTargetWeight || null,
-          isCurated: Boolean(CURATED_BY_CODE[code])
+          nextTargetWeight: prevMeta.nextTargetWeight || null
         };
       });
-
-      mapped.sort((a, b) => (b.isCurated ? 1 : 0) - (a.isCurated ? 1 : 0));
 
       await db.exercises.clear();
       await db.exercises.bulkAdd(mapped);
 
       if (bannerTxt) bannerTxt.textContent = `✓ Zsynchronizowano pełne 1324 ćwiczenia i GIF-y!`;
-      setTimeout(() => { if (banner) banner.classList.add('hidden'); }, 2200);
+      setTimeout(() => { if (banner) banner.classList.add('hidden'); }, 2000);
       renderCurrentView();
-    } else {
-      if (banner) banner.classList.add('hidden');
     }
   } catch (err) {
-    console.warn('Używam wbudowanego pakietu startowego ćwiczeń:', err);
+    console.warn('Błąd pobierania bazy hasaneyldrm:', err);
     if (banner) banner.classList.add('hidden');
   }
 }
 
-// ============================================================================
-// 4. NAWIGACJA GŁÓWNA
-// ============================================================================
 function navigate(tabName) {
   state.tab = tabName;
   document.querySelectorAll('nav button').forEach(btn => {
@@ -657,9 +419,6 @@ async function renderCurrentView() {
   else if (state.tab === 'calendar') container.innerHTML = await renderCalendarView();
 }
 
-// ============================================================================
-// WIDOK 1: EKRAN GŁÓWNY (LIQUID GLASS DASHBOARD)
-// ============================================================================
 async function renderHomeView() {
   const workouts = await db.workouts.toArray();
   workouts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
@@ -807,9 +566,6 @@ async function editStickyNote() {
   }
 }
 
-// ============================================================================
-// WIDOK 2A: PLANY
-// ============================================================================
 async function renderPlansView() {
   const plans = await db.plans.toArray();
   const activePlan = plans.find(p => p.active === 1) || plans[0];
@@ -819,7 +575,7 @@ async function renderPlansView() {
     return `
       <div class="text-center py-14 px-4 bg-bgCard rounded-3xl mt-2">
         <h2 class="text-xl font-bold mb-2">Brak aktywnego planu</h2>
-        <p class="text-xs text-gray-300 mb-6 leading-relaxed">Utwórz swoje rutyny w zakładce „Rutyny”, a następnie połącz je w Plan. Wyniki ćwiczeń są globalne dla całego planu!</p>
+        <p class="text-xs text-gray-300 mb-6 leading-relaxed">Utwórz swoje rutyny w zakładce „Rutyny”, a następnie połącz je w Plan.</p>
         <div class="flex justify-center gap-3">
           <button onclick="switchWorkoutSubTab('routines')" class="liquid-pill text-white font-bold text-xs px-4 py-3 rounded-2xl">Przejdź do Rutyn</button>
           <button onclick="openPlanWizard()" class="liquid-orange-btn text-white font-bold text-xs px-5 py-3 rounded-2xl">+ Utwórz Plan</button>
@@ -854,7 +610,7 @@ async function renderPlansView() {
     <div class="flex justify-between items-center mb-4 pt-1">
       <button onclick="deletePlan(${activePlan.id})" class="text-xs text-gray-400">Usuń</button>
       <h1 class="text-lg font-bold">Aktywny Plan</h1>
-      <button onclick="openPlanWizard()" class="liquid-pill text-white text-xs font-bold px-3.5 py-1.5 rounded-full">+ Nowy</button>
+      <button onclick="openPlanWizard()" class="liquid-pill text-white font-bold text-xs px-3.5 py-1.5 rounded-full">+ Nowy</button>
     </div>
 
     <div class="flex justify-between items-center mb-3">
@@ -912,9 +668,6 @@ async function deletePlan(planId) {
   }
 }
 
-// ============================================================================
-// WIDOK 2B: RUTYNY
-// ============================================================================
 async function renderRoutinesView() {
   const routines = await db.routines.toArray();
   const exercises = await db.exercises.toArray();
@@ -923,7 +676,7 @@ async function renderRoutinesView() {
   const emptyHtml = `
     <div class="text-center py-14 px-4 bg-bgCard rounded-3xl">
       <h3 class="text-base font-bold mb-1">Nie masz jeszcze żadnej rutyny</h3>
-      <p class="text-xs text-gray-300 mb-4">Stwórz rutynę, ustaw czas przerwy dla rozgrzewki (R) oraz serii roboczej (1,2,3) i dobierz ćwiczenia.</p>
+      <p class="text-xs text-gray-300 mb-4">Stwórz rutynę, ustaw czas przerwy dla rozgrzewki (R) oraz serii roboczej (1,2,3) i dobierz ćwiczenia z bazy 1324 GIF-ów.</p>
       <button onclick="openRoutineCreatorModal()" class="liquid-orange-btn text-white text-xs font-bold px-5 py-3 rounded-2xl">+ Stwórz pierwszą rutynę</button>
     </div>`;
 
@@ -1093,7 +846,7 @@ async function renderRoutineDraftModal() {
       <div class="bg-bgCard rounded-3xl p-3.5 mb-3">
         <div class="flex items-center justify-between gap-2 mb-2">
           <div class="flex items-center gap-2.5 min-w-0">
-            ${renderExerciseMediaThumb(exObj, 'w-12 h-12')}
+            ${renderHasanGifThumb(exObj, 'w-12 h-12')}
             <div class="min-w-0">
               <div class="text-xs font-bold text-white truncate">${exIdx + 1}. ${exObj.name}</div>
               <div class="flex items-center gap-1.5 mt-1 flex-wrap">
@@ -1293,7 +1046,7 @@ async function renderExercisePickerModal() {
     return `
       <div onclick="togglePickerExercise(${ex.id})"
         class="bg-bgCard border ${picked ? 'border-striveOrange bg-striveOrange/10' : 'border-white/15'} rounded-3xl p-2.5 flex items-center gap-3 cursor-pointer transition">
-        ${renderExerciseMediaThumb(ex, 'w-14 h-14')}
+        ${renderHasanGifThumb(ex, 'w-14 h-14')}
         <div class="flex-1 min-w-0">
           <div class="flex justify-between items-start gap-2">
             <h3 class="font-semibold text-xs text-white leading-snug">${ex.name}</h3>
@@ -1322,7 +1075,7 @@ async function renderExercisePickerModal() {
     </div>
 
     <div class="flex gap-2 mb-2.5">
-      <input type="text" placeholder="🔍 Szukaj po polsku lub ang. (np. wyciskanie, lever, cable)..." value="${state.exerciseSearch}"
+      <input type="text" placeholder="🔍 Szukaj po polsku lub ang..." value="${state.exerciseSearch}"
         oninput="state.exerciseSearch = this.value; state.exerciseLimit = 60; renderExercisePickerModal()"
         class="flex-1 bg-bgInput rounded-2xl px-3.5 py-2 text-sm">
     </div>
@@ -1408,9 +1161,6 @@ async function saveRoutineDraft() {
   renderCurrentView();
 }
 
-// ============================================================================
-// WIDOK 2C: ĆWICZENIA
-// ============================================================================
 async function renderExercisesView() {
   const allEx = await db.exercises.toArray();
   const categories = ['ALL', ...new Set(allEx.map(e => e.category))];
@@ -1428,7 +1178,7 @@ async function renderExercisesView() {
 
   const listHtml = visibleList.map(ex => `
     <div onclick="openExerciseDetailModal(${ex.id})" class="bg-bgCard rounded-3xl p-2.5 flex items-center gap-3 cursor-pointer active:scale-[0.99] transition">
-      ${renderExerciseMediaThumb(ex, 'w-14 h-14')}
+      ${renderHasanGifThumb(ex, 'w-14 h-14')}
       <div class="flex-1 min-w-0">
         <div class="flex justify-between items-start gap-2">
           <h3 class="font-semibold text-xs text-white leading-snug">${ex.name}</h3>
@@ -1444,13 +1194,13 @@ async function renderExercisesView() {
 
   return `
     <div class="flex justify-between items-center mb-3 pt-1">
-      <button onclick="syncHasanDataset(true)" class="liquid-pill text-white text-[10px] font-bold px-2.5 py-1.5 rounded-full">🔄 Pełna baza (${allEx.length})</button>
+      <button onclick="syncHasanDataset(true)" class="liquid-pill text-white text-[10px] font-bold px-2.5 py-1.5 rounded-full">🔄 Odśwież (${allEx.length})</button>
       <h1 class="text-lg font-bold">Ćwiczenia</h1>
       <button onclick="openAddCustomExerciseModal(false)" class="liquid-orange-btn text-white text-xs font-bold px-3.5 py-1.5 rounded-full">Dodaj +</button>
     </div>
 
     <div class="flex gap-2 mb-2.5">
-      <input type="text" placeholder="🔍 Szukaj w ${allEx.length} ćwiczeniach (PL / ANG)..." value="${state.exerciseSearch}"
+      <input type="text" placeholder="🔍 Szukaj w ${allEx.length} ćwiczeniach..." value="${state.exerciseSearch}"
         oninput="state.exerciseSearch = this.value; state.exerciseLimit = 60; renderCurrentView()"
         class="flex-1 bg-bgInput rounded-2xl px-3.5 py-2.5 text-sm text-white">
     </div>
@@ -1470,7 +1220,7 @@ async function renderExercisesView() {
       ${listHtml}
       ${filtered.length > state.exerciseLimit ? `
         <button onclick="state.exerciseLimit += 80; renderCurrentView()" class="w-full liquid-pill text-white text-xs font-bold py-3.5 rounded-3xl mt-3">
-          Pokaż więcej ćwiczeń (wyświetlono ${visibleList.length} z ${filtered.length})
+          Pokaż więcej ćwiczeń (${visibleList.length} z ${filtered.length})
         </button>
       ` : ''}
     </div>
@@ -1500,18 +1250,18 @@ async function openExerciseDetailModal(exId) {
     </div>
 
     <div class="bg-white rounded-3xl p-4 flex flex-col items-center justify-center mb-4 relative overflow-hidden">
-      <span class="text-[10px] font-bold uppercase text-gray-500 mb-1">Animacja ruchu (#${ex.code || 'Custom'})</span>
-      ${renderExerciseMediaThumb(ex, 'w-52 h-52')}
+      <span class="text-[10px] font-bold uppercase text-gray-500 mb-1">Animacja GIF (#${ex.code || 'Custom'})</span>
+      ${renderHasanGifThumb(ex, 'w-56 h-56')}
       <span class="text-xs font-semibold text-gray-700 mt-2">Sprzęt: ${ex.category} · Partia: ${ex.bodyPart}</span>
     </div>
 
     <div class="bg-bgCard rounded-3xl p-4 mb-4">
       <h3 class="text-xs font-bold uppercase text-striveOrange mb-1">Polska instrukcja techniczna</h3>
-      <p class="text-xs text-gray-200 leading-relaxed">${ex.tip || 'Kontroluj fazę opuszczania (2-3s) i pilnuj pełnego zakresu ruchu.'}</p>
+      <p class="text-xs text-gray-200 leading-relaxed">${ex.tip || 'Kontroluj fazę opuszczania i pilnuj zakresu ruchu.'}</p>
     </div>
 
     <div class="bg-bgCard rounded-3xl p-4">
-      <h3 class="text-xs font-bold uppercase text-striveTeal mb-2">Globalna historia w całym planie</h3>
+      <h3 class="text-xs font-bold uppercase text-striveTeal mb-2">Globalna historia</h3>
       ${historyRows || '<p class="text-xs text-gray-400">Brak zapisanych serii dla tego ćwiczenia.</p>'}
     </div>
   `);
@@ -1539,27 +1289,27 @@ function openAddCustomExerciseModal(returnToPicker = false) {
     <div class="bg-bgCard rounded-3xl p-4 space-y-3">
       <div>
         <label class="text-xs text-gray-400 block mb-1">Polska nazwa ćwiczenia</label>
-        <input id="new-ex-name" type="text" placeholder="np. Wyciskanie na maszynie Hammer" class="w-full bg-bgInput rounded-2xl p-2.5 text-sm">
+        <input id="new-ex-name" type="text" placeholder="np. Wyciskanie na maszynie" class="w-full bg-bgInput rounded-2xl p-2.5 text-sm">
       </div>
       <div>
         <label class="text-xs text-gray-400 block mb-1">Bezpośredni link do GIF-a (opcjonalnie)</label>
-        <input id="new-ex-customgif" type="text" placeholder="https://... (lub zostaw puste)" class="w-full bg-bgInput rounded-2xl p-2.5 text-xs">
+        <input id="new-ex-customgif" type="text" placeholder="https://..." class="w-full bg-bgInput rounded-2xl p-2.5 text-xs">
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
-          <label class="text-xs text-gray-400 block mb-1">Kategoria (Sprzęt)</label>
+          <label class="text-xs text-gray-400 block mb-1">Kategoria</label>
           <select id="new-ex-cat" class="w-full bg-bgInput rounded-2xl p-2.5 text-sm">
             <option>Maszyna</option><option>Wyciąg</option><option>Hantle</option><option>Sztanga</option><option>Masa ciała</option>
           </select>
         </div>
         <div>
-          <label class="text-xs text-gray-400 block mb-1">Partia mięśniowa</label>
+          <label class="text-xs text-gray-400 block mb-1">Partia</label>
           <select id="new-ex-part" class="w-full bg-bgInput rounded-2xl p-2.5 text-sm">
-            <option>Klatka</option><option>Najszerszy grzbietu</option><option>Czworoboczny grzbietu</option><option>Barki</option><option>Bicepsy</option><option>Tricepsy</option><option>Czworogłowe ud</option><option>Dwugłowe ud</option><option>Pośladki</option><option>Łydki</option><option>Brzuch</option>
+            <option>Klatka</option><option>Najszerszy grzbietu</option><option>Barki</option><option>Bicepsy</option><option>Tricepsy</option><option>Czworogłowe ud</option><option>Dwugłowe ud</option><option>Pośladki</option><option>Łydki</option><option>Brzuch</option>
           </select>
         </div>
       </div>
-      <button onclick="saveCustomExercise(${returnToPicker})" class="w-full liquid-orange-btn text-white font-bold py-3.5 rounded-2xl">Zapisz ćwiczenie w bazie</button>
+      <button onclick="saveCustomExercise(${returnToPicker})" class="w-full liquid-orange-btn text-white font-bold py-3.5 rounded-2xl">Zapisz ćwiczenie</button>
     </div>
   `);
 }
@@ -1572,7 +1322,7 @@ async function saveCustomExercise(returnToPicker) {
     code: '9999',
     name,
     enName: name,
-    slug: 'Leverage_Chest_Press',
+    gifPath: 'videos/0576-2gPfomN.gif',
     customGifUrl,
     category: document.getElementById('new-ex-cat').value,
     bodyPart: document.getElementById('new-ex-part').value,
@@ -1582,9 +1332,6 @@ async function saveCustomExercise(returnToPicker) {
   else { closeModal(); renderCurrentView(); }
 }
 
-// ============================================================================
-// AKTYWNY TRENING
-// ============================================================================
 async function openQuickStartModal() {
   if (state.activeWorkout) {
     openActiveWorkoutModal();
@@ -1615,7 +1362,7 @@ async function openQuickStartModal() {
       <h2 class="text-lg font-bold">Wybierz trening na dziś</h2>
       <div class="w-6"></div>
     </div>
-    <p class="text-xs text-gray-300 text-center mb-4">Dziś jest <strong class="text-striveOrange">${todayShort} (${formatDayMonth(today)})</strong>. Wyniki ćwiczeń są globalne dla całego planu.</p>
+    <p class="text-xs text-gray-300 text-center mb-4">Dziś jest <strong class="text-striveOrange">${todayShort} (${formatDayMonth(today)})</strong>.</p>
     ${routines.length ? `<div class="divide-y divide-white/10">${listHtml}</div>` : `
       <div class="text-center py-8">
         <p class="text-sm text-gray-400 mb-4">Nie utworzyłeś jeszcze żadnej rutyny treningowej.</p>
@@ -1640,7 +1387,7 @@ async function startWorkout(routineId) {
   const workoutExercises = (routine.exercises || []).map(item => {
     const exObj = item.isPlaceholder
       ? { id: 0, name: item.placeholderName, bodyPart: 'Wybierz na siłowni', isPlaceholder: true }
-      : (exMap[item.exId] || { id: item.exId, name: 'Ćwiczenie', bodyPart: 'Klatka', gifPath: '', slug: 'Leverage_Chest_Press' });
+      : (exMap[item.exId] || { id: item.exId, name: 'Ćwiczenie', bodyPart: 'Klatka', gifPath: '' });
 
     let lastAllSets = [];
     if (!item.isPlaceholder) {
@@ -1754,7 +1501,6 @@ async function startWorkout(routineId) {
       bodyPart: exObj.bodyPart,
       gifPath: exObj.gifPath,
       imgPath: exObj.imgPath,
-      slug: exObj.slug,
       customGifUrl: exObj.customGifUrl,
       isPlaceholder: Boolean(item.isPlaceholder),
       superset: Boolean(item.superset),
@@ -1819,7 +1565,7 @@ function openActiveWorkoutModal() {
       <div class="bg-bgCard rounded-3xl p-3.5 mb-3.5">
         <div class="flex justify-between items-center gap-2 mb-2.5">
           <div onclick="${ex.exId ? `openExerciseDetailModal(${ex.exId})` : `swapExerciseInFlight(${exIdx}, 'ALL')`}" class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
-            ${renderExerciseMediaThumb(ex, 'w-12 h-12')}
+            ${renderHasanGifThumb(ex, 'w-12 h-12')}
             <div class="min-w-0">
               <h3 class="font-bold text-xs text-striveTeal leading-snug">${ex.superset ? '🔗 ' : ''}${ex.name}</h3>
               <span class="text-[11px] text-gray-400">${ex.bodyPart} · ⏱ R: ${w.warmupRestSec}s / Robocza: ${w.workingRestSec}s</span>
@@ -1902,11 +1648,9 @@ function addExtraSet(exIdx, setType = 'N') {
 
 async function swapExerciseInFlight(exIdx, bodyPart) {
   const all = await db.exercises.toArray();
-  const alternatives = (bodyPart && bodyPart !== 'ALL' && bodyPart !== 'Wybierz na siłowni')
-    ? all.filter(a => a.bodyPart === bodyPart).slice(0, 35)
-    : all.slice(0, 35);
+  const alternatives = all.slice(0, 40);
   const names = alternatives.map((a, i) => `${i + 1}. ${a.name}`).join('\n');
-  const choice = prompt(`Wybierz numer ćwiczenia (${bodyPart}):\n\n${names}`);
+  const choice = prompt(`Wybierz numer ćwiczenia:\n\n${names}`);
   const idx = parseInt(choice) - 1;
   if (!isNaN(idx) && alternatives[idx]) {
     const picked = alternatives[idx];
@@ -1914,8 +1658,6 @@ async function swapExerciseInFlight(exIdx, bodyPart) {
     state.activeWorkout.exercises[exIdx].name = picked.name;
     state.activeWorkout.exercises[exIdx].bodyPart = picked.bodyPart;
     state.activeWorkout.exercises[exIdx].gifPath = picked.gifPath;
-    state.activeWorkout.exercises[exIdx].imgPath = picked.imgPath;
-    state.activeWorkout.exercises[exIdx].slug = picked.slug;
     state.activeWorkout.exercises[exIdx].customGifUrl = picked.customGifUrl;
     state.activeWorkout.exercises[exIdx].isPlaceholder = false;
     openActiveWorkoutModal();
@@ -1990,9 +1732,6 @@ function playFinishBeep() {
   } catch (e) {}
 }
 
-// ============================================================================
-// PODSUMOWANIE TRENINGU + WYKRYWANIE LIMITU POWTÓRZEŃ + PROPOZYCJA CIĘŻARU
-// ============================================================================
 function prepareWorkoutSummaryModal() {
   const w = state.activeWorkout;
   if (!w) return;
@@ -2107,7 +1846,7 @@ function renderWorkoutSummaryModal() {
     </div>
   `).join('') : `
     <div class="bg-bgMain/40 border border-white/10 rounded-2xl p-3 text-xs text-gray-300 text-center">
-      Brak ćwiczeń, które przekroczyły dziś górny limit powtórzeń we wszystkich seriach roboczych. Na kolejnym treningu walczysz o kolejne powtórzenia!
+      Brak ćwiczeń, które przekroczyły dziś górny limit powtórzeń we wszystkich seriach roboczych.
     </div>`;
 
   openModal(`
@@ -2211,9 +1950,6 @@ async function confirmAndSaveWorkoutSummary() {
   navigate('home');
 }
 
-// ============================================================================
-// WIDOK 3: PROFIL (POMIARY ZE ZDJĘCIAMI Z APARATU LUB GALERII, RAPORT, REKORDY)
-// ============================================================================
 async function renderProfileView() {
   const photosCount = await db.photos.count();
   const measCount = await db.measurements.count();
@@ -2615,9 +2351,6 @@ async function deleteSinglePhoto(photoId) {
   openProgressPhotosModal();
 }
 
-// ============================================================================
-// WIDOK 4: KALENDARZ / HISTORIA I KREATOR PLANU
-// ============================================================================
 async function renderCalendarView() {
   const workouts = await db.workouts.toArray();
   workouts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
