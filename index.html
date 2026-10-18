@@ -114,10 +114,10 @@
     </div>
   </div>
 
-  <!-- BANER SYNCHRONIZACJI -->
+  <!-- BANER SYNCHRONIZACJI Z POLSKIMI FOLDERAMI -->
   <div id="sync-banner" class="hidden max-w-md mx-auto px-3.5 mb-2">
     <div class="bg-bgCard rounded-2xl px-3.5 py-2 flex items-center justify-between text-xs border border-striveTeal/40">
-      <span id="sync-banner-text" class="text-striveTeal font-semibold animate-pulse">⚡ Synchronizuję 1324 GIF-y z hasaneyldrm...</span>
+      <span id="sync-banner-text" class="text-striveTeal font-semibold animate-pulse">⚡ Pobieram bazę 1324 ćwiczeń z folderu dane/...</span>
     </div>
   </div>
 
@@ -180,12 +180,11 @@
 
 <script>
 const DAYS_SHORT = ['pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.', 'niedz.'];
-const HASAN_RAW_BASE = 'https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/';
-const HASAN_JSON_URL = HASAN_RAW_BASE + 'data/exercises.json';
+const LOCAL_JSON_URL = './dane/exercises.json';
 
-const db = new Dexie('gymWK_GitHubPages_v11');
+const db = new Dexie('gymWK_PolishRepo_v12');
 db.version(1).stores({
-  exercises: '++id, code, name, enName, category, bodyPart, gifPath, nextTargetWeight',
+  exercises: '++id, code, name, enName, category, bodyPart, gifPath, imgPath, nextTargetWeight',
   routines: '++id, name, tag, assignedDay',
   plans: '++id, name, active',
   workouts: '++id, date, timestamp, routineId, routineName',
@@ -270,21 +269,25 @@ function nextSetType(currentType) {
   return 'N';
 }
 
-// Renderowanie oryginalnego pliku GIF z repozytorium hasaneyldrm
-function renderHasanGifThumb(ex, sizeClass = 'w-14 h-14') {
+// Renderowanie GIF-ów z polskiego folderu ./filmy/ oraz obrazków z ./obrazy/
+function renderPolishRepoMediaThumb(ex, sizeClass = 'w-14 h-14') {
   if (!ex || ex.isPlaceholder) {
     return `<div class="${sizeClass} rounded-2xl bg-striveTealDark/60 border border-striveTeal/50 flex items-center justify-center shrink-0 text-xs font-bold text-striveTeal">?</div>`;
   }
   if (ex.customGifUrl) {
     return `<div class="${sizeClass} rounded-2xl bg-white flex items-center justify-center shrink-0 overflow-hidden border border-white/25 shadow-inner"><img src="${ex.customGifUrl}" class="w-full h-full object-contain bg-white" loading="lazy" /></div>`;
   }
-  const relGif = ex.gifPath || 'videos/0576-2gPfomN.gif';
-  const fullGifUrl = HASAN_RAW_BASE + relGif;
+  
+  // Zamieniamy angielskie ścieżki "videos/..." i "images/..." na polskie foldery "filmy/..." i "obrazy/" z Twojego forka
+  let path = ex.gifPath || '';
+  path = path.replace(/^videos\//, 'filmy/').replace(/^images\//, 'obrazy/');
+  const fullUrl = `./${path}`;
+  const imgFallback = fullUrl.replace('.gif', '.jpg');
 
   return `
     <div class="${sizeClass} rounded-2xl bg-white flex items-center justify-center shrink-0 overflow-hidden border border-white/25 shadow-inner relative">
-      <img src="${fullGifUrl}" alt="${ex.name}" loading="lazy"
-        onerror="this.style.opacity='0.2'"
+      <img src="${fullUrl}" alt="${ex.name}" loading="lazy"
+        onerror="if(this.src !== '${imgFallback}'){this.src='${imgFallback}';}else{this.style.opacity='0.2';}"
         class="w-full h-full object-contain bg-white" />
     </div>`;
 }
@@ -310,8 +313,35 @@ function compressImageFileToDataUrl(file) {
   });
 }
 
-// Automatyczna synchronizacja wszystkich 1324 ćwiczeń i GIF-ów z hasaneyldrm
-async function syncHasanDataset(forceResync = false) {
+// Mapowanie sprzętu na polskie kategorie
+function mapEquipmentToPl(eqArray = []) {
+  const eq = (eqArray[0] || '').toLowerCase();
+  if (eq.includes('leverage') || eq.includes('machine') || eq.includes('smith') || eq.includes('sled') || eq.includes('assisted')) return 'Maszyna';
+  if (eq.includes('cable') || eq.includes('band') || eq.includes('rope')) return 'Wyciąg';
+  if (eq.includes('dumbbell') || eq.includes('kettlebell')) return 'Hantle';
+  if (eq.includes('barbell') || eq.includes('ez_bar') || eq.includes('olympic') || eq.includes('trap')) return 'Sztanga';
+  return 'Masa ciała';
+}
+
+function mapMuscleToPl(primaryArr = [], bodyPartArr = []) {
+  const m = (primaryArr[0] || '').toLowerCase();
+  const bp = (bodyPartArr[0] || '').toLowerCase();
+  if (m.includes('pectorals') || m.includes('serratus') || bp.includes('chest')) return 'Klatka';
+  if (m.includes('lats') || m.includes('upper_back') || m.includes('spine')) return 'Najszerszy grzbietu';
+  if (m.includes('traps') || m.includes('levator')) return 'Czworoboczny grzbietu';
+  if (m.includes('delts') || bp.includes('shoulders')) return 'Barki';
+  if (m.includes('biceps') || m.includes('brachialis') || m.includes('forearms')) return 'Bicepsy';
+  if (m.includes('triceps')) return 'Tricepsy';
+  if (m.includes('quads') || m.includes('adductors')) return 'Czworogłowe ud';
+  if (m.includes('hamstrings')) return 'Dwugłowe ud';
+  if (m.includes('glutes') || m.includes('abductors')) return 'Pośladki';
+  if (m.includes('calves') || bp.includes('lower_legs')) return 'Łydki';
+  if (m.includes('abs') || m.includes('obliques') || bp.includes('waist')) return 'Brzuch';
+  return 'Klatka';
+}
+
+// Synchronizacja 1324 ćwiczeń z polskiego pliku ./dane/exercises.json w Twoim repozytorium
+async function syncPolishRepoDataset(forceResync = false) {
   const existingCount = await db.exercises.count();
   if (existingCount > 500 && !forceResync) return;
 
@@ -320,8 +350,8 @@ async function syncHasanDataset(forceResync = false) {
   if (banner) banner.classList.remove('hidden');
 
   try {
-    const resp = await fetch(HASAN_JSON_URL);
-    if (!resp.ok) throw new Error('Błąd pobierania JSON');
+    const resp = await fetch(LOCAL_JSON_URL);
+    if (!resp.ok) throw new Error('Błąd ładowania lokalnego JSON');
     const rawList = await resp.json();
 
     if (Array.isArray(rawList) && rawList.length > 0) {
@@ -334,17 +364,22 @@ async function syncHasanDataset(forceResync = false) {
       const mapped = rawList.map(item => {
         const code = String(item.id || '').padStart(4, '0');
         const enName = item.title || item.slug || `Exercise ${code}`;
-        const plSteps = (item.instructions && item.instructions.pl) ? item.instructions.pl.join(' ') : '';
+        // Sprawdzamy, czy w bazie jest polski tytuł (zależnie od struktury kluczy), a jak nie, bierzemy z JSONa
+        const plName = item.title_pl || item.name_pl || enName;
+        const category = mapEquipmentToPl(item.equipment);
+        const bodyPart = mapMuscleToPl(item.primary_muscles, item.body_parts);
+        const plSteps = (item.instructions && item.instructions.pl) ? item.instructions.pl.join(' ') : (item.description || '');
         const prevMeta = oldStateByCode[code] || {};
 
         return {
           code,
-          name: enName, // Oryginalna nazwa z bazy
+          name: plName,
           enName,
-          category: 'Maszyna',
-          bodyPart: 'Klatka',
+          category,
+          bodyPart,
           gifPath: item.gif_url || '',
-          tip: plSteps || 'Kontroluj fazę opuszczania i pilnuj pełnego zakresu ruchu.',
+          imgPath: item.img_url || '',
+          tip: plSteps || 'Kontroluj fazę ekscentryczną i pilnuj zakresu ruchu.',
           sessions: prevMeta.sessions || 0,
           nextTargetWeight: prevMeta.nextTargetWeight || null
         };
@@ -353,14 +388,25 @@ async function syncHasanDataset(forceResync = false) {
       await db.exercises.clear();
       await db.exercises.bulkAdd(mapped);
 
-      if (bannerTxt) bannerTxt.textContent = `✓ Zsynchronizowano pełne 1324 ćwiczenia i GIF-y!`;
+      if (bannerTxt) bannerTxt.textContent = `✓ Zsynchronizowano pełne 1324 ćwiczenia z folderu dane/!`;
       setTimeout(() => { if (banner) banner.classList.add('hidden'); }, 2000);
       renderCurrentView();
     }
   } catch (err) {
-    console.warn('Błąd pobierania bazy hasaneyldrm:', err);
+    console.warn('Ładuję wbudowany pakiet startowy z powodu braku pliku JSON:', err);
     if (banner) banner.classList.add('hidden');
+    await ensureStarterCatalog();
   }
+}
+
+async function ensureStarterCatalog() {
+  const count = await db.exercises.count();
+  if (count > 0) return;
+  // Zapasowe ćwiczenia w razie testów lokalnych bez folderów
+  await db.exercises.bulkAdd([
+    { code: '0576', name: 'Wyciskanie na klatkę siedząc (Maszyna)', category: 'Maszyna', bodyPart: 'Klatka', gifPath: 'filmy/0576-2gPfomN.gif', tip: 'Łopatki ściągnięte, łokcie pod kątem 45 stopni.' },
+    { code: '0596', name: 'Rozpiętki siedząc na maszynie (Pec Deck)', category: 'Maszyna', bodyPart: 'Klatka', gifPath: 'filmy/0596-2gPfomN.gif', tip: 'Czysta izolacja klatki.' }
+  ]);
 }
 
 function navigate(tabName) {
@@ -676,7 +722,7 @@ async function renderRoutinesView() {
   const emptyHtml = `
     <div class="text-center py-14 px-4 bg-bgCard rounded-3xl">
       <h3 class="text-base font-bold mb-1">Nie masz jeszcze żadnej rutyny</h3>
-      <p class="text-xs text-gray-300 mb-4">Stwórz rutynę, ustaw czas przerwy dla rozgrzewki (R) oraz serii roboczej (1,2,3) i dobierz ćwiczenia z bazy 1324 GIF-ów.</p>
+      <p class="text-xs text-gray-300 mb-4">Stwórz rutynę, ustaw czas przerwy dla rozgrzewki (R) oraz serii roboczej (1,2,3) i dobierz ćwiczenia.</p>
       <button onclick="openRoutineCreatorModal()" class="liquid-orange-btn text-white text-xs font-bold px-5 py-3 rounded-2xl">+ Stwórz pierwszą rutynę</button>
     </div>`;
 
@@ -846,7 +892,7 @@ async function renderRoutineDraftModal() {
       <div class="bg-bgCard rounded-3xl p-3.5 mb-3">
         <div class="flex items-center justify-between gap-2 mb-2">
           <div class="flex items-center gap-2.5 min-w-0">
-            ${renderHasanGifThumb(exObj, 'w-12 h-12')}
+            ${renderPolishRepoMediaThumb(exObj, 'w-12 h-12')}
             <div class="min-w-0">
               <div class="text-xs font-bold text-white truncate">${exIdx + 1}. ${exObj.name}</div>
               <div class="flex items-center gap-1.5 mt-1 flex-wrap">
@@ -1046,7 +1092,7 @@ async function renderExercisePickerModal() {
     return `
       <div onclick="togglePickerExercise(${ex.id})"
         class="bg-bgCard border ${picked ? 'border-striveOrange bg-striveOrange/10' : 'border-white/15'} rounded-3xl p-2.5 flex items-center gap-3 cursor-pointer transition">
-        ${renderHasanGifThumb(ex, 'w-14 h-14')}
+        ${renderPolishRepoMediaThumb(ex, 'w-14 h-14')}
         <div class="flex-1 min-w-0">
           <div class="flex justify-between items-start gap-2">
             <h3 class="font-semibold text-xs text-white leading-snug">${ex.name}</h3>
@@ -1178,7 +1224,7 @@ async function renderExercisesView() {
 
   const listHtml = visibleList.map(ex => `
     <div onclick="openExerciseDetailModal(${ex.id})" class="bg-bgCard rounded-3xl p-2.5 flex items-center gap-3 cursor-pointer active:scale-[0.99] transition">
-      ${renderHasanGifThumb(ex, 'w-14 h-14')}
+      ${renderPolishRepoMediaThumb(ex, 'w-14 h-14')}
       <div class="flex-1 min-w-0">
         <div class="flex justify-between items-start gap-2">
           <h3 class="font-semibold text-xs text-white leading-snug">${ex.name}</h3>
@@ -1194,7 +1240,7 @@ async function renderExercisesView() {
 
   return `
     <div class="flex justify-between items-center mb-3 pt-1">
-      <button onclick="syncHasanDataset(true)" class="liquid-pill text-white text-[10px] font-bold px-2.5 py-1.5 rounded-full">🔄 Odśwież (${allEx.length})</button>
+      <button onclick="syncPolishRepoDataset(true)" class="liquid-pill text-white text-[10px] font-bold px-2.5 py-1.5 rounded-full">🔄 Odśwież (${allEx.length})</button>
       <h1 class="text-lg font-bold">Ćwiczenia</h1>
       <button onclick="openAddCustomExerciseModal(false)" class="liquid-orange-btn text-white text-xs font-bold px-3.5 py-1.5 rounded-full">Dodaj +</button>
     </div>
@@ -1251,7 +1297,7 @@ async function openExerciseDetailModal(exId) {
 
     <div class="bg-white rounded-3xl p-4 flex flex-col items-center justify-center mb-4 relative overflow-hidden">
       <span class="text-[10px] font-bold uppercase text-gray-500 mb-1">Animacja GIF (#${ex.code || 'Custom'})</span>
-      ${renderHasanGifThumb(ex, 'w-56 h-56')}
+      ${renderPolishRepoMediaThumb(ex, 'w-56 h-56')}
       <span class="text-xs font-semibold text-gray-700 mt-2">Sprzęt: ${ex.category} · Partia: ${ex.bodyPart}</span>
     </div>
 
@@ -1322,7 +1368,7 @@ async function saveCustomExercise(returnToPicker) {
     code: '9999',
     name,
     enName: name,
-    gifPath: 'videos/0576-2gPfomN.gif',
+    gifPath: 'filmy/0576-2gPfomN.gif',
     customGifUrl,
     category: document.getElementById('new-ex-cat').value,
     bodyPart: document.getElementById('new-ex-part').value,
@@ -1565,7 +1611,7 @@ function openActiveWorkoutModal() {
       <div class="bg-bgCard rounded-3xl p-3.5 mb-3.5">
         <div class="flex justify-between items-center gap-2 mb-2.5">
           <div onclick="${ex.exId ? `openExerciseDetailModal(${ex.exId})` : `swapExerciseInFlight(${exIdx}, 'ALL')`}" class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
-            ${renderHasanGifThumb(ex, 'w-12 h-12')}
+            ${renderPolishRepoMediaThumb(ex, 'w-12 h-12')}
             <div class="min-w-0">
               <h3 class="font-bold text-xs text-striveTeal leading-snug">${ex.superset ? '🔗 ' : ''}${ex.name}</h3>
               <span class="text-[11px] text-gray-400">${ex.bodyPart} · ⏱ R: ${w.warmupRestSec}s / Robocza: ${w.workingRestSec}s</span>
@@ -1999,7 +2045,7 @@ async function renderProfileView() {
       <button onclick="openRecordsModal()" class="w-full p-4 flex items-center justify-between text-sm font-medium">
         <span class="flex items-center gap-3">🏆 Rekordy treningowe (Serie robocze)</span><span class="text-gray-400">›</span>
       </button>
-      <button onclick="syncHasanDataset(true)" class="w-full p-4 flex items-center justify-between text-sm font-medium text-gray-200">
+      <button onclick="syncPolishRepoDataset(true)" class="w-full p-4 flex items-center justify-between text-sm font-medium text-gray-200">
         <span class="flex items-center gap-3">🔄 Synchronizuj pełny katalog 1324 GIF-ów (${exCount} w bazie)</span><span class="text-gray-400">›</span>
       </button>
       <button onclick="exportFullBackup()" class="w-full p-4 flex items-center justify-between text-sm font-medium text-striveOrange">
@@ -2585,7 +2631,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   checkIosStandaloneMode();
   await ensureStarterCatalog();
   navigate('home');
-  await syncHasanDataset(false);
+  await syncPolishRepoDataset(false);
 });
 </script>
 </body>
