@@ -4,22 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
-  <!-- Pełnoekranowy tryb natywnej aplikacji iOS (usuwa pasek adresu Safari po dodaniu do ekranu głównego) -->
+  <!-- Pełnoekranowy tryb natywnej aplikacji iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="gymWK">
   <meta name="theme-color" content="#030407">
 
-  <!-- Wbudowana ikona na pulpit iPhone'a (Liquid Glass SVG) -->
+  <!-- Ikona na pulpit -->
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%2316222f'/><stop offset='50%' stop-color='%23080b11'/><stop offset='100%' stop-color='%23291508'/></linearGradient></defs><rect width='180' height='180' rx='42' fill='url(%23g)'/><rect x='8' y='8' width='164' height='164' rx='36' fill='none' stroke='rgba(255,255,255,0.22)' stroke-width='2'/><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' font-family='-apple-system, sans-serif' font-weight='900' font-size='44' fill='%23ffffff'>WK</text><circle cx='142' cy='42' r='10' fill='%23ff7a18'/></svg>">
-
-  <!-- Wbudowany Web App Manifest w jednym pliku (dla pełnego standalone PWA) -->
   <link rel="manifest" href='data:application/manifest+json,{"name":"gymWK Pro","short_name":"gymWK","start_url":".","display":"standalone","background_color":"#030407","theme_color":"#030407","orientation":"portrait"}'>
 
   <title>gymWK — Liquid Glass</title>
   
-  <!-- Tailwind CSS & Dexie.js (IndexedDB) -->
+  <!-- Tailwind CSS & Dexie.js -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
 
@@ -73,16 +71,12 @@
     }
     ::-webkit-scrollbar { width: 0px; background: transparent; }
 
-    /* Silnik Liquid Glass (iPhone 18 Pro Specular Glassmorphism) */
     .bg-bgCard, .liquid-card {
       background: linear-gradient(145deg, rgba(255, 255, 255, 0.085) 0%, rgba(255, 255, 255, 0.025) 100%) !important;
       backdrop-filter: blur(30px) saturate(190%);
       -webkit-backdrop-filter: blur(30px) saturate(190%);
       border: 1px solid rgba(255, 255, 255, 0.13) !important;
-      box-shadow:
-        0 14px 34px -10px rgba(0, 0, 0, 0.65),
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.25),
-        inset 0 -1px 0 0 rgba(255, 255, 255, 0.04);
+      box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.25), inset 0 -1px 0 0 rgba(255, 255, 255, 0.04);
     }
 
     .bg-bgInput {
@@ -98,9 +92,7 @@
       backdrop-filter: blur(40px) saturate(210%);
       -webkit-backdrop-filter: blur(40px) saturate(210%);
       border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow:
-        0 20px 45px rgba(0, 0, 0, 0.8),
-        inset 0 1px 0.5px rgba(255, 255, 255, 0.35);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.8), inset 0 1px 0.5px rgba(255, 255, 255, 0.35);
     }
 
     .liquid-pill {
@@ -113,9 +105,7 @@
 
     .liquid-orange-btn {
       background: linear-gradient(135deg, #ff9233 0%, #e85d04 100%);
-      box-shadow:
-        0 8px 22px -4px rgba(255, 122, 24, 0.55),
-        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      box-shadow: 0 8px 22px -4px rgba(255, 122, 24, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.45);
     }
 
     .heatmap-grid {
@@ -138,21 +128,18 @@
 </head>
 <body class="flex flex-col justify-between">
 
-  <!-- BANER INSTRUKCJI INSTALACJI (Widoczny tylko w zwykłym Safari, znika automatycznie po otwarciu z ikony na pulpicie iPhone'a!) -->
   <div id="ios-pwa-hint" class="hidden max-w-md mx-auto px-3 mb-2">
     <div class="liquid-pill rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs">
       <div class="leading-snug">
         <span class="font-bold text-white">Tryb pełnoekranowy iPhone:</span>
-        <span class="text-gray-200"> kliknij <strong>Udostępnij</strong> na dole Safari i wybierz <strong>„Dodaj do ekranu początkowego”</strong> – pasek z linkiem zniknie.</span>
+        <span class="text-gray-200"> kliknij <strong>Udostępnij</strong> na dole Safari i wybierz <strong>„Dodaj do ekranu początkowego”</strong>.</span>
       </div>
       <button onclick="dismissPwaHint()" class="text-gray-300 font-bold px-2 py-1">✕</button>
     </div>
   </div>
 
-  <!-- GŁÓWNY KONTENER WIDOKÓW -->
   <main id="app-content" class="w-full max-w-md mx-auto px-3.5 pt-1 pb-24"></main>
 
-  <!-- PŁYWAJĄCA KAPSUŁA AKTYWNEGO TRENINGU / TIMERA (Dynamic Island Style) -->
   <div id="active-workout-bar" class="hidden fixed left-0 right-0 max-w-md mx-auto px-3.5 z-40" style="bottom: calc(86px + env(safe-area-inset-bottom));">
     <div class="liquid-dock rounded-3xl p-3 flex items-center justify-between border border-striveTeal/40">
       <div onclick="openActiveWorkoutModal()" class="flex-1 cursor-pointer pl-1">
@@ -171,7 +158,6 @@
     </div>
   </div>
 
-  <!-- PŁYWAJĄCY PRZEŁĄCZNIK SUB-ZAKŁADEK (PLANY / RUTYNY / ĆWICZENIA) -->
   <div id="workout-subnav" class="hidden fixed left-0 right-0 max-w-md mx-auto px-8 z-30" style="bottom: calc(84px + env(safe-area-inset-bottom));">
     <div class="liquid-dock p-1 rounded-2xl grid grid-cols-3 text-center text-xs font-semibold">
       <button onclick="switchWorkoutSubTab('plans')" id="subtab-plans" class="py-2 rounded-xl transition">Plany</button>
@@ -180,7 +166,6 @@
     </div>
   </div>
 
-  <!-- PŁYWAJĄCY SZKLANY DOCK NAWIGACJI (iPhone 18 Pro Liquid Glass Dock) -->
   <div class="fixed left-0 right-0 max-w-md mx-auto px-4 z-40 pointer-events-none" style="bottom: max(12px, env(safe-area-inset-bottom));">
     <nav class="liquid-dock rounded-[28px] px-3 py-2 flex justify-between items-center h-[64px] pointer-events-auto">
       <button onclick="navigate('calendar')" id="nav-calendar" class="flex flex-col items-center justify-center w-12 h-12 text-gray-300 active:scale-90 transition">
@@ -205,21 +190,15 @@
     </nav>
   </div>
 
-  <!-- UNIWERSALNY MODAL PEŁNOEKRANOWY (SZKLANE TŁO) -->
   <div id="modal-overlay" class="hidden fixed inset-0 bg-bgMain/90 backdrop-blur-2xl z-50 overflow-y-auto safe-modal-padding">
     <div id="modal-body" class="max-w-md mx-auto px-4"></div>
   </div>
 
 <script>
-// ============================================================================
-// 1. BAZA DANYCH I DARMOWY MIRROR ANIMACJI (FREE-EXERCISE-DB CDN)
-// ============================================================================
 const DAYS_SHORT = ['pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.', 'niedz.'];
-const FREE_EX_CDN = (slug, frame = 0) => `https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/${slug}/${frame}.jpg`;
-const FREE_EX_RAW = (slug, frame = 0) => `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${slug}/${frame}.jpg`;
-const FREE_EX_INDEX_URL = 'https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/dist/exercises.json';
 
-const db = new Dexie('gymWK_GlobalPlan_v8');
+// Zmieniono wersję bazy na v10, aby wymusić odświeżenie danych i pobranie poprawnych ścieżek
+const db = new Dexie('gymWK_GlobalPlan_v10');
 db.version(1).stores({
   exercises: '++id, name, category, bodyPart, slug, nextTargetWeight',
   routines: '++id, name, tag, assignedDay',
@@ -246,18 +225,14 @@ let state = {
   tempMeasurementPhotos: [],
   exerciseFilterCat: 'ALL',
   exerciseFilterPart: 'ALL',
-  exerciseSearch: '',
-  remoteFreeCatalog: null,
-  globalFrameBit: 0
+  exerciseSearch: ''
 };
 
 function checkIosStandaloneMode() {
   const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
   const dismissed = localStorage.getItem('gymWK_hide_pwa_hint') === '1';
   const hintEl = document.getElementById('ios-pwa-hint');
-  if (!isStandalone && !dismissed && hintEl) {
-    hintEl.classList.remove('hidden');
-  }
+  if (!isStandalone && !dismissed && hintEl) hintEl.classList.remove('hidden');
 }
 
 function dismissPwaHint() {
@@ -265,18 +240,6 @@ function dismissPwaHint() {
   const hintEl = document.getElementById('ios-pwa-hint');
   if (hintEl) hintEl.classList.add('hidden');
 }
-
-// Pętla animująca klatki 0.jpg ⇄ 1.jpg jak GIF
-setInterval(() => {
-  state.globalFrameBit = state.globalFrameBit === 0 ? 1 : 0;
-  document.querySelectorAll('img.live-loop-gif').forEach(img => {
-    const f0 = img.getAttribute('data-f0');
-    const f1 = img.getAttribute('data-f1');
-    if (f0 && f1) {
-      img.src = state.globalFrameBit === 0 ? f0 : f1;
-    }
-  });
-}, 750);
 
 function toLocalIso(dateObj = new Date()) {
   const y = dateObj.getFullYear();
@@ -306,12 +269,8 @@ function parseRepRange(rangeStr) {
 function getSetBadgeInfo(setsArray, currentIndex) {
   const current = setsArray[currentIndex];
   const type = current.type || 'N';
-  if (type === 'R') {
-    return { label: 'R', isWorking: false, classes: 'bg-striveOrange/20 text-striveOrange border border-striveOrange/60' };
-  }
-  if (type === 'D') {
-    return { label: 'D', isWorking: false, classes: 'bg-purple-500/20 text-purple-300 border border-purple-400/50' };
-  }
+  if (type === 'R') return { label: 'R', isWorking: false, classes: 'bg-striveOrange/20 text-striveOrange border border-striveOrange/60' };
+  if (type === 'D') return { label: 'D', isWorking: false, classes: 'bg-purple-500/20 text-purple-300 border border-purple-400/50' };
   let workingNumber = 0;
   for (let i = 0; i <= currentIndex; i++) {
     if ((setsArray[i].type || 'N') === 'N') workingNumber++;
@@ -325,30 +284,26 @@ function nextSetType(currentType) {
   return 'N';
 }
 
+// Funkcja renderująca miniaturkę / GIF bezpośrednio z Twojego repozytorium GitHub
 function renderAnimatedExerciseThumb(ex, sizeClass = 'w-14 h-14') {
   if (!ex || ex.isPlaceholder) {
     return `<div class="${sizeClass} rounded-2xl bg-striveTealDark/60 border border-striveTeal/50 flex items-center justify-center shrink-0 text-xs font-bold text-striveTeal">?</div>`;
   }
-  if (ex.customGifUrl) {
+  const primarySrc = ex.customGifUrl || ex.imageUrl;
+  const fallbackSrc = ex.imageUrl || ex.customGifUrl;
+
+  if (primarySrc) {
     return `
       <div class="${sizeClass} rounded-2xl bg-white flex items-center justify-center shrink-0 overflow-hidden border border-white/25 shadow-inner">
-        <img src="${ex.customGifUrl}" alt="${ex.name}" class="w-full h-full object-cover" />
+        <img src="${primarySrc}" alt="${ex.name || 'Ćwiczenie'}" loading="lazy"
+          onerror="if(this.src !== '${fallbackSrc}'){this.src='${fallbackSrc}';}else{this.style.display='none';}"
+          class="w-full h-full object-cover bg-white" />
       </div>`;
   }
-  const slug = ex.slug || 'Leverage_Chest_Press';
-  const f0 = FREE_EX_CDN(slug, 0);
-  const f1 = FREE_EX_CDN(slug, 1);
-  const rawFallback = FREE_EX_RAW(slug, 0);
 
-  return `
-    <div class="${sizeClass} rounded-2xl bg-white flex items-center justify-center shrink-0 overflow-hidden border border-white/25 shadow-inner relative">
-      <img src="${f0}" data-f0="${f0}" data-f1="${f1}" alt="${ex.name}" loading="lazy"
-        onerror="if(this.src !== '${rawFallback}'){this.classList.remove('live-loop-gif');this.src='${rawFallback}';}"
-        class="live-loop-gif w-full h-full object-cover bg-white" />
-    </div>`;
+  return `<div class="${sizeClass} rounded-2xl bg-striveTealDark/60 border border-striveTeal/50 flex items-center justify-center shrink-0 text-xs font-bold text-striveTeal">🏋️</div>`;
 }
 
-// Pomocnicza funkcja kompresująca dowolny plik zdjęcia (z aparatu lub z galerii) do lekkiego formatu JPEG Base64
 function compressImageFileToDataUrl(file) {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -370,113 +325,72 @@ function compressImageFileToDataUrl(file) {
   });
 }
 
-// ============================================================================
-// 2. BAZA 82 ĆWICZEŃ (MASZYNY IZOLOWANE, WYCIĄGI, WOLNE CIĘŻARY)
-// ============================================================================
-
-// Tłumaczenie sprzętu z języka angielskiego na polski
 function translateEquipmentToPolish(equipment) {
     const equipmentMap = {
-        "body weight": "Masa ciała",
-        "barbell": "Sztanga",
-        "dumbbell": "Hantle",
-        "cable": "Wyciąg",
-        "kettlebell": "Kettlebell",
-        "band": "Taśma oporowa",
-        "weighted": "Obciążenie",
-        "stability ball": "Piłka gimnastyczna",
-        "ez barbell": "Sztanga EZ",
-        "leverage machine": "Maszyna",
-        "smith machine": "Suwnica Smitha",
-        "sled machine": "Sanie",
-        "assisted": "Wspomagane",
-        "medicine ball": "Piłka lekarska",
-        "rope": "Lina",
-        "roller": "Walec",
-        "resistance band": "Taśma oporowa",
-        "bosu ball": "Piłka BOSU",
-        "wheel roller": "Koło z walcem",
-        "olympic barbell": "Sztanga olimpijska"
+        "body weight": "Masa ciała", "barbell": "Sztanga", "dumbbell": "Hantle",
+        "cable": "Wyciąg", "kettlebell": "Kettlebell", "band": "Taśma oporowa",
+        "weighted": "Obciążenie", "stability ball": "Piłka gimnastyczna",
+        "ez barbell": "Sztanga EZ", "leverage machine": "Maszyna",
+        "smith machine": "Suwnica Smitha", "assisted": "Wspomagane", "medicine ball": "Piłka lekarska"
     };
     return equipmentMap[equipment] || equipment;
 }
 
-// Tłumaczenie grupy mięśniowej z języka angielskiego na polski
 function translateTargetToPolish(target) {
     const targetMap = {
-        "abs": "Brzuch",
-        "waist": "Pas",
-        "pectorals": "Klatka",
-        "biceps": "Bicepsy",
-        "glutes": "Pośladki",
-        "delts": "Barki",
-        "triceps": "Tricepsy",
-        "upper back": "Plecy",
-        "lats": "Najszerszy grzbietu",
-        "calves": "Łydki",
-        "quads": "Czworogłowe ud",
-        "forearms": "Przedramiona",
-        "cardiovascular system": "Cardio",
-        "hamstrings": "Dwugłowe ud",
-        "spine": "Krzyżówka",
-        "traps": "Czworoboczny grzbietu",
-        "adductors": "Przywodziciele",
-        "serratus anterior": "Ząbek przedni",
-        "abductors": "Odwodziciele",
-        "levator scapulae": "Unoszący łopatkę"
+        "abs": "Brzuch", "waist": "Pas", "pectorals": "Klatka", "biceps": "Bicepsy",
+        "glutes": "Pośladki", "delts": "Barki", "triceps": "Tricepsy", "upper back": "Plecy",
+        "lats": "Najszerszy grzbietu", "calves": "Łydki", "quads": "Czworogłowe ud",
+        "forearms": "Przedramiona", "hamstrings": "Dwugłowe ud"
     };
     return targetMap[target] || target;
 }
 
-// ============================================================================
-// 2. BAZA 82 ĆWICZEŃ (MASZYNY IZOLOWANE, WYCIĄGI, WOLNE CIĘŻARY)
-// ============================================================================
+// Inicjalizacja bazy danych i pobieranie ćwiczeń z exercises.json z uwzględnieniem GitHub RAW
 async function initCatalogOnly() {
   const exCount = await db.exercises.count();
   if (exCount > 0) return;
 
-  // Load exercises from JSON file
+  const REPO_RAW = 'https://raw.githubusercontent.com/kulaczekkkk/exercises-dataset/main';
   let catalog = [];
   try {
-    const response = await fetch('data/exercises.json');
+    let response = await fetch('data/exercises.json').catch(() => null);
+    let useRemoteRaw = false;
+
+    if (!response || !response.ok) {
+      response = await fetch(`${REPO_RAW}/data/exercises.json`);
+      useRemoteRaw = true;
+    }
     if (!response.ok) throw new Error('Failed to load exercises');
     const exercisesData = await response.json();
 
-    // Map JSON data to app format
     catalog = exercisesData.map(ex => {
-      // Map equipment to Polish category (for "Sprzęt" display)
       const category = translateEquipmentToPolish(ex.equipment || '');
-
-      // Map target muscle group to Polish bodyPart (for "Partia" display)
       const bodyPart = translateTargetToPolish(ex.target || '');
-
-      // Use exercise name as-is (keep in English for fitness context)
       const name = ex.name || 'Unknown Exercise';
 
-      // Generate tip from first instruction (prefer Polish, fallback to English, then default)
-      let tip = 'Wykonaj ćwiczenie zgodnie z techniką.'; // default
+      let tip = 'Wykonaj ćwiczenie zgodnie z techniką.';
       if (ex.instructions) {
-        // Try to get Polish instructions first
         if (ex.instructions.pl && typeof ex.instructions.pl === 'string' && ex.instructions.pl.trim() !== '') {
           tip = ex.instructions.pl;
-        }
-        // Fallback to English if Polish not available
-        else if (ex.instructions.en && typeof ex.instructions.en === 'string' && ex.instructions.en.trim() !== '') {
+        } else if (ex.instructions.en && typeof ex.instructions.en === 'string' && ex.instructions.en.trim() !== '') {
           tip = ex.instructions.en;
-        }
-        // Fallback to first available instruction
-        else {
-          const firstLang = Object.keys(ex.instructions).find(lang =>
-            typeof ex.instructions[lang] === 'string' && ex.instructions[lang].trim() !== ''
-          );
-          if (firstLang) {
-            tip = ex.instructions[firstLang];
-          }
         }
       }
 
-      // Use slug or generate ID
-      const slug = ex.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+      const slug = ex.id || ex.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+
+      // Bezpośrednie i niezawodne mapowanie ścieżek z Twojego repozytorium GitHub
+      const rawGif = ex.gif_url || '';
+      const rawImg = ex.image || '';
+
+      const customGifUrl = rawGif
+        ? (rawGif.startsWith('http') ? rawGif : `${REPO_RAW}/${rawGif.replace(/^\.?\//, '')}`)
+        : '';
+
+      const imageUrl = rawImg
+        ? (rawImg.startsWith('http') ? rawImg : `${REPO_RAW}/${rawImg.replace(/^\.?\//, '')}`)
+        : '';
 
       return {
         slug,
@@ -484,24 +398,22 @@ async function initCatalogOnly() {
         category,
         bodyPart,
         sessions: 0,
-        tip
+        tip,
+        customGifUrl,
+        imageUrl
       };
     });
   } catch (error) {
     console.error('Error loading exercises from JSON:', error);
-    // Fallback to minimal hardcoded catalog
     catalog = [
-      { slug: 'Pushup', name: 'Pompki', category: 'Masa ciała', bodyPart: 'Klatka', sessions: 0, tip: 'Ustaw ręce nieco szerzej niż barki, utrzymuj prostą linię ciała.' },
-      { slug: 'Bodyweight_Squat', name: 'Przysiady', category: 'Masa ciała', bodyPart: 'Czworogłowe ud', sessions: 0, tip: 'Stopy na szerokość bioder, pousuj biodra do tyłu i w dół.' }
+      { slug: 'Pushup', name: 'Pompki', category: 'Masa ciała', bodyPart: 'Klatka', sessions: 0, tip: 'Ustaw ręce nieco szerzej niż barki.' },
+      { slug: 'Bodyweight_Squat', name: 'Przysiady', category: 'Masa ciała', bodyPart: 'Czworogłowe ud', sessions: 0, tip: 'Stopy na szerokość bioder.' }
     ];
   }
 
   await db.exercises.bulkAdd(catalog);
 }
 
-// ============================================================================
-// 3. NAWIGACJA GŁÓWNA
-// ============================================================================
 function navigate(tabName) {
   state.tab = tabName;
   document.querySelectorAll('nav button').forEach(btn => {
@@ -558,9 +470,6 @@ async function renderCurrentView() {
   else if (state.tab === 'calendar') container.innerHTML = await renderCalendarView();
 }
 
-// ============================================================================
-// WIDOK 1: EKRAN GŁÓWNY (LIQUID GLASS DASHBOARD)
-// ============================================================================
 async function renderHomeView() {
   const workouts = await db.workouts.toArray();
   workouts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
@@ -571,107 +480,25 @@ async function renderHomeView() {
   const stickyText = noteObj ? noteObj.value : 'Naciśnij aby edytować tekst';
 
   const latestWeight = measurements.length ? `${measurements[measurements.length - 1].weight} kg` : 'Brak wpisu';
-  let weightDiffHtml = 'Dodaj pierwszy pomiar';
-  if (measurements.length >= 2) {
-    const firstW = measurements[0].weight;
-    const lastW = measurements[measurements.length - 1].weight;
-    const pct = (((lastW - firstW) / firstW) * 100).toFixed(1);
-    weightDiffHtml = `${pct >= 0 ? '+' : ''}${pct} %`;
-  }
-
-  const workoutDates = new Set(workouts.map(w => w.date));
-  let heatmapCells = '';
-  const today = new Date();
-  for (let i = 111; i >= 0; i--) {
-    const d = new Date(today.getTime() - i * 86400000);
-    const iso = toLocalIso(d);
-    const hasW = workoutDates.has(iso);
-    const isToday = i === 0;
-    heatmapCells += `<div class="w-2.5 h-2.5 rounded-[3px] ${hasW ? 'bg-striveTeal shadow-[0_0_6px_rgba(92,200,230,0.6)]' : 'bg-white/10'} ${isToday ? 'ring-1 ring-striveOrange' : ''}"></div>`;
-  }
-
-  const currDayIdx = (today.getDay() + 6) % 7;
-  const plannedDaysSet = new Set(activePlan && activePlan.days ? activePlan.days : routines.map(r => r.assignedDay).filter(Boolean));
-
-  let weekRowHtml = '';
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(today.getTime() - (currDayIdx - i) * 86400000);
-    const iso = toLocalIso(d);
-    const dayLabel = DAYS_SHORT[i];
-    const dateNum = formatDayMonth(d);
-    const done = workoutDates.has(iso);
-    const isToday = i === currDayIdx;
-    const isPlanned = plannedDaysSet.has(dayLabel);
-
-    weekRowHtml += `
-      <div onclick="openQuickStartModal()" class="flex flex-col items-center gap-1 cursor-pointer active:scale-95 transition">
-        <span class="text-xs ${isToday ? 'text-striveOrange font-bold' : 'text-gray-300'}">${dayLabel}</span>
-        <span class="text-[10px] ${isToday ? 'text-striveOrange font-semibold' : 'text-gray-500'}">${dateNum}</span>
-        <div class="w-7 h-7 rounded-full flex items-center justify-center border text-xs font-bold transition
-          ${done ? 'border-striveGreen text-striveGreen bg-striveGreen/15 shadow-[0_0_10px_rgba(50,215,75,0.3)]' : (isPlanned ? 'border-striveTeal text-striveTeal bg-striveTeal/15' : 'border-white/15 text-white/25')}">
-          ${done ? '✓' : (isPlanned ? '•' : '–')}
-        </div>
-      </div>`;
-  }
-
-  const startOfWeek = new Date(today.getTime() - currDayIdx * 86400000);
-  startOfWeek.setHours(0,0,0,0);
-  const thisWeekCount = workouts.filter(w => new Date(w.date) >= startOfWeek).length;
-  const currentMonthPrefix = toLocalIso(today).slice(0, 7);
-  const thisMonthCount = workouts.filter(w => w.date.startsWith(currentMonthPrefix)).length;
-
-  const lastWorkout = workouts[0];
-  const lastWorkoutHtml = lastWorkout ? `
-    <div onclick="navigate('calendar')" class="liquid-pill rounded-3xl p-4 cursor-pointer active:scale-[0.99] transition">
-      <div class="flex justify-between items-center mb-1.5">
-        <h3 class="text-base font-bold text-white">${lastWorkout.routineName}</h3>
-        <span class="text-[11px] text-gray-200">${lastWorkout.date} →</span>
-      </div>
-      <div class="flex items-center gap-4 text-xs text-gray-100">
-        <span>🕒 ${Math.floor(lastWorkout.durationMin / 60)}h, ${lastWorkout.durationMin % 60}min</span>
-        <span>📊 Serie: ${lastWorkout.totalSets}</span>
-        <span>∑ Objętość: ${lastWorkout.totalVolume} kg</span>
-      </div>
-    </div>
-  ` : `
-    <div onclick="openQuickStartModal()" class="liquid-pill rounded-3xl p-4 text-center cursor-pointer active:scale-[0.99] transition">
-      <div class="text-sm font-bold text-white mb-0.5">Brak wykonanych treningów</div>
-      <div class="text-xs text-gray-200">Dotknij tutaj lub kliknij „+” w szklanym docku na dole, aby rozpocząć trening</div>
-    </div>
-  `;
 
   return `
     <div class="flex justify-between items-center mb-3.5 pt-1">
-      <span class="text-xs text-gray-400 font-mono bg-white/5 px-2.5 py-1 rounded-full border border-white/10">${toLocalIso(today)}</span>
+      <span class="text-xs text-gray-400 font-mono bg-white/5 px-2.5 py-1 rounded-full border border-white/10">${toLocalIso(new Date())}</span>
       <h1 class="text-xl font-extrabold tracking-tight">gym<span class="text-striveOrange">WK</span></h1>
       <button onclick="openQuickStartModal()" class="liquid-pill text-white text-xs font-bold px-3.5 py-1.5 rounded-full active:scale-95 transition">Trenuj</button>
     </div>
 
-    <div class="bg-bgCard rounded-3xl p-3.5 mb-1.5">
-      <div class="heatmap-grid justify-center overflow-hidden py-1">${heatmapCells}</div>
-    </div>
-    <p class="text-center text-[11px] text-gray-400 mb-3">Regularność w ostatnich tygodniach</p>
-
-    <div class="bg-bgCard rounded-3xl p-3.5 mb-1">
-      <div class="flex justify-between items-center px-0.5">${weekRowHtml}</div>
-    </div>
-    <p class="text-center text-[11px] text-gray-400 mb-3">
-      <span class="text-striveGreen font-bold">✓</span> zrobiony · <span class="text-striveTeal font-bold">•</span> dzień treningowy · <span class="text-gray-500">–</span> wolne
-    </p>
-
-    <div onclick="navigate('profile'); setTimeout(()=>openMeasurementsModal(),100)" class="bg-bgCard rounded-3xl p-4 mb-1 relative overflow-hidden cursor-pointer min-h-[104px] flex flex-col justify-between active:scale-[0.99] transition">
+    <div onclick="navigate('profile'); setTimeout(()=>openMeasurementsModal(),100)" class="bg-bgCard rounded-3xl p-4 mb-3 relative overflow-hidden cursor-pointer active:scale-[0.99] transition">
       <div><span class="liquid-orange-btn text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">Waga i Sylwetka</span></div>
-      <div class="text-right mt-3">
+      <div class="text-right mt-2">
         <div class="text-2xl font-extrabold text-white tracking-tight">${latestWeight}</div>
-        <div class="text-xs text-striveTeal font-semibold">${weightDiffHtml}</div>
       </div>
     </div>
-    <p class="text-center text-[11px] text-gray-400 mb-3">Dotknij, aby wpisać pomiar lub dodać zdjęcia z galerii</p>
 
     <div class="grid grid-cols-2 gap-3 mb-4">
-      <div onclick="editStickyNote()" class="liquid-pill rounded-3xl p-3.5 flex flex-col justify-between min-h-[148px] cursor-pointer active:scale-[0.98] transition">
+      <div onclick="editStickyNote()" class="liquid-pill rounded-3xl p-3.5 flex flex-col justify-between min-h-[120px] cursor-pointer active:scale-[0.98] transition">
         <p class="text-sm text-white/95 font-medium leading-snug break-words">${stickyText}</p>
-        <span class="text-[10px] text-white/70 text-right mt-2">✎ Karteczka</span>
+        <span class="text-[10px] text-white/70 text-right mt-2">✎ Notatka</span>
       </div>
       <div class="grid grid-cols-2 gap-2.5">
         <div class="bg-bgCard rounded-3xl p-2 flex flex-col items-center justify-center">
@@ -680,22 +507,12 @@ async function renderHomeView() {
           <span class="text-[10px] text-gray-400 text-center">Łącznie</span>
         </div>
         <div class="bg-bgCard rounded-3xl p-2 flex flex-col items-center justify-center">
-          <span class="text-xl font-extrabold text-striveTeal">${thisWeekCount}</span>
-          <span class="text-[10px] text-gray-400 text-center mt-1">🏋️ tego tyg.</span>
-        </div>
-        <div class="bg-bgCard rounded-3xl p-2 flex flex-col items-center justify-center">
-          <span class="text-xl font-extrabold">${thisMonthCount}</span>
-          <span class="text-[10px] text-gray-400 text-center mt-1">📅 tego mies.</span>
-        </div>
-        <div class="bg-bgCard rounded-3xl p-2 flex flex-col items-center justify-center">
           <span class="text-lg">📌</span>
           <span class="text-xl font-extrabold mt-0.5">${routines.length}</span>
           <span class="text-[10px] text-gray-400 text-center">Rutyn</span>
         </div>
       </div>
     </div>
-
-    ${lastWorkoutHtml}
   `;
 }
 
@@ -708,9 +525,6 @@ async function editStickyNote() {
   }
 }
 
-// ============================================================================
-// WIDOK 2A: PLANY
-// ============================================================================
 async function renderPlansView() {
   const plans = await db.plans.toArray();
   const activePlan = plans.find(p => p.active === 1) || plans[0];
@@ -720,639 +534,86 @@ async function renderPlansView() {
     return `
       <div class="text-center py-14 px-4 bg-bgCard rounded-3xl mt-2">
         <h2 class="text-xl font-bold mb-2">Brak aktywnego planu</h2>
-        <p class="text-xs text-gray-300 mb-6 leading-relaxed">Utwórz swoje rutyny w zakładce „Rutyny”, a następnie połącz je w Plan. Wyniki ćwiczeń są globalne dla całego planu!</p>
-        <div class="flex justify-center gap-3">
-          <button onclick="switchWorkoutSubTab('routines')" class="liquid-pill text-white font-bold text-xs px-4 py-3 rounded-2xl">Przejdź do Rutyn</button>
-          <button onclick="openPlanWizard()" class="liquid-orange-btn text-white font-bold text-xs px-5 py-3 rounded-2xl">+ Utwórz Plan</button>
-        </div>
+        <p class="text-xs text-gray-300 mb-6">Utwórz rutyny i połącz je w plan.</p>
+        <button onclick="openPlanWizard()" class="liquid-orange-btn text-white font-bold text-xs px-5 py-3 rounded-2xl">+ Utwórz Plan</button>
       </div>`;
   }
 
-  const today = new Date();
-  const todayShort = DAYS_SHORT[(today.getDay() + 6) % 7];
-  const planRoutines = (activePlan.routineIds || []).map(id => routines.find(r => r.id === id)).filter(Boolean);
-
-  let defaultRoutine = planRoutines.find(r => r.assignedDay === todayShort)
-    || planRoutines[(activePlan.nextIndex || 0) % Math.max(1, planRoutines.length)]
-    || routines[0];
-
-  const selectedRoutine = routines.find(r => r.id === Number(state.selectedTodayRoutineId)) || defaultRoutine;
-
-  const scheduleRow = DAYS_SHORT.map(d => {
-    const isToday = d === todayShort;
-    const assignedR = planRoutines.find(r => r.assignedDay === d);
-    const isPlanDay = (activePlan.days || []).includes(d) || Boolean(assignedR);
-    return `
-      <div class="bg-bgCard border ${isToday ? 'border-striveOrange' : 'border-white/10'} rounded-2xl p-1.5 text-center">
-        <div class="text-[10px] font-bold ${isToday ? 'text-striveOrange' : 'text-gray-400'}">${d}</div>
-        <div class="text-[9px] mt-1 truncate ${isPlanDay ? 'text-striveTeal font-semibold' : 'text-gray-500'}">
-          ${assignedR ? assignedR.name : (isPlanDay ? 'Trening' : 'Wolne')}
-        </div>
-      </div>`;
-  }).join('');
-
   return `
     <div class="flex justify-between items-center mb-4 pt-1">
-      <button onclick="deletePlan(${activePlan.id})" class="text-xs text-gray-400">Usuń</button>
       <h1 class="text-lg font-bold">Aktywny Plan</h1>
       <button onclick="openPlanWizard()" class="liquid-pill text-white text-xs font-bold px-3.5 py-1.5 rounded-full">+ Nowy</button>
     </div>
-
-    <div class="flex justify-between items-center mb-3">
-      <div>
-        <h2 class="text-2xl font-extrabold">${activePlan.name}</h2>
-        <span class="text-xs text-gray-400">${activePlan.goal} · Globalna pamięć ciężarów</span>
-      </div>
-      <span class="liquid-pill text-xs px-3 py-1 rounded-full font-semibold">${activePlan.progressionRule || 'Podwójna progresja'}</span>
-    </div>
-
-    <p class="text-xs font-semibold text-gray-300 mb-1.5">Rozkład dni (Dziś: <span class="text-striveOrange">${todayShort} ${formatDayMonth(today)}</span>)</p>
-    <div class="grid grid-cols-7 gap-1 mb-5">${scheduleRow}</div>
-
     <div class="bg-bgCard rounded-3xl p-4 mb-4">
-      <div class="flex justify-between items-center mb-2">
-        <span class="text-xs font-bold uppercase text-striveOrange">Wybierz trening na dziś:</span>
-        <span class="text-[11px] text-gray-300">${selectedRoutine && selectedRoutine.assignedDay ? `Dzień: ${selectedRoutine.assignedDay}` : 'Elastyczny'}</span>
-      </div>
-
-      ${routines.length ? `
-        <div class="flex flex-col gap-2.5">
-          <select onchange="state.selectedTodayRoutineId = this.value; renderCurrentView()"
-            class="w-full bg-bgInput rounded-2xl px-3.5 py-3 text-sm font-bold text-white focus:outline-none">
-            ${routines.map(r => `
-              <option value="${r.id}" ${selectedRoutine && selectedRoutine.id === r.id ? 'selected' : ''}>
-                ${r.name} ${r.assignedDay ? `[Przypisany: ${r.assignedDay}]` : ''} (${(r.exercises || []).length} ćw.)
-              </option>
-            `).join('')}
-          </select>
-
-          <div class="flex gap-2">
-            <button onclick="skipTodayRoutine(${activePlan.id})" class="flex-1 bg-white/10 text-white text-xs font-bold py-3 rounded-2xl active:scale-95 transition">Pomiń</button>
-            <button onclick="startWorkout(${selectedRoutine.id})" class="flex-[2] liquid-orange-btn text-white text-sm font-bold py-3 rounded-2xl active:scale-95 transition">
-              🏋️ Trenuj: ${selectedRoutine.name}
-            </button>
-          </div>
-        </div>
-      ` : `<p class="text-xs text-gray-400">Brak rutyn. Dodaj pierwszą rutynę w zakładce „Rutyny”.</p>`}
+      <h2 class="text-2xl font-extrabold mb-1">${activePlan.name}</h2>
     </div>
   `;
 }
 
-async function skipTodayRoutine(planId) {
-  const plan = await db.plans.get(planId);
-  if (!plan) return;
-  state.selectedTodayRoutineId = null;
-  await db.plans.update(planId, { nextIndex: (plan.nextIndex || 0) + 1 });
-  renderCurrentView();
-}
-
-async function deletePlan(planId) {
-  if (confirm('Usunąć ten plan?')) {
-    await db.plans.delete(planId);
-    renderCurrentView();
-  }
-}
-
-// ============================================================================
-// WIDOK 2B: RUTYNY
-// ============================================================================
 async function renderRoutinesView() {
   const routines = await db.routines.toArray();
   const exercises = await db.exercises.toArray();
   const exMap = Object.fromEntries(exercises.map(e => [e.id, e]));
 
-  const emptyHtml = `
-    <div class="text-center py-14 px-4 bg-bgCard rounded-3xl">
-      <h3 class="text-base font-bold mb-1">Nie masz jeszcze żadnej rutyny</h3>
-      <p class="text-xs text-gray-300 mb-4">Stwórz rutynę, ustaw czas przerwy dla rozgrzewki (R) oraz serii roboczej (1,2,3) i dobierz ćwiczenia.</p>
-      <button onclick="openRoutineCreatorModal()" class="liquid-orange-btn text-white text-xs font-bold px-5 py-3 rounded-2xl">+ Stwórz pierwszą rutynę</button>
-    </div>`;
-
-  let cardsHtml = routines.map(r => {
-    const exListHtml = (r.exercises || []).map(item => {
-      const ex = item.isPlaceholder ? { name: item.placeholderName } : exMap[item.exId];
-      const setsArr = item.setsList || Array.from({ length: item.sets || 3 }, () => ({ type: 'N', reps: '8-10' }));
-      const workingSets = setsArr.filter(s => (s.type || 'N') === 'N');
-      const warmupCount = setsArr.filter(s => s.type === 'R').length;
-      const dropCount = setsArr.filter(s => s.type === 'D').length;
-      const repSample = workingSets[0] ? workingSets[0].reps : '8-10';
-      const badgeSummary = `${warmupCount ? `${warmupCount}R+` : ''}${workingSets.length}x (${repSample})${dropCount ? `+${dropCount}D` : ''}`;
-
-      return `
-        <div class="flex justify-between items-start text-xs py-0.5 text-gray-200 gap-1">
-          <span class="leading-tight">${item.superset ? '🔗 ' : ''}${ex ? ex.name : 'Ćwiczenie'}</span>
-          <span class="text-striveTeal font-semibold shrink-0 text-[11px]">${badgeSummary}</span>
-        </div>`;
-    }).join('');
-
-    return `
-      <div class="bg-bgCard rounded-3xl p-3.5 flex flex-col justify-between">
-        <div>
-          <div class="flex justify-between items-start gap-1 mb-1">
-            <div>
-              <h3 class="font-bold text-sm leading-tight">${r.name}</h3>
-              <span class="text-[10px] text-striveOrange font-semibold block">${r.assignedDay ? `📅 Dzień: ${r.assignedDay}` : '📅 Dowolny dzień'}</span>
-              <span class="text-[10px] text-gray-400">⏱ R: ${r.warmupRestSec || 60}s · Robocza: ${r.workingRestSec || 120}s</span>
-            </div>
-            <button onclick="openRoutineActionsModal(${r.id})" class="bg-white/10 text-white px-2 py-0.5 rounded-xl text-xs font-bold">•••</button>
-          </div>
-          <div class="space-y-1 my-2 border-t border-white/10 pt-2">${exListHtml}</div>
-        </div>
-        <button onclick="startWorkout(${r.id})" class="w-full liquid-orange-btn text-white text-xs font-bold py-2.5 rounded-2xl mt-2 active:scale-95 transition">Trenuj</button>
-      </div>`;
-  }).join('');
+  const cardsHtml = routines.map(r => `
+    <div class="bg-bgCard rounded-3xl p-3.5 flex flex-col justify-between mb-3">
+      <div>
+        <h3 class="font-bold text-sm mb-1">${r.name}</h3>
+      </div>
+      <button onclick="startWorkout(${r.id})" class="w-full liquid-orange-btn text-white text-xs font-bold py-2.5 rounded-2xl mt-2">Trenuj</button>
+    </div>`).join('');
 
   return `
     <div class="flex justify-between items-center mb-4 pt-1">
-      <span class="text-striveTeal text-xs font-bold uppercase">Twoje zestawy</span>
       <h1 class="text-lg font-bold">Rutyny</h1>
       <button onclick="openRoutineCreatorModal()" class="liquid-orange-btn text-white text-xs font-bold px-3.5 py-1.5 rounded-full">Dodaj +</button>
     </div>
-    ${routines.length ? `<div class="grid grid-cols-2 gap-2.5">${cardsHtml}</div>` : emptyHtml}
+    ${routines.length ? cardsHtml : '<p class="text-center text-xs text-gray-400 py-10">Brak rutyn.</p>'}
   `;
 }
 
-async function openRoutineActionsModal(routineId) {
-  const r = await db.routines.get(routineId);
-  if (!r) return;
+async function openRoutineCreatorModal() {
+  state.routineDraft = { name: '', exercises: [] };
   openModal(`
     <div class="flex justify-between items-center mb-5">
       <button onclick="closeModal()" class="text-2xl">✕</button>
-      <h2 class="text-lg font-bold">${r.name}</h2>
+      <h2 class="text-lg font-bold">Nowa Rutyna</h2>
       <div class="w-6"></div>
     </div>
-    <div class="space-y-2.5">
-      <button onclick="startWorkout(${r.id})" class="w-full liquid-orange-btn text-white font-bold py-3.5 rounded-2xl text-sm">🏋️ Rozpocznij ten trening teraz</button>
-      <button onclick="openRoutineCreatorModal(${r.id})" class="w-full liquid-pill text-white font-bold py-3.5 rounded-2xl text-sm">✎ Edytuj rutynę, przerwy i serie</button>
-      <button onclick="duplicateRoutine(${r.id})" class="w-full bg-bgCard text-white font-bold py-3.5 rounded-2xl text-sm">📋 Duplikuj rutynę</button>
-      <button onclick="deleteRoutine(${r.id})" class="w-full bg-red-950/60 border border-red-500/40 text-red-300 font-bold py-3.5 rounded-2xl text-sm">🗑 Usuń rutynę</button>
-    </div>
+    <input type="text" id="draft-routine-name" placeholder="Nazwa rutyny..." class="w-full bg-bgInput rounded-2xl p-3 text-sm mb-4">
+    <button onclick="saveRoutineDraft()" class="w-full liquid-orange-btn text-white font-bold py-3 rounded-2xl">Zapisz rutynę</button>
   `);
-}
-
-async function duplicateRoutine(routineId) {
-  const r = await db.routines.get(routineId);
-  if (!r) return;
-  const copy = { ...r, name: `${r.name} (Kopia)` };
-  delete copy.id;
-  await db.routines.add(copy);
-  closeModal();
-  renderCurrentView();
-}
-
-async function deleteRoutine(id) {
-  if (confirm('Na pewno usunąć tę rutynę?')) {
-    await db.routines.delete(id);
-    closeModal();
-    renderCurrentView();
-  }
-}
-
-async function openRoutineCreatorModal(editRoutineId = null) {
-  if (editRoutineId) {
-    const existing = await db.routines.get(editRoutineId);
-    const cloned = JSON.parse(JSON.stringify(existing));
-    if (!cloned.warmupRestSec) cloned.warmupRestSec = 60;
-    if (!cloned.workingRestSec) cloned.workingRestSec = 120;
-    cloned.exercises = (cloned.exercises || []).map(item => {
-      if (!item.setsList || !item.setsList.length) {
-        item.setsList = Array.from({ length: item.sets || 3 }, () => ({
-          type: 'N',
-          reps: item.repsRange || '8-10',
-          weight: ''
-        }));
-      }
-      return item;
-    });
-    state.routineDraft = cloned;
-  } else if (!state.routineDraft) {
-    state.routineDraft = {
-      id: null,
-      name: '',
-      tag: '',
-      assignedDay: 'pon.',
-      warmupRestSec: 60,
-      workingRestSec: 120,
-      desc: '',
-      progression: 'Podwójna progresja',
-      exercises: []
-    };
-  }
-  await renderRoutineDraftModal();
-}
-
-async function renderRoutineDraftModal() {
-  const d = state.routineDraft;
-  const allEx = await db.exercises.toArray();
-  const exMap = Object.fromEntries(allEx.map(e => [e.id, e]));
-
-  const exRowsHtml = d.exercises.map((item, exIdx) => {
-    const exObj = item.isPlaceholder
-      ? { name: item.placeholderName, bodyPart: 'Placeholder', isPlaceholder: true }
-      : (exMap[item.exId] || { name: 'Ćwiczenie', bodyPart: '' });
-
-    if (!item.setsList || !item.setsList.length) {
-      item.setsList = [
-        { type: 'N', reps: '8-10', weight: '' },
-        { type: 'N', reps: '8-10', weight: '' },
-        { type: 'N', reps: '8-10', weight: '' }
-      ];
-    }
-
-    const defaultExRange = item.setsList.find(s => (s.type || 'N') === 'N')?.reps || '8-10';
-
-    const setsHtml = item.setsList.map((s, sIdx) => {
-      const badge = getSetBadgeInfo(item.setsList, sIdx);
-      const parsed = parseRepRange(s.reps || '8-10');
-      const roleNote = badge.isWorking
-        ? `Robocza (${d.workingRestSec || 120}s) · limit ${parsed.max}`
-        : (s.type === 'R' ? `Rozgrzewka (${d.warmupRestSec || 60}s)` : `Drop set (${d.warmupRestSec || 60}s)`);
-
-      return `
-        <div class="grid grid-cols-12 items-center gap-1.5 py-1.5 border-b border-white/5">
-          <div class="col-span-2 flex justify-center">
-            <button onclick="cycleDraftSetType(${exIdx}, ${sIdx})"
-              class="w-8 h-8 rounded-xl font-extrabold text-xs flex items-center justify-center transition active:scale-90 ${badge.classes}">
-              ${badge.label}
-            </button>
-          </div>
-          <div class="col-span-4">
-            <input type="text" placeholder="np. 8-10 lub 12-15" value="${s.reps || '8-10'}"
-              onchange="state.routineDraft.exercises[${exIdx}].setsList[${sIdx}].reps = this.value; renderRoutineDraftModal()"
-              class="w-full bg-bgInput rounded-xl py-1.5 text-center text-xs font-bold text-white">
-          </div>
-          <div class="col-span-4">
-            <div class="text-[10px] ${badge.isWorking ? 'text-striveTeal font-semibold' : 'text-gray-400'} text-center leading-tight">${roleNote}</div>
-          </div>
-          <div class="col-span-2 flex justify-end">
-            <button onclick="removeDraftSet(${exIdx}, ${sIdx})" class="w-7 h-7 rounded-xl bg-white/5 text-gray-400 hover:text-red-400 text-xs flex items-center justify-center">✕</button>
-          </div>
-        </div>`;
-    }).join('');
-
-    return `
-      <div class="bg-bgCard rounded-3xl p-3.5 mb-3">
-        <div class="flex items-center justify-between gap-2 mb-2">
-          <div class="flex items-center gap-2.5 min-w-0">
-            ${renderAnimatedExerciseThumb(exObj, 'w-12 h-12')}
-            <div class="min-w-0">
-              <div class="text-xs font-bold text-white truncate">${exIdx + 1}. ${exObj.name}</div>
-              <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                <span class="text-[10px] text-gray-300">Zakres ćwiczenia:</span>
-                <input type="text" value="${defaultExRange}" placeholder="8-10"
-                  onchange="applyRangeToAllWorkingSets(${exIdx}, this.value)"
-                  class="w-16 bg-bgInput rounded-lg px-1.5 py-0.5 text-center text-xs font-bold text-striveOrange">
-              </div>
-            </div>
-          </div>
-          <div class="flex items-center gap-1 shrink-0">
-            <button onclick="moveDraftExercise(${exIdx}, -1)" class="bg-white/10 px-2 py-1 rounded-lg text-xs">↑</button>
-            <button onclick="moveDraftExercise(${exIdx}, 1)" class="bg-white/10 px-2 py-1 rounded-lg text-xs">↓</button>
-            <button onclick="removeDraftExercise(${exIdx})" class="bg-red-900/50 text-red-300 px-2 py-1 rounded-lg text-xs">✕</button>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-12 text-[10px] uppercase text-gray-400 font-bold pb-1 border-b border-white/10">
-          <div class="col-span-2 text-center">Seria</div>
-          <div class="col-span-4 text-center">Zakres (np. 12-15)</div>
-          <div class="col-span-4 text-center">Przerwa i progres</div>
-          <div class="col-span-2 text-right">Usuń</div>
-        </div>
-
-        <div class="divide-y divide-white/5">${setsHtml}</div>
-
-        <div class="grid grid-cols-3 gap-1.5 mt-2.5 pt-1">
-          <button onclick="addDraftSet(${exIdx}, 'R')" class="bg-striveOrange/15 border border-striveOrange/40 text-striveOrange text-[11px] font-bold py-1.5 rounded-xl">+ Rozgrzewka (R)</button>
-          <button onclick="addDraftSet(${exIdx}, 'N')" class="bg-striveTeal/25 border border-striveTeal/50 text-white text-[11px] font-bold py-1.5 rounded-xl">+ Dodaj serię</button>
-          <button onclick="addDraftSet(${exIdx}, 'D')" class="bg-purple-500/15 border border-purple-400/40 text-purple-300 text-[11px] font-bold py-1.5 rounded-xl">+ Drop set (D)</button>
-        </div>
-      </div>`;
-  }).join('');
-
-  openModal(`
-    <div class="flex justify-between items-center mb-5">
-      <button onclick="state.routineDraft=null; closeModal()" class="text-2xl">✕</button>
-      <h2 class="text-lg font-bold">${d.id ? 'Edytuj Rutynę' : 'Nowa Rutyna'}</h2>
-      <button onclick="saveRoutineDraft()" class="liquid-orange-btn text-white text-xs font-bold px-4 py-2 rounded-full">ZAPISZ</button>
-    </div>
-
-    <div class="space-y-4">
-      <div>
-        <label class="text-sm font-bold block mb-1">Nazwa</label>
-        <input type="text" placeholder="np. PON FBW lub Klatka-Biceps" value="${d.name}"
-          oninput="state.routineDraft.name = this.value"
-          class="w-full bg-bgInput rounded-2xl p-3 text-sm">
-      </div>
-
-      <div>
-        <label class="text-sm font-bold block mb-1.5">Przypisz dzień tygodnia (zrobisz go też w inny dzień)</label>
-        <div class="grid grid-cols-4 gap-1.5">
-          ${[...DAYS_SHORT, 'Dowolny'].map(day => `
-            <button onclick="state.routineDraft.assignedDay = '${day === 'Dowolny' ? '' : day}'; renderRoutineDraftModal()"
-              class="py-2 rounded-2xl border text-xs font-bold ${(d.assignedDay || '') === (day === 'Dowolny' ? '' : day) ? 'liquid-orange-btn border-transparent text-white' : 'bg-bgCard border-white/15 text-gray-300'}">
-              ${day}
-            </button>
-          `).join('')}
-        </div>
-      </div>
-
-      <div class="liquid-pill rounded-3xl p-3.5">
-        <label class="text-xs font-bold uppercase text-striveTeal block mb-2">⏱ Czasy przerw w tej rutynie (sekundy)</label>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="text-[11px] text-striveOrange font-semibold block mb-1">Przerwa po Rozgrzewce (R)</label>
-            <input type="number" step="15" value="${d.warmupRestSec || 60}"
-              onchange="state.routineDraft.warmupRestSec = parseInt(this.value)||60; renderRoutineDraftModal()"
-              class="w-full bg-bgInput rounded-2xl p-2 text-center text-sm font-bold text-white">
-          </div>
-          <div>
-            <label class="text-[11px] text-striveTeal font-semibold block mb-1">Przerwa po Serii Roboczej (1,2,3)</label>
-            <input type="number" step="15" value="${d.workingRestSec || 120}"
-              onchange="state.routineDraft.workingRestSec = parseInt(this.value)||120; renderRoutineDraftModal()"
-              class="w-full bg-bgInput rounded-2xl p-2 text-center text-sm font-bold text-white">
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="text-sm font-bold block mb-1">Tagi</label>
-          <input type="text" placeholder="+ Nowy Tag (np. FBW 3x)" value="${d.tag}"
-            oninput="state.routineDraft.tag = this.value"
-            class="w-full bg-bgInput rounded-2xl p-2.5 text-xs">
-        </div>
-        <div>
-          <label class="text-sm font-bold block mb-1">Automatyzacja</label>
-          <select onchange="state.routineDraft.progression = this.value" class="w-full bg-bgInput rounded-2xl p-2.5 text-xs font-semibold text-striveOrange">
-            ${['Podwójna progresja', 'Liniowa (+2.5kg)', 'Cel powtórzeń', 'Brak (ręczna)'].map(p => `<option ${d.progression === p ? 'selected' : ''}>${p}</option>`).join('')}
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <div class="flex justify-between items-center mb-1">
-          <label class="text-sm font-bold">Ćwiczenia (${d.exercises.length})</label>
-          <span class="text-[10px] text-gray-400">Kliknij numer serii: 1,2,3 ⇄ R ⇄ D</span>
-        </div>
-        ${exRowsHtml || '<p class="text-xs text-gray-400 py-4 text-center border border-dashed border-white/10 rounded-2xl mb-3">Brak dodanych ćwiczeń w tej rutynie.</p>'}
-
-        <div class="grid grid-cols-2 gap-2.5 mt-3">
-          <button onclick="addPlaceholderToDraft()" class="liquid-pill text-white font-bold text-xs py-3.5 rounded-2xl">Dodaj placeholder</button>
-          <button onclick="openExercisePickerForDraft()" class="liquid-orange-btn text-white font-bold text-xs py-3.5 rounded-2xl">Dodaj ćwiczenia</button>
-        </div>
-      </div>
-    </div>
-  `);
-}
-
-function applyRangeToAllWorkingSets(exIdx, newRange) {
-  const list = state.routineDraft.exercises[exIdx].setsList || [];
-  list.forEach(s => {
-    if ((s.type || 'N') === 'N') s.reps = newRange;
-  });
-  renderRoutineDraftModal();
-}
-
-function cycleDraftSetType(exIdx, sIdx) {
-  const s = state.routineDraft.exercises[exIdx].setsList[sIdx];
-  s.type = nextSetType(s.type);
-  renderRoutineDraftModal();
-}
-
-function addDraftSet(exIdx, setType = 'N') {
-  const list = state.routineDraft.exercises[exIdx].setsList;
-  const lastWorking = [...list].reverse().find(s => (s.type || 'N') === 'N') || list[list.length - 1] || { reps: '8-10' };
-  list.push({
-    type: setType,
-    reps: lastWorking.reps || '8-10',
-    weight: ''
-  });
-  renderRoutineDraftModal();
-}
-
-function removeDraftSet(exIdx, sIdx) {
-  const list = state.routineDraft.exercises[exIdx].setsList;
-  if (list.length <= 1) return;
-  list.splice(sIdx, 1);
-  renderRoutineDraftModal();
-}
-
-function moveDraftExercise(idx, dir) {
-  const arr = state.routineDraft.exercises;
-  const target = idx + dir;
-  if (target < 0 || target >= arr.length) return;
-  const temp = arr[idx];
-  arr[idx] = arr[target];
-  arr[target] = temp;
-  renderRoutineDraftModal();
-}
-
-function removeDraftExercise(idx) {
-  state.routineDraft.exercises.splice(idx, 1);
-  renderRoutineDraftModal();
-}
-
-function addPlaceholderToDraft() {
-  const name = prompt('Nazwa placeholdera (np. Dowolne ćwiczenie na klatkę):', 'Dowolne ćwiczenie na partię');
-  if (!name) return;
-  state.routineDraft.exercises.push({
-    isPlaceholder: true,
-    placeholderName: name,
-    setsList: [
-      { type: 'N', reps: '8-10', weight: '' },
-      { type: 'N', reps: '8-10', weight: '' },
-      { type: 'N', reps: '8-10', weight: '' }
-    ]
-  });
-  renderRoutineDraftModal();
-}
-
-async function openExercisePickerForDraft() {
-  state.pickerSelectedIds = [];
-  state.pickerSupersetMode = false;
-  await renderExercisePickerModal();
-}
-
-async function renderExercisePickerModal() {
-  const allEx = await db.exercises.toArray();
-  const categories = ['ALL', ...new Set(allEx.map(e => e.category))];
-  const parts = ['ALL', ...new Set(allEx.map(e => e.bodyPart))];
-
-  const filtered = allEx.filter(e => {
-    const matchCat = state.exerciseFilterCat === 'ALL' || e.category === state.exerciseFilterCat;
-    const matchPart = state.exerciseFilterPart === 'ALL' || e.bodyPart === state.exerciseFilterPart;
-    const matchSearch = e.name.toLowerCase().includes(state.exerciseSearch.toLowerCase());
-    return matchCat && matchPart && matchSearch;
-  });
-
-  const rowsHtml = filtered.map(ex => {
-    const picked = state.pickerSelectedIds.includes(ex.id);
-    return `
-      <div onclick="togglePickerExercise(${ex.id})"
-        class="bg-bgCard border ${picked ? 'border-striveOrange bg-striveOrange/10' : 'border-white/15'} rounded-3xl p-2.5 flex items-center gap-3 cursor-pointer transition">
-        ${renderAnimatedExerciseThumb(ex, 'w-14 h-14')}
-        <div class="flex-1 min-w-0">
-          <div class="flex justify-between items-start gap-2">
-            <h3 class="font-semibold text-sm text-white truncate">${ex.name}</h3>
-            <span class="text-xs ${picked ? 'text-striveOrange font-bold' : 'text-gray-400'}">${picked ? 'Wybrano ✓' : `(${ex.sessions || 0})`}</span>
-          </div>
-          <div class="flex justify-between items-center text-xs text-gray-400 mt-2">
-            <span>${ex.category}</span>
-            <span>${ex.bodyPart}</span>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
-
-  openModal(`
-    <div class="flex justify-between items-center mb-3">
-      <h2 class="text-lg font-bold">Wybierz Ćwiczenia (${allEx.length})</h2>
-    </div>
-
-    <div class="flex justify-between items-center mb-3">
-      <button onclick="openFreeMirrorImporterModal(true)" class="liquid-pill text-white font-bold text-xs px-4 py-2 rounded-2xl">Dodaj + (Mirror 800+)</button>
-      <button onclick="state.pickerSupersetMode = !state.pickerSupersetMode; renderExercisePickerModal()"
-        class="liquid-pill text-white font-semibold text-xs px-3.5 py-2 rounded-2xl flex items-center gap-2">
-        <span>Seria łączona</span>
-        <span class="w-4 h-4 rounded-full border-2 border-white flex items-center justify-center ${state.pickerSupersetMode ? 'bg-striveOrange' : ''}"></span>
-      </button>
-    </div>
-
-    <div class="flex gap-2 mb-2.5">
-      <input type="text" placeholder="🔍 Szukaj ćwiczenia (np. maszyna, izolacja)..." value="${state.exerciseSearch}"
-        oninput="state.exerciseSearch = this.value; renderExercisePickerModal()"
-        class="flex-1 bg-bgInput rounded-2xl px-3.5 py-2 text-sm">
-    </div>
-
-    <div class="grid grid-cols-2 gap-2 mb-3">
-      <select onchange="state.exerciseFilterCat = this.value; renderExercisePickerModal()" class="liquid-pill text-white font-semibold text-xs rounded-2xl px-3 py-2">
-        <option value="ALL">Dowolna Kategoria</option>
-        ${categories.filter(c => c !== 'ALL').map(c => `<option value="${c}" ${state.exerciseFilterCat === c ? 'selected' : ''}>${c}</option>`).join('')}
-      </select>
-      <select onchange="state.exerciseFilterPart = this.value; renderExercisePickerModal()" class="liquid-pill text-white font-semibold text-xs rounded-2xl px-3 py-2">
-        <option value="ALL">Dowolna Część Ciała</option>
-        ${parts.filter(p => p !== 'ALL').map(p => `<option value="${p}" ${state.exerciseFilterPart === p ? 'selected' : ''}>${p}</option>`).join('')}
-      </select>
-    </div>
-
-    <div class="space-y-2 max-h-[52vh] overflow-y-auto pb-4">${rowsHtml}</div>
-
-    <div class="space-y-2 pt-2 border-t border-white/10">
-      <button onclick="renderRoutineDraftModal()" class="w-full bg-white/10 text-white font-bold py-3 rounded-2xl text-sm">Anuluj</button>
-      <button onclick="confirmPickerExercises()" class="w-full ${state.pickerSelectedIds.length ? 'liquid-orange-btn text-white' : 'bg-white/5 text-gray-500'} font-bold py-3 rounded-2xl text-sm">
-        Wybierz ćwiczenia (${state.pickerSelectedIds.length})
-      </button>
-    </div>
-  `);
-}
-
-function togglePickerExercise(exId) {
-  const idx = state.pickerSelectedIds.indexOf(exId);
-  if (idx >= 0) state.pickerSelectedIds.splice(idx, 1);
-  else state.pickerSelectedIds.push(exId);
-  renderExercisePickerModal();
-}
-
-function confirmPickerExercises() {
-  if (!state.pickerSelectedIds.length) return;
-  state.pickerSelectedIds.forEach(id => {
-    state.routineDraft.exercises.push({
-      exId: id,
-      superset: state.pickerSupersetMode,
-      setsList: [
-        { type: 'N', reps: '8-10', weight: '' },
-        { type: 'N', reps: '8-10', weight: '' },
-        { type: 'N', reps: '8-10', weight: '' }
-      ]
-    });
-  });
-  renderRoutineDraftModal();
 }
 
 async function saveRoutineDraft() {
-  const d = state.routineDraft;
-  if (!d.name.trim()) return alert('Podaj nazwę rutyny (np. PON FBW)');
-  if (!d.exercises.length) return alert('Dodaj przynajmniej jedno ćwiczenie do rutyny');
-
-  const payload = {
-    name: d.name.trim(),
-    tag: d.tag.trim() || 'Własna',
-    assignedDay: d.assignedDay || '',
-    warmupRestSec: Number(d.warmupRestSec) || 60,
-    workingRestSec: Number(d.workingRestSec) || 120,
-    desc: d.desc.trim(),
-    progression: d.progression || 'Podwójna progresja',
-    exercises: d.exercises.map(ex => ({
-      ...ex,
-      sets: (ex.setsList || []).length
-    }))
-  };
-
-  if (d.id) {
-    await db.routines.update(d.id, payload);
-  } else {
-    await db.routines.add(payload);
-  }
+  const name = document.getElementById('draft-routine-name').value.trim();
+  if (!name) return alert('Podaj nazwę');
+  await db.routines.add({ name, exercises: [] });
   state.routineDraft = null;
   closeModal();
   renderCurrentView();
 }
 
-// ============================================================================
-// WIDOK 2C: ĆWICZENIA
-// ============================================================================
 async function renderExercisesView() {
   const allEx = await db.exercises.toArray();
-  const categories = ['ALL', ...new Set(allEx.map(e => e.category))];
-  const parts = ['ALL', ...new Set(allEx.map(e => e.bodyPart))];
-
-  const filtered = allEx.filter(e => {
-    const matchCat = state.exerciseFilterCat === 'ALL' || e.category === state.exerciseFilterCat;
-    const matchPart = state.exerciseFilterPart === 'ALL' || e.bodyPart === state.exerciseFilterPart;
-    const matchSearch = e.name.toLowerCase().includes(state.exerciseSearch.toLowerCase());
-    return matchCat && matchPart && matchSearch;
-  });
+  const filtered = allEx.filter(e => e.name.toLowerCase().includes(state.exerciseSearch.toLowerCase()));
 
   const listHtml = filtered.map(ex => `
-    <div onclick="openExerciseDetailModal(${ex.id})" class="bg-bgCard rounded-3xl p-2.5 flex items-center gap-3 cursor-pointer active:scale-[0.99] transition">
+    <div onclick="openExerciseDetailModal(${ex.id})" class="bg-bgCard rounded-3xl p-2.5 flex items-center gap-3 cursor-pointer active:scale-[0.99] transition mb-2">
       ${renderAnimatedExerciseThumb(ex, 'w-14 h-14')}
       <div class="flex-1 min-w-0">
-        <div class="flex justify-between items-start gap-2">
-          <h3 class="font-semibold text-sm text-white truncate">${ex.name}</h3>
-          <span class="text-xs text-gray-400 shrink-0">(${ex.sessions || 0})</span>
-        </div>
-        <div class="flex justify-between items-center text-xs text-gray-400 mt-2">
-          <span>${ex.category} ${ex.nextTargetWeight ? `· <strong class="text-striveOrange">Cel: ${ex.nextTargetWeight}kg</strong>` : ''}</span>
-          <span>${ex.bodyPart}</span>
-        </div>
+        <h3 class="font-semibold text-sm text-white truncate">${ex.name}</h3>
+        <div class="text-xs text-gray-400 mt-1">${ex.category} · ${ex.bodyPart}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 
   return `
     <div class="flex justify-between items-center mb-3 pt-1">
-      <span class="text-[11px] text-striveTeal font-bold uppercase">Atlas (${allEx.length})</span>
-      <h1 class="text-lg font-bold">Ćwiczenia</h1>
-      <button onclick="openFreeMirrorImporterModal(false)" class="liquid-orange-btn text-white text-xs font-bold px-3.5 py-1.5 rounded-full">Dodaj +</button>
+      <h1 class="text-lg font-bold">Ćwiczenia (${allEx.length})</h1>
     </div>
-
-    <div class="flex gap-2 mb-2.5">
-      <input type="text" placeholder="🔍 Szukaj ćwiczenia (${allEx.length} w bazie)..." value="${state.exerciseSearch}"
-        oninput="state.exerciseSearch = this.value; renderCurrentView()"
-        class="flex-1 bg-bgInput rounded-2xl px-3.5 py-2.5 text-sm text-white">
-    </div>
-
-    <div class="grid grid-cols-2 gap-2 mb-3">
-      <select onchange="state.exerciseFilterCat = this.value; renderCurrentView()" class="liquid-pill text-white font-semibold text-xs rounded-2xl px-3 py-2.5">
-        <option value="ALL">Dowolna Kategoria</option>
-        ${categories.filter(c => c !== 'ALL').map(c => `<option value="${c}" ${state.exerciseFilterCat === c ? 'selected' : ''}>${c}</option>`).join('')}
-      </select>
-      <select onchange="state.exerciseFilterPart = this.value; renderCurrentView()" class="liquid-pill text-white font-semibold text-xs rounded-2xl px-3 py-2.5">
-        <option value="ALL">Dowolna Część Ciała</option>
-        ${parts.filter(p => p !== 'ALL').map(p => `<option value="${p}" ${state.exerciseFilterPart === p ? 'selected' : ''}>${p}</option>`).join('')}
-      </select>
-    </div>
-
+    <input type="text" placeholder="🔍 Szukaj ćwiczenia..." value="${state.exerciseSearch}"
+      oninput="state.exerciseSearch = this.value; renderCurrentView()"
+      class="w-full bg-bgInput rounded-2xl px-3.5 py-2.5 text-sm text-white mb-3">
     <div class="space-y-2">${listHtml}</div>
   `;
 }
@@ -1360,1417 +621,87 @@ async function renderExercisesView() {
 async function openExerciseDetailModal(exId) {
   const ex = await db.exercises.get(exId);
   if (!ex) return;
-  const workouts = await db.workouts.toArray();
-  workouts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-  let historyRows = '';
-  workouts.forEach(w => {
-    const found = (w.exercises || []).find(item => item.exId === exId);
-    if (found && found.sets.length) {
-      const setsStr = found.sets.map(s => `${s.type === 'R' ? '[R] ' : (s.type === 'D' ? '[D] ' : '')}${s.weight}kg x ${s.reps}`).join(' | ');
-      historyRows += `<div class="flex justify-between py-2 border-b border-white/10 text-xs"><span class="text-gray-400">${w.date} (${w.routineName})</span><span class="font-mono font-semibold text-white">${setsStr}</span></div>`;
-    }
-  });
 
   openModal(`
     <div class="flex justify-between items-center mb-4">
       <button onclick="closeModal()" class="text-2xl text-gray-300">✕</button>
       <h2 class="font-bold text-base truncate px-2">${ex.name}</h2>
-      <span class="text-xs liquid-pill text-white font-bold px-2.5 py-1 rounded-full">${ex.bodyPart}</span>
+      <div class="w-6"></div>
     </div>
 
     <div class="bg-white rounded-3xl p-4 flex flex-col items-center justify-center mb-4 relative overflow-hidden">
-      <span class="text-[10px] font-bold uppercase text-gray-500 mb-1">Darmowa animacja ruchu (Start ⇄ Koniec)</span>
+      <span class="text-[10px] font-bold uppercase text-gray-500 mb-1">Animacja / Podgląd</span>
       ${renderAnimatedExerciseThumb(ex, 'w-56 h-56')}
       <span class="text-xs font-semibold text-gray-700 mt-2">Sprzęt: ${ex.category} · Partia: ${ex.bodyPart}</span>
     </div>
 
-    <div class="bg-bgCard rounded-3xl p-4 mb-4">
-      <h3 class="text-xs font-bold uppercase text-striveOrange mb-1">Ściągawka z techniki</h3>
-      <p class="text-sm text-gray-200 leading-relaxed">${ex.tip || 'Kontroluj fazę opuszczania (2-3s) i pilnuj pełnego zakresu ruchu.'}</p>
-    </div>
-
     <div class="bg-bgCard rounded-3xl p-4">
-      <h3 class="text-xs font-bold uppercase text-striveTeal mb-2">Globalna historia w całym planie</h3>
-      ${historyRows || '<p class="text-xs text-gray-400">Brak zapisanych serii dla tego ćwiczenia.</p>'}
+      <h3 class="text-xs font-bold uppercase text-striveOrange mb-1">Wskazówka</h3>
+      <p class="text-sm text-gray-200 leading-relaxed">${ex.tip || 'Brak dodatkowych wskazówek.'}</p>
     </div>
   `);
 }
 
-function openFreeMirrorImporterModal(returnToPicker = false) {
-  openModal(`
-    <div class="flex justify-between items-center mb-4">
-      <button onclick="${returnToPicker ? 'renderExercisePickerModal()' : 'closeModal()'}" class="text-2xl">✕</button>
-      <h2 class="text-lg font-bold">Darmowy Mirror Ćwiczeń (800+)</h2>
-      <div class="w-6"></div>
-    </div>
-
-    <div class="bg-bgCard rounded-3xl p-4 mb-4">
-      <label class="text-xs font-bold text-striveTeal uppercase block mb-1.5">1. Przeszukaj darmowy katalog GitHub (machine, cable, lever, curl...)</label>
-      <div class="flex gap-2">
-        <input id="free-mirror-q" type="text" placeholder="Wpisz po ang. np. machine, cable, chest, curl..." class="flex-1 bg-bgInput rounded-2xl px-3 py-2 text-sm">
-        <button onclick="searchFreeExerciseMirror(${returnToPicker})" class="liquid-orange-btn text-white text-xs font-bold px-4 py-2 rounded-2xl">Szukaj</button>
-      </div>
-      <div id="free-mirror-results" class="mt-3 space-y-2 max-h-64 overflow-y-auto"></div>
-    </div>
-
-    <div class="bg-bgCard rounded-3xl p-4 space-y-3">
-      <div class="text-xs font-bold text-gray-300 uppercase">2. Lub dodaj ręcznie</div>
-      <div>
-        <label class="text-xs text-gray-400 block mb-1">Polska nazwa ćwiczenia</label>
-        <input id="new-ex-name" type="text" placeholder="np. Odwodzenie ramion na maszynie" class="w-full bg-bgInput rounded-2xl p-2.5 text-sm">
-      </div>
-      <div>
-        <label class="text-xs text-gray-400 block mb-1">Bezpośredni link do GIF-a (opcjonalnie)</label>
-        <input id="new-ex-customgif" type="text" placeholder="https://... (lub zostaw puste)" class="w-full bg-bgInput rounded-2xl p-2.5 text-xs">
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="text-xs text-gray-400 block mb-1">Kategoria (Sprzęt)</label>
-          <select id="new-ex-cat" class="w-full bg-bgInput rounded-2xl p-2.5 text-sm">
-            <option>Maszyna</option><option>Wyciąg</option><option>Hantle</option><option>Sztanga</option><option>Masa ciała</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-xs text-gray-400 block mb-1">Partia mięśniowa</label>
-          <select id="new-ex-part" class="w-full bg-bgInput rounded-2xl p-2.5 text-sm">
-            <option>Klatka</option><option>Najszerszy grzbietu</option><option>Czworoboczny grzbietu</option><option>Barki</option><option>Bicepsy</option><option>Tricepsy</option><option>Czworogłowe ud</option><option>Dwugłowe ud</option><option>Pośladki</option><option>Łydki</option><option>Brzuch</option>
-          </select>
-        </div>
-      </div>
-      <button onclick="saveCustomExercise(${returnToPicker})" class="w-full liquid-orange-btn text-white font-bold py-3 rounded-2xl">Zapisz ćwiczenie w bazie</button>
-    </div>
-  `);
-}
-
-async function searchFreeExerciseMirror(returnToPicker) {
-  const q = document.getElementById('free-mirror-q').value.trim().toLowerCase();
-  const box = document.getElementById('free-mirror-results');
-  if (!q) return;
-  box.innerHTML = `<div class="text-xs text-gray-400 py-2">Pobieram darmowy katalog z GitHuba...</div>`;
-
-  try {
-    if (!state.remoteFreeCatalog) {
-      const resp = await fetch(FREE_EX_INDEX_URL);
-      state.remoteFreeCatalog = await resp.json();
-    }
-    const matches = state.remoteFreeCatalog.filter(item =>
-      (item.name && item.name.toLowerCase().includes(q)) ||
-      (item.equipment && item.equipment.toLowerCase().includes(q)) ||
-      (item.primaryMuscles && item.primaryMuscles.join(' ').toLowerCase().includes(q))
-    ).slice(0, 20);
-
-    if (!matches.length) {
-      box.innerHTML = `<div class="text-xs text-gray-400 py-2">Brak wyników dla "${q}".</div>`;
-      return;
-    }
-
-    box.innerHTML = matches.map(item => {
-      const slug = item.id;
-      const safeName = (item.name || 'Exercise').replace(/'/g, '');
-      const f0 = FREE_EX_CDN(slug, 0);
-      const f1 = FREE_EX_CDN(slug, 1);
-      return `
-        <div class="flex items-center justify-between gap-2.5 bg-bgMain/60 p-2 rounded-2xl border border-white/10">
-          <img src="${f0}" data-f0="${f0}" data-f1="${f1}" class="live-loop-gif w-14 h-14 rounded-xl bg-white object-cover shrink-0" loading="lazy" />
-          <div class="min-w-0 flex-1">
-            <div class="text-xs font-bold text-white truncate">${safeName}</div>
-            <div class="text-[10px] text-striveTeal">${item.equipment || ''} · ${(item.primaryMuscles || [])[0] || ''}</div>
-          </div>
-          <button onclick="importFromFreeMirror('${slug}', '${safeName}', ${returnToPicker})"
-            class="liquid-orange-btn text-white text-[11px] font-bold px-3 py-1.5 rounded-xl shrink-0">Zaciągnij</button>
-        </div>`;
-    }).join('');
-  } catch (err) {
-    box.innerHTML = `<div class="text-xs text-orange-400 py-2">Błąd połączenia z mirrorem CDN.</div>`;
-  }
-}
-
-async function importFromFreeMirror(slug, rawName, returnToPicker) {
-  const plName = prompt('Podaj polską nazwę dla tego ćwiczenia:', rawName);
-  if (!plName) return;
-  const part = prompt('Partia mięśniowa (Klatka, Najszerszy grzbietu, Barki, Bicepsy, Tricepsy, Czworogłowe ud, Dwugłowe ud, Pośladki, Łydki, Brzuch):', 'Klatka') || 'Klatka';
-  await db.exercises.add({
-    slug,
-    name: plName,
-    category: 'Maszyna',
-    bodyPart: part,
-    tip: `Zaimportowano z darmowego repozytorium (${slug}).`,
-    sessions: 0
-  });
-  if (returnToPicker) renderExercisePickerModal();
-  else { closeModal(); renderCurrentView(); }
-}
-
-async function saveCustomExercise(returnToPicker) {
-  const name = document.getElementById('new-ex-name').value.trim();
-  const customGifUrl = document.getElementById('new-ex-customgif').value.trim();
-  if (!name) return alert('Podaj nazwę ćwiczenia');
-  await db.exercises.add({
-    name,
-    slug: 'Leverage_Chest_Press',
-    customGifUrl,
-    category: document.getElementById('new-ex-cat').value,
-    bodyPart: document.getElementById('new-ex-part').value,
-    sessions: 0
-  });
-  if (returnToPicker) renderExercisePickerModal();
-  else { closeModal(); renderCurrentView(); }
-}
-
-// ============================================================================
-// AKTYWNY TRENING
-// ============================================================================
 async function openQuickStartModal() {
-  if (state.activeWorkout) {
-    openActiveWorkoutModal();
-    return;
-  }
   const routines = await db.routines.toArray();
-  const today = new Date();
-  const todayShort = DAYS_SHORT[(today.getDay() + 6) % 7];
-
-  const listHtml = routines.map(r => {
-    const isTodayAssigned = r.assignedDay === todayShort;
-    return `
-      <div class="flex justify-between items-center py-3.5 border-b border-white/10">
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-bold text-sm text-white">${r.name}</span>
-            ${r.assignedDay ? `<span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${isTodayAssigned ? 'liquid-orange-btn text-white' : 'bg-white/10 text-gray-300'}">${r.assignedDay}</span>` : ''}
-          </div>
-          <div class="text-xs text-striveTeal mt-0.5">⏱ R: ${r.warmupRestSec || 60}s / Robocza: ${r.workingRestSec || 120}s · ${(r.exercises || []).length} ćw.</div>
-        </div>
-        <button onclick="startWorkout(${r.id})" class="liquid-orange-btn text-white text-xs font-bold px-4 py-2.5 rounded-2xl active:scale-95 transition">Trenuj dziś</button>
-      </div>`;
-  }).join('');
-
   openModal(`
     <div class="flex justify-between items-center mb-2">
       <button onclick="closeModal()" class="text-2xl">✕</button>
-      <h2 class="text-lg font-bold">Wybierz trening na dziś</h2>
+      <h2 class="text-lg font-bold">Wybierz trening</h2>
       <div class="w-6"></div>
     </div>
-    <p class="text-xs text-gray-300 text-center mb-4">Dziś jest <strong class="text-striveOrange">${todayShort} (${formatDayMonth(today)})</strong>. Wyniki ćwiczeń są globalne dla całego planu.</p>
-    ${routines.length ? `<div class="divide-y divide-white/10">${listHtml}</div>` : `
-      <div class="text-center py-8">
-        <p class="text-sm text-gray-400 mb-4">Nie utworzyłeś jeszcze żadnej rutyny treningowej.</p>
-        <button onclick="closeModal(); navigate('hub'); switchWorkoutSubTab('routines'); openRoutineCreatorModal();" class="liquid-orange-btn text-white text-xs font-bold px-5 py-3 rounded-2xl">+ Stwórz pierwszą rutynę</button>
-      </div>
-    `}
+    ${routines.length ? routines.map(r => `<button onclick="startWorkout(${r.id})" class="w-full liquid-orange-btn text-white font-bold py-3 rounded-2xl mb-2">${r.name}</button>`).join('') : '<p class="text-center text-xs text-gray-400 py-6">Najpierw stwórz rutynę.</p>'}
   `);
 }
 
 async function startWorkout(routineId) {
   const routine = await db.routines.get(routineId);
   if (!routine) return;
-  const allExercises = await db.exercises.toArray();
-  const exMap = Object.fromEntries(allExercises.map(e => [e.id, e]));
-
-  const pastWorkouts = await db.workouts.toArray();
-  pastWorkouts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-  const warmupRest = Number(routine.warmupRestSec) || 60;
-  const workingRest = Number(routine.workingRestSec) || 120;
-
-  const workoutExercises = (routine.exercises || []).map(item => {
-    const exObj = item.isPlaceholder
-      ? { id: 0, name: item.placeholderName, bodyPart: 'Wybierz na siłowni', isPlaceholder: true }
-      : (exMap[item.exId] || { id: item.exId, name: 'Ćwiczenie', bodyPart: 'Klatka', slug: 'Leverage_Chest_Press' });
-
-    let lastAllSets = [];
-    if (!item.isPlaceholder) {
-      for (const w of pastWorkouts) {
-        const found = (w.exercises || []).find(e => Number(e.exId) === Number(item.exId));
-        if (found && found.sets && found.sets.length) {
-          lastAllSets = found.sets;
-          break;
-        }
-      }
-    }
-
-    const lastWorkingSets = lastAllSets.filter(s => (s.type || 'N') === 'N');
-    const lastWarmupSets = lastAllSets.filter(s => s.type === 'R');
-    const lastDropSets = lastAllSets.filter(s => s.type === 'D');
-
-    const templateSets = (item.setsList && item.setsList.length)
-      ? item.setsList
-      : Array.from({ length: item.sets || 3 }, () => ({ type: 'N', reps: item.repsRange || '8-10', weight: '' }));
-
-    const plannedWorkingTemplates = templateSets.filter(t => (t.type || 'N') === 'N');
-    const allWorkingHitMaxLastTime = lastWorkingSets.length >= plannedWorkingTemplates.length && plannedWorkingTemplates.every((wt, wIdx) => {
-      const prevWork = lastWorkingSets[wIdx] || lastWorkingSets[lastWorkingSets.length - 1];
-      const range = parseRepRange(wt.reps || '8-10');
-      return prevWork && Number(prevWork.reps) >= range.max;
-    });
-
-    let workIdx = 0;
-    let warmIdx = 0;
-    let dropIdx = 0;
-
-    const sets = templateSets.map((tmpl) => {
-      const setType = tmpl.type || 'N';
-      const range = parseRepRange(tmpl.reps || '8-10');
-
-      if (setType !== 'N') {
-        const prevPool = setType === 'R' ? lastWarmupSets : lastDropSets;
-        const currPoolIdx = setType === 'R' ? warmIdx++ : dropIdx++;
-        const prevSame = prevPool[currPoolIdx] || prevPool[prevPool.length - 1] || null;
-
-        return {
-          type: setType,
-          repsRangeText: range.text,
-          weight: prevSame ? prevSame.weight : (tmpl.weight || ''),
-          reps: prevSame ? prevSame.reps : range.min,
-          done: false,
-          prevText: prevSame ? `${prevSame.weight}kg x ${prevSame.reps}` : '—',
-          hintText: setType === 'R' ? `Rozgrzewka (${warmupRest}s)` : `Drop set (${warmupRest}s)`
-        };
-      }
-
-      const prevWork = lastWorkingSets[workIdx] || lastWorkingSets[lastWorkingSets.length - 1] || null;
-      workIdx++;
-
-      const savedNextWeight = exObj.nextTargetWeight ? Number(exObj.nextTargetWeight) : null;
-
-      if (!prevWork && !savedNextWeight) {
-        return {
-          type: 'N',
-          repsRangeText: range.text,
-          weight: tmpl.weight || '',
-          reps: range.min,
-          done: false,
-          prevText: '—',
-          hintText: `Cel: ${range.text} powt.`
-        };
-      }
-
-      const prevDisplay = prevWork ? `${prevWork.weight}kg x ${prevWork.reps}` : '—';
-
-      if (savedNextWeight) {
-        return {
-          type: 'N',
-          repsRangeText: range.text,
-          weight: savedNextWeight,
-          reps: range.min,
-          done: false,
-          prevText: prevDisplay,
-          hintText: `🔥 Nowy ciężar: ${savedNextWeight}kg x ${range.min}`
-        };
-      }
-
-      if (allWorkingHitMaxLastTime) {
-        const nextWeight = Number(prevWork.weight) + 2.5;
-        return {
-          type: 'N',
-          repsRangeText: range.text,
-          weight: nextWeight,
-          reps: range.min,
-          done: false,
-          prevText: prevDisplay,
-          hintText: `🔥 Progres: ${nextWeight}kg x ${range.min}`
-        };
-      }
-
-      const nextReps = Math.min(range.max, Number(prevWork.reps) + 1);
-      return {
-        type: 'N',
-        repsRangeText: range.text,
-        weight: prevWork.weight,
-        reps: nextReps,
-        done: false,
-        prevText: prevDisplay,
-        hintText: `Cel: ${prevWork.weight}kg x ${nextReps}`
-      };
-    });
-
-    return {
-      exId: exObj.id,
-      name: exObj.name,
-      bodyPart: exObj.bodyPart,
-      slug: exObj.slug,
-      customGifUrl: exObj.customGifUrl,
-      isPlaceholder: Boolean(item.isPlaceholder),
-      superset: Boolean(item.superset),
-      sets
-    };
-  });
-
-  state.activeWorkout = {
-    routineId: routine.id,
-    routineName: routine.name,
-    warmupRestSec: warmupRest,
-    workingRestSec: workingRest,
-    startTime: Date.now(),
-    exercises: workoutExercises
-  };
-
+  state.activeWorkout = { routineName: routine.name, startTime: Date.now(), exercises: [] };
   document.getElementById('active-workout-bar').classList.remove('hidden');
   document.getElementById('bar-routine-name').textContent = routine.name;
-  startGlobalWorkoutClock();
-  openActiveWorkoutModal();
-}
-
-function openActiveWorkoutModal() {
-  if (!state.activeWorkout) return;
-  const w = state.activeWorkout;
-
-  const exBlocks = w.exercises.map((ex, exIdx) => {
-    const setsRows = ex.sets.map((s, sIdx) => {
-      const badge = getSetBadgeInfo(ex.sets, sIdx);
-      return `
-        <div class="grid grid-cols-12 items-center gap-1.5 py-2 border-b border-white/5 ${s.done ? 'bg-striveGreen/15 rounded-2xl px-1' : ''}">
-          <div class="col-span-2 flex justify-center">
-            <button onclick="cycleActiveWorkoutSetType(${exIdx}, ${sIdx})"
-              class="w-8 h-8 rounded-xl font-extrabold text-xs flex items-center justify-center transition ${badge.classes}">
-              ${badge.label}
-            </button>
-          </div>
-          <div class="col-span-4">
-            <div class="text-xs font-bold text-white font-mono">${s.prevText}</div>
-            <div class="text-[10px] ${badge.isWorking ? 'text-striveOrange font-semibold' : 'text-gray-400'}">${s.hintText}</div>
-          </div>
-          <div class="col-span-2">
-            <input type="number" step="0.5" placeholder="kg" value="${s.weight}"
-              onchange="updateSetField(${exIdx}, ${sIdx}, 'weight', this.value)"
-              class="w-full bg-bgInput rounded-xl py-1.5 text-center text-sm font-bold text-white">
-          </div>
-          <div class="col-span-2">
-            <input type="number" placeholder="powt" value="${s.reps}"
-              onchange="updateSetField(${exIdx}, ${sIdx}, 'reps', this.value)"
-              class="w-full bg-bgInput rounded-xl py-1.5 text-center text-sm font-bold text-white">
-          </div>
-          <div class="col-span-2 flex justify-end gap-1">
-            <button onclick="toggleSetDone(${exIdx}, ${sIdx})"
-              class="w-9 h-8 rounded-xl font-bold text-sm flex items-center justify-center active:scale-90 transition ${s.done ? 'bg-striveGreen text-black shadow-[0_0_12px_rgba(50,215,75,0.5)]' : 'bg-white/10 text-gray-300'}">
-              ✓
-            </button>
-          </div>
-        </div>`;
-    }).join('');
-
-    return `
-      <div class="bg-bgCard rounded-3xl p-3.5 mb-3.5">
-        <div class="flex justify-between items-center gap-2 mb-2.5">
-          <div onclick="${ex.exId ? `openExerciseDetailModal(${ex.exId})` : `swapExerciseInFlight(${exIdx}, 'ALL')`}" class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
-            ${renderAnimatedExerciseThumb(ex, 'w-12 h-12')}
-            <div class="min-w-0">
-              <h3 class="font-bold text-sm text-striveTeal truncate">${ex.superset ? '🔗 ' : ''}${ex.name}</h3>
-              <span class="text-[11px] text-gray-400">${ex.bodyPart} · ⏱ R: ${w.warmupRestSec}s / Robocza: ${w.workingRestSec}s</span>
-            </div>
-          </div>
-          <button onclick="swapExerciseInFlight(${exIdx}, '${ex.bodyPart}')" class="text-[11px] bg-white/10 px-2.5 py-1.5 rounded-xl text-gray-200 shrink-0">⇄ Zamień</button>
-        </div>
-
-        <div class="grid grid-cols-12 text-[10px] uppercase text-gray-400 font-bold pb-1 border-b border-white/10">
-          <div class="col-span-2 text-center">Seria</div>
-          <div class="col-span-4">Poprzednio</div>
-          <div class="col-span-2 text-center">Ciężar</div>
-          <div class="col-span-2 text-center">Powt.</div>
-          <div class="col-span-2 text-right">Zrob.</div>
-        </div>
-        ${setsRows}
-
-        <div class="grid grid-cols-3 gap-1.5 pt-2.5">
-          <button onclick="addExtraSet(${exIdx}, 'R')" class="bg-striveOrange/15 border border-striveOrange/40 text-striveOrange text-[11px] font-bold py-1.5 rounded-xl">+ Rozgrzewka (R)</button>
-          <button onclick="addExtraSet(${exIdx}, 'N')" class="bg-striveTeal/25 border border-striveTeal/50 text-white text-[11px] font-bold py-1.5 rounded-xl">+ Dodaj serię</button>
-          <button onclick="addExtraSet(${exIdx}, 'D')" class="bg-purple-500/15 border border-purple-400/40 text-purple-300 text-[11px] font-bold py-1.5 rounded-xl">+ Drop set (D)</button>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  openModal(`
-    <div class="flex justify-between items-center mb-4 sticky top-0 liquid-dock rounded-2xl px-3 py-2.5 z-10">
-      <button onclick="closeModal()" class="text-xs bg-white/10 px-3 py-1.5 rounded-xl">Minimalizuj ↓</button>
-      <div class="text-center">
-        <h2 class="font-bold text-sm">${w.routineName}</h2>
-        <span id="modal-timer-status" class="text-[11px] text-striveOrange font-mono">⏱ R: ${w.warmupRestSec}s | Robocza: ${w.workingRestSec}s</span>
-      </div>
-      <button onclick="prepareWorkoutSummaryModal()" class="liquid-orange-btn text-white text-xs font-bold px-3.5 py-1.5 rounded-xl">Zakończ</button>
-    </div>
-    ${exBlocks}
-  `);
-}
-
-function cycleActiveWorkoutSetType(exIdx, sIdx) {
-  const w = state.activeWorkout;
-  const s = w.exercises[exIdx].sets[sIdx];
-  s.type = nextSetType(s.type);
-  if (s.type === 'R') s.hintText = `Rozgrzewka (${w.warmupRestSec}s)`;
-  else if (s.type === 'D') s.hintText = `Drop set (${w.warmupRestSec}s)`;
-  else s.hintText = `Cel (${s.repsRangeText || '8-10'})`;
-  openActiveWorkoutModal();
-}
-
-function updateSetField(exIdx, sIdx, field, val) {
-  if (!state.activeWorkout) return;
-  state.activeWorkout.exercises[exIdx].sets[sIdx][field] = parseFloat(val) || 0;
-}
-
-function toggleSetDone(exIdx, sIdx) {
-  const w = state.activeWorkout;
-  const s = w.exercises[exIdx].sets[sIdx];
-  s.done = !s.done;
-  if (s.done) {
-    const isWarmup = s.type === 'R' || s.type === 'D';
-    const sec = isWarmup ? (w.warmupRestSec || 60) : (w.workingRestSec || 120);
-    const label = isWarmup ? 'Przerwa (Rozgrzewka)' : 'Przerwa (Seria robocza)';
-    startRestTimer(sec, label);
-  }
-  openActiveWorkoutModal();
-}
-
-function addExtraSet(exIdx, setType = 'N') {
-  const w = state.activeWorkout;
-  const ex = w.exercises[exIdx];
-  const last = ex.sets[ex.sets.length - 1] || { weight: '', reps: '', repsRangeText: '8-10', prevText: '—', hintText: '-' };
-  ex.sets.push({
-    ...last,
-    type: setType,
-    done: false,
-    hintText: setType === 'R' ? `Rozgrzewka (${w.warmupRestSec}s)` : (setType === 'D' ? `Drop set (${w.warmupRestSec}s)` : `Cel (${last.repsRangeText || '8-10'})`)
-  });
-  openActiveWorkoutModal();
-}
-
-async function swapExerciseInFlight(exIdx, bodyPart) {
-  const all = await db.exercises.toArray();
-  const alternatives = (bodyPart && bodyPart !== 'ALL' && bodyPart !== 'Wybierz na siłowni')
-    ? all.filter(a => a.bodyPart === bodyPart)
-    : all;
-  const names = alternatives.map((a, i) => `${i + 1}. ${a.name} (${a.category})`).join('\n');
-  const choice = prompt(`Wybierz numer ćwiczenia:\n\n${names}`);
-  const idx = parseInt(choice) - 1;
-  if (!isNaN(idx) && alternatives[idx]) {
-    const picked = alternatives[idx];
-    state.activeWorkout.exercises[exIdx].exId = picked.id;
-    state.activeWorkout.exercises[exIdx].name = picked.name;
-    state.activeWorkout.exercises[exIdx].bodyPart = picked.bodyPart;
-    state.activeWorkout.exercises[exIdx].slug = picked.slug;
-    state.activeWorkout.exercises[exIdx].customGifUrl = picked.customGifUrl;
-    state.activeWorkout.exercises[exIdx].isPlaceholder = false;
-    openActiveWorkoutModal();
-  }
-}
-
-function startRestTimer(seconds, label = 'Przerwa') {
-  state.restTimerEnd = Date.now() + seconds * 1000;
-  state.restTimerLabel = label;
-  updateRestTimerUI();
-}
-
-function adjustRestTimer(deltaSec) {
-  if (!state.restTimerEnd) {
-    startRestTimer(90 + deltaSec, 'Przerwa');
-    return;
-  }
-  state.restTimerEnd += deltaSec * 1000;
-  updateRestTimerUI();
-}
-
-function startGlobalWorkoutClock() {
-  if (state.timerInterval) clearInterval(state.timerInterval);
-  state.timerInterval = setInterval(() => {
-    if (!state.activeWorkout) return;
-    const elapsedSec = Math.floor((Date.now() - state.activeWorkout.startTime) / 1000);
-    const mm = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
-    const ss = String(elapsedSec % 60).padStart(2, '0');
-    const el = document.getElementById('bar-elapsed-time');
-    if (el) el.textContent = `${mm}:${ss}`;
-    updateRestTimerUI();
-  }, 500);
-}
-
-function updateRestTimerUI() {
-  const btn = document.getElementById('bar-timer-btn');
-  const status = document.getElementById('bar-timer-status');
-  const modalStatus = document.getElementById('modal-timer-status');
-  if (!state.restTimerEnd) return;
-
-  const rem = Math.ceil((state.restTimerEnd - Date.now()) / 1000);
-  if (rem > 0) {
-    const m = Math.floor(rem / 60);
-    const s = String(rem % 60).padStart(2, '0');
-    if (btn) btn.textContent = `⏱ ${m}:${s}`;
-    if (status) status.textContent = `${state.restTimerLabel}: pozostało ${rem} s`;
-    if (modalStatus) modalStatus.textContent = `⏱ ${state.restTimerLabel}: ${m}:${s}`;
-  } else {
-    state.restTimerEnd = null;
-    if (btn) btn.textContent = `⏱ Gotowe`;
-    if (status) status.textContent = `🔔 Koniec przerwy! Czas pod sztangę!`;
-    if (modalStatus) modalStatus.textContent = `🔔 Koniec przerwy!`;
-    playFinishBeep();
-  }
-}
-
-function playFinishBeep() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [520, 680, 880].forEach((freq, idx) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.frequency.value = freq;
-      osc.type = 'sine';
-      gain.gain.value = 0.15;
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + idx * 0.14);
-      osc.stop(ctx.currentTime + idx * 0.14 + 0.12);
-    });
-    if (navigator.vibrate) navigator.vibrate([200, 100, 250]);
-  } catch (e) {}
-}
-
-// ============================================================================
-// PODSUMOWANIE TRENINGU + WYKRYWANIE LIMITU POWTÓRZEŃ + PROPOZYCJA CIĘŻARU
-// ============================================================================
-function prepareWorkoutSummaryModal() {
-  const w = state.activeWorkout;
-  if (!w) return;
-
-  let totalSets = 0;
-  let totalWorkingSets = 0;
-  let totalVolume = 0;
-  const cleanedExercises = [];
-  const progressions = [];
-
-  w.exercises.forEach(ex => {
-    const doneSets = ex.sets.filter(s => s.done && (Number(s.weight) > 0 || Number(s.reps) > 0));
-    const usedSets = doneSets.length ? doneSets : ex.sets.filter(s => Number(s.weight) > 0 || Number(s.reps) > 0);
-
-    usedSets.forEach(s => {
-      totalSets++;
-      if ((s.type || 'N') === 'N') totalWorkingSets++;
-      totalVolume += (Number(s.weight) || 0) * (Number(s.reps) || 0);
-    });
-
-    if (usedSets.length) {
-      cleanedExercises.push({
-        exId: ex.exId,
-        name: ex.name,
-        sets: usedSets.map(s => ({
-          type: s.type || 'N',
-          weight: Number(s.weight) || 0,
-          reps: Number(s.reps) || 0,
-          repsRangeText: s.repsRangeText || '8-10'
-        }))
-      });
-
-      const workingUsed = usedSets.filter(s => (s.type || 'N') === 'N');
-      if (workingUsed.length > 0 && ex.exId) {
-        const hitLimitAll = workingUsed.every(ws => {
-          const parsed = parseRepRange(ws.repsRangeText || '8-10');
-          return Number(ws.reps) >= parsed.max;
-        });
-
-        const topWorkingWeight = Math.max(...workingUsed.map(ws => Number(ws.weight) || 0));
-        const sampleRange = parseRepRange(workingUsed[0].repsRangeText || '8-10');
-
-        if (hitLimitAll && topWorkingWeight > 0) {
-          progressions.push({
-            exId: ex.exId,
-            name: ex.name,
-            currentWeight: topWorkingWeight,
-            achievedRepsText: workingUsed.map(ws => `${ws.weight}kg×${ws.reps}`).join(', '),
-            limitMax: sampleRange.max,
-            proposedWeight: topWorkingWeight + 2.5
-          });
-        }
-      }
-    }
-  });
-
-  const durationMin = Math.max(1, Math.round((Date.now() - w.startTime) / 60000));
-
-  state.pendingSummary = {
-    date: toLocalIso(new Date()),
-    timestamp: Date.now(),
-    routineId: w.routineId,
-    routineName: w.routineName,
-    durationMin,
-    totalSets,
-    totalWorkingSets,
-    totalVolume: Math.round(totalVolume),
-    exercises: cleanedExercises,
-    progressions
-  };
-
-  renderWorkoutSummaryModal();
-}
-
-function renderWorkoutSummaryModal() {
-  const sum = state.pendingSummary;
-  if (!sum) return;
-
-  const doneExHtml = sum.exercises.map(ex => {
-    const setsBadges = ex.sets.map(s => {
-      const prefix = s.type === 'R' ? '[R] ' : (s.type === 'D' ? '[D] ' : '');
-      return `<span class="inline-block bg-bgInput rounded-xl px-2.5 py-1 text-[11px] font-mono mr-1 mb-1">${prefix}${s.weight}kg x ${s.reps}</span>`;
-    }).join('');
-    return `
-      <div class="py-2 border-b border-white/10 last:border-none">
-        <div class="font-bold text-xs text-white mb-1">${ex.name}</div>
-        <div class="flex flex-wrap">${setsBadges}</div>
-      </div>`;
-  }).join('');
-
-  const progressionCardsHtml = sum.progressions.length ? sum.progressions.map((p, idx) => `
-    <div class="bg-bgCard border border-striveOrange rounded-3xl p-3.5 mb-2.5">
-      <div class="flex justify-between items-start gap-2 mb-1">
-        <span class="font-bold text-sm text-white">${p.name}</span>
-        <span class="bg-striveGreen/20 text-striveGreen text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0">Limit ${p.limitMax} powt. osiągnięty!</span>
-      </div>
-      <div class="text-xs text-gray-300 mb-3">Serie robocze dziś: <span class="text-white font-mono">${p.achievedRepsText}</span></div>
-
-      <div class="bg-bgMain/60 border border-white/10 rounded-2xl p-2.5 flex items-center justify-between gap-2">
-        <div>
-          <div class="text-[10px] uppercase font-bold text-striveOrange">PROPOZYCJA na kolejny trening</div>
-          <div class="text-[11px] text-gray-400">Poprzednio: ${p.currentWeight} kg (możesz zmienić)</div>
-        </div>
-        <div class="flex items-center gap-1.5">
-          <button onclick="adjustProposedWeight(${idx}, -2.5)" class="bg-white/10 w-8 h-8 rounded-xl font-bold text-xs">-2.5</button>
-          <input type="number" step="0.5" value="${p.proposedWeight}"
-            onchange="state.pendingSummary.progressions[${idx}].proposedWeight = parseFloat(this.value)||0"
-            class="w-20 bg-bgInput rounded-xl py-1.5 text-center text-sm font-extrabold text-white">
-          <button onclick="adjustProposedWeight(${idx}, 2.5)" class="bg-white/10 w-8 h-8 rounded-xl font-bold text-xs">+2.5</button>
-        </div>
-      </div>
-    </div>
-  `).join('') : `
-    <div class="bg-bgMain/40 border border-white/10 rounded-2xl p-3 text-xs text-gray-300 text-center">
-      Brak ćwiczeń, które przekroczyły dziś górny limit powtórzeń we wszystkich seriach roboczych. Na kolejnym treningu walczysz o kolejne powtórzenia!
-    </div>`;
-
-  openModal(`
-    <div class="flex justify-between items-center mb-4">
-      <button onclick="openActiveWorkoutModal()" class="text-xs bg-white/10 px-3 py-1.5 rounded-xl">← Wróć do serii</button>
-      <h2 class="text-lg font-bold text-striveOrange">Podsumowanie Treningu</h2>
-      <div class="w-10"></div>
-    </div>
-
-    <div class="grid grid-cols-3 gap-2.5 mb-4">
-      <div class="bg-bgCard rounded-3xl p-3 text-center">
-        <div class="text-[10px] text-gray-400 uppercase">Czas</div>
-        <div class="text-lg font-extrabold text-white mt-0.5">${sum.durationMin} min</div>
-      </div>
-      <div class="bg-bgCard rounded-3xl p-3 text-center">
-        <div class="text-[10px] text-gray-400 uppercase">Serie (Robocze)</div>
-        <div class="text-lg font-extrabold text-striveTeal mt-0.5">${sum.totalSets} (${sum.totalWorkingSets})</div>
-      </div>
-      <div class="bg-bgCard rounded-3xl p-3 text-center">
-        <div class="text-[10px] text-gray-400 uppercase">Tonaż</div>
-        <div class="text-lg font-extrabold text-striveOrange mt-0.5">${sum.totalVolume} kg</div>
-      </div>
-    </div>
-
-    <div class="liquid-pill rounded-3xl p-3.5 mb-4">
-      <h3 class="text-xs font-bold uppercase text-white mb-2 flex items-center gap-1.5">
-        <span>🔥 Progresja ciężaru (Globalnie dla planu)</span>
-      </h3>
-      ${progressionCardsHtml}
-    </div>
-
-    <div class="bg-bgCard rounded-3xl p-3.5 mb-6">
-      <h3 class="text-xs font-bold uppercase text-striveTeal mb-2">Wykonane ćwiczenia (${sum.exercises.length})</h3>
-      ${doneExHtml || '<p class="text-xs text-gray-400">Brak zaliczonych serii.</p>'}
-    </div>
-
-    <button onclick="confirmAndSaveWorkoutSummary()" class="w-full liquid-orange-btn text-white font-bold py-4 rounded-3xl text-base shadow-xl active:scale-95 transition">
-      ✓ Zapisz trening i zatwierdź ciężary
-    </button>
-  `);
-}
-
-function adjustProposedWeight(idx, delta) {
-  const p = state.pendingSummary.progressions[idx];
-  p.proposedWeight = Math.max(0, Number(p.proposedWeight) + delta);
-  renderWorkoutSummaryModal();
-}
-
-async function confirmAndSaveWorkoutSummary() {
-  const sum = state.pendingSummary;
-  if (!sum) return;
-
-  await db.workouts.add({
-    date: sum.date,
-    timestamp: sum.timestamp,
-    routineId: sum.routineId,
-    routineName: sum.routineName,
-    durationMin: sum.durationMin,
-    totalSets: sum.totalSets,
-    totalVolume: sum.totalVolume,
-    exercises: sum.exercises
-  });
-
-  const progressedIds = new Set();
-  for (const prog of sum.progressions) {
-    if (prog.exId && prog.proposedWeight > 0) {
-      progressedIds.add(prog.exId);
-      const dbEx = await db.exercises.get(prog.exId);
-      if (dbEx) {
-        await db.exercises.update(prog.exId, {
-          nextTargetWeight: prog.proposedWeight,
-          sessions: (dbEx.sessions || 0) + 1
-        });
-      }
-    }
-  }
-
-  for (const ex of sum.exercises) {
-    if (ex.exId && !progressedIds.has(ex.exId)) {
-      const dbEx = await db.exercises.get(ex.exId);
-      if (dbEx) {
-        await db.exercises.update(ex.exId, {
-          nextTargetWeight: null,
-          sessions: (dbEx.sessions || 0) + 1
-        });
-      }
-    }
-  }
-
-  const activePlan = await db.plans.where('active').equals(1).first();
-  if (activePlan) {
-    await db.plans.update(activePlan.id, { nextIndex: (activePlan.nextIndex || 0) + 1 });
-  }
-
-  state.activeWorkout = null;
-  state.pendingSummary = null;
-  state.restTimerEnd = null;
-  state.selectedTodayRoutineId = null;
-  document.getElementById('active-workout-bar').classList.add('hidden');
   closeModal();
-  navigate('home');
 }
 
-// ============================================================================
-// WIDOK 3: PROFIL (POMIARY ZE ZDJĘCIAMI Z APARATU LUB GALERII, RAPORT, REKORDY)
-// ============================================================================
 async function renderProfileView() {
-  const photosCount = await db.photos.count();
-  const measCount = await db.measurements.count();
-
   return `
     <div class="text-center pt-1 mb-5">
       <h1 class="text-lg font-bold">Profil</h1>
     </div>
-
-    <div class="grid grid-cols-2 gap-3 mb-6">
-      <button onclick="openMeasurementsModal()" class="liquid-pill text-white font-semibold rounded-3xl p-4 flex items-center gap-3 active:scale-95 transition">
-        <span class="text-xl">📏</span>
-        <div class="text-left">
-          <div class="text-sm font-bold">Pomiary + Zdjęcia</div>
-          <div class="text-[11px] text-gray-300">Wpisów: ${measCount}</div>
-        </div>
-      </button>
-      <button onclick="openBodyProgressModal()" class="liquid-pill text-white font-semibold rounded-3xl p-4 flex items-center gap-3 active:scale-95 transition">
-        <span class="text-xl">📈</span>
-        <div class="text-left leading-tight">
-          <div class="text-sm font-bold">Progres części ciała</div>
-          <div class="text-[11px] text-gray-300">Symetria L/P</div>
-        </div>
-      </button>
-      <button onclick="navigate('calendar')" class="liquid-pill text-white font-semibold rounded-3xl p-4 flex items-center gap-3 active:scale-95 transition">
-        <span class="text-xl">☑️</span>
-        <div class="text-left">
-          <div class="text-sm font-bold">Regularność</div>
-          <div class="text-[11px] text-gray-300">Kalendarz</div>
-        </div>
-      </button>
-      <button onclick="openProgressPhotosModal()" class="liquid-pill text-white font-semibold rounded-3xl p-4 flex items-center gap-3 active:scale-95 transition">
-        <span class="text-xl">📷</span>
-        <div class="text-left leading-tight">
-          <div class="text-sm font-bold">Galeria postępów</div>
-          <div class="text-[11px] text-gray-300">Zdjęć: ${photosCount}</div>
-        </div>
-      </button>
-    </div>
-
-    <p class="text-xs text-gray-400 mb-2 pl-1">Narzędzia i raportowanie</p>
-    <div class="bg-bgCard rounded-3xl divide-y divide-white/10 mb-6">
-      <button onclick="openCoachReportModal()" class="w-full p-4 flex items-center justify-between text-sm font-bold text-striveTeal">
-        <span class="flex items-center gap-3">📄 Raport dla trenera (Kopiuj / PDF)</span><span class="text-gray-400">›</span>
-      </button>
-      <button onclick="openRecordsModal()" class="w-full p-4 flex items-center justify-between text-sm font-medium">
-        <span class="flex items-center gap-3">🏆 Rekordy treningowe (Serie robocze)</span><span class="text-gray-400">›</span>
-      </button>
-      <button onclick="exportFullBackup()" class="w-full p-4 flex items-center justify-between text-sm font-medium text-striveOrange">
-        <span class="flex items-center gap-3">☁️ Eksportuj kopię zapasową (.JSON)</span><span class="text-gray-400">›</span>
-      </button>
-      <label class="w-full p-4 flex items-center justify-between text-sm font-medium cursor-pointer">
-        <span class="flex items-center gap-3">🔄 Przywróć kopię zapasową z pliku</span>
-        <input type="file" accept=".json" onchange="importFullBackup(event)" class="hidden">
-        <span class="text-gray-400">›</span>
-      </label>
+    <div class="bg-bgCard rounded-3xl divide-y divide-white/10">
       <button onclick="clearAllUserData()" class="w-full p-4 flex items-center justify-between text-sm font-medium text-red-400">
-        <span class="flex items-center gap-3">🗑 Wyczyść historię i pomiary (Reset do zera)</span><span class="text-gray-400">›</span>
+        <span>🗑 Reset danych</span><span>›</span>
       </button>
     </div>
   `;
 }
 
-async function openCoachReportModal() {
-  const workouts = await db.workouts.toArray();
-  workouts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-  const measurements = await db.measurements.orderBy('date').reverse().toArray();
-
-  const latestM = measurements[0];
-  const prevM = measurements[1];
-
-  let reportText = `=== RAPORT TRENINGOWY GYMWK (${toLocalIso(new Date())}) ===\n\n`;
-
-  reportText += `1. POMIARY SYLWETKI I WAGA:\n`;
-  if (latestM) {
-    const wDiff = prevM ? ` (${(latestM.weight - prevM.weight >= 0 ? '+' : '')}${(latestM.weight - prevM.weight).toFixed(1)} kg vs ${prevM.date})` : '';
-    reportText += `• Data pomiaru: ${latestM.date}\n`;
-    reportText += `• Aktualna waga: ${latestM.weight} kg${wDiff}\n`;
-    reportText += `• Klatka: ${latestM.chest || '-'} cm | Pas: ${latestM.waist || '-'} cm\n`;
-    reportText += `• Biceps L/P: ${latestM.bicepsL || '-'}/${latestM.bicepsR || '-'} cm | Przedramię L/P: ${latestM.forearmL || '-'}/${latestM.forearmR || '-'} cm\n`;
-    reportText += `• Udo L/P: ${latestM.thighL || '-'}/${latestM.thighR || '-'} cm | Łydka L/P: ${latestM.calfL || '-'}/${latestM.calfR || '-'} cm\n\n`;
-  } else {
-    reportText += `• Brak wpisanych pomiarów.\n\n`;
-  }
-
-  reportText += `2. WYKONANE TRENINGI (Ostatnie ${Math.min(10, workouts.length)} sesji):\n`;
-  if (workouts.length) {
-    workouts.slice(0, 10).forEach(w => {
-      reportText += `\n[${w.date}] ${w.routineName} (${w.durationMin} min | Tonaż: ${w.totalVolume} kg)\n`;
-      (w.exercises || []).forEach(ex => {
-        const setsStr = (ex.sets || []).map(s => `${s.type === 'R' ? 'R:' : (s.type === 'D' ? 'D:' : '')}${s.weight}kg×${s.reps}`).join(', ');
-        reportText += `  - ${ex.name}: ${setsStr}\n`;
-      });
-    });
-  } else {
-    reportText += `• Brak zarejestrowanych treningów.\n`;
-  }
-
-  openModal(`
-    <div class="flex justify-between items-center mb-4 no-print">
-      <button onclick="closeModal()" class="text-2xl">✕</button>
-      <h2 class="text-lg font-bold">📄 Raport dla trenera</h2>
-      <div class="w-6"></div>
-    </div>
-
-    <p class="text-xs text-gray-300 mb-3 no-print">Gotowe podsumowanie Twojej wagi, obwodów L/P i wyników z serii roboczych.</p>
-
-    <textarea id="coach-report-area" rows="16" readonly
-      class="w-full bg-bgCard rounded-3xl p-4 text-xs font-mono text-gray-200 leading-relaxed mb-4">${reportText}</textarea>
-
-    <div class="grid grid-cols-2 gap-2.5 no-print">
-      <button onclick="copyCoachReportText()" class="liquid-orange-btn text-white font-bold py-3.5 rounded-2xl text-xs shadow">
-        📋 Kopiuj raport do schowka
-      </button>
-      <button onclick="window.print()" class="liquid-pill text-white font-bold py-3.5 rounded-2xl text-xs shadow">
-        🖨 Drukuj / Zapisz PDF
-      </button>
-    </div>
-  `);
-}
-
-function copyCoachReportText() {
-  const area = document.getElementById('coach-report-area');
-  if (!area) return;
-  navigator.clipboard.writeText(area.value).then(() => {
-    alert('Raport dla trenera został skopiowany do schowka!');
-  }).catch(() => {
-    area.select();
-    document.execCommand('copy');
-    alert('Raport skopiowany!');
-  });
-}
-
-// ============================================================================
-// POMIARY + DODAWANIE ZDJĘĆ Z APARATU LUB BEZPOŚREDNIO Z GALERII TELEFONU
-// ============================================================================
-async function openMeasurementsModal() {
-  state.tempMeasurementPhotos = [];
-  await renderMeasurementsModalContent();
-}
-
-async function renderMeasurementsModalContent() {
-  const list = await db.measurements.orderBy('date').reverse().toArray();
-  const latest = list[0] || { weight: '', chest: '', waist: '', bicepsL: '', bicepsR: '', forearmL: '', forearmR: '', thighL: '', thighR: '', calfL: '', calfR: '' };
-
-  const tempThumbsHtml = state.tempMeasurementPhotos.map((dataUrl, idx) => `
-    <div class="relative w-16 h-16 rounded-2xl overflow-hidden border border-striveOrange">
-      <img src="${dataUrl}" class="w-full h-full object-cover">
-      <button onclick="state.tempMeasurementPhotos.splice(${idx},1); renderMeasurementsModalContent()" class="absolute top-0.5 right-0.5 bg-black/70 text-white text-[10px] w-4 h-4 rounded-full">✕</button>
-    </div>
-  `).join('');
-
-  openModal(`
-    <div class="flex justify-between items-center mb-4">
-      <button onclick="closeModal()" class="text-2xl">✕</button>
-      <h2 class="text-lg font-bold">Dziennik pomiarów i sylwetki</h2>
-      <div class="w-6"></div>
-    </div>
-
-    <div class="bg-bgCard rounded-3xl p-4 mb-4 space-y-3">
-      <div class="grid grid-cols-3 gap-2">
-        <div><label class="text-[11px] text-gray-300">Waga (kg)</label><input id="m-weight" type="number" step="0.1" placeholder="np. 85" value="${latest.weight}" class="w-full bg-bgInput rounded-2xl p-2 text-center font-bold"></div>
-        <div><label class="text-[11px] text-gray-300">Klatka (cm)</label><input id="m-chest" type="number" step="0.5" value="${latest.chest}" class="w-full bg-bgInput rounded-2xl p-2 text-center font-bold"></div>
-        <div><label class="text-[11px] text-gray-300">Pas (cm)</label><input id="m-waist" type="number" step="0.5" value="${latest.waist}" class="w-full bg-bgInput rounded-2xl p-2 text-center font-bold"></div>
-      </div>
-
-      <div class="text-xs font-bold text-striveTeal pt-1">Obwody Lewa vs Prawa (cm)</div>
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <div><label class="text-gray-300">Biceps Lewy</label><input id="m-bicL" type="number" step="0.1" value="${latest.bicepsL}" class="w-full bg-bgInput rounded-2xl p-2 font-bold mt-0.5"></div>
-        <div><label class="text-gray-300">Biceps Prawy</label><input id="m-bicR" type="number" step="0.1" value="${latest.bicepsR}" class="w-full bg-bgInput rounded-2xl p-2 font-bold mt-0.5"></div>
-        <div><label class="text-gray-300">Przedramię L</label><input id="m-forL" type="number" step="0.1" value="${latest.forearmL}" class="w-full bg-bgInput rounded-2xl p-2 font-bold mt-0.5"></div>
-        <div><label class="text-gray-300">Przedramię P</label><input id="m-forR" type="number" step="0.1" value="${latest.forearmR}" class="w-full bg-bgInput rounded-2xl p-2 font-bold mt-0.5"></div>
-        <div><label class="text-gray-300">Udo Lewe</label><input id="m-thiL" type="number" step="0.1" value="${latest.thighL}" class="w-full bg-bgInput rounded-2xl p-2 font-bold mt-0.5"></div>
-        <div><label class="text-gray-300">Udo Prawe</label><input id="m-thiR" type="number" step="0.1" value="${latest.thighR}" class="w-full bg-bgInput rounded-2xl p-2 font-bold mt-0.5"></div>
-        <div><label class="text-gray-300">Łydka Lewa</label><input id="m-calL" type="number" step="0.1" value="${latest.calfL}" class="w-full bg-bgInput rounded-2xl p-2 font-bold mt-0.5"></div>
-        <div><label class="text-gray-300">Łydka Prawa</label><input id="m-calR" type="number" step="0.1" value="${latest.calfR}" class="w-full bg-bgInput rounded-2xl p-2 font-bold mt-0.5"></div>
-      </div>
-
-      <!-- Dodawanie zdjęć sylwetki: Aparat LUB Galeria iPhone'a (obsługa wielu zdjęć naraz!) -->
-      <div class="border-t border-white/10 pt-3">
-        <label class="text-xs font-bold text-striveOrange block mb-2">📷 Zdjęcia sylwetki do tego pomiaru (${state.tempMeasurementPhotos.length})</label>
-        ${tempThumbsHtml ? `<div class="flex flex-wrap gap-2 mb-2.5">${tempThumbsHtml}</div>` : ''}
-        <div class="grid grid-cols-2 gap-2">
-          <label class="liquid-pill text-white text-center text-xs font-bold py-3 rounded-2xl cursor-pointer active:scale-95 transition flex items-center justify-center gap-1.5">
-            <span>📷 Zrób aparatem</span>
-            <input type="file" accept="image/*" capture="environment" onchange="attachPhotoToMeasurementDraft(event)" class="hidden">
-          </label>
-          <label class="liquid-pill text-white text-center text-xs font-bold py-3 rounded-2xl cursor-pointer active:scale-95 transition flex items-center justify-center gap-1.5">
-            <span>🖼️ Wybierz z galerii</span>
-            <input type="file" accept="image/*" multiple onchange="attachPhotoToMeasurementDraft(event)" class="hidden">
-          </label>
-        </div>
-      </div>
-
-      <button onclick="saveMeasurement()" class="w-full liquid-orange-btn text-white font-bold py-3.5 rounded-2xl shadow">Zapisz pomiar i zdjęcia</button>
-    </div>
-
-    <div class="space-y-2.5">
-      ${list.map(m => {
-        const photosRow = (m.photos || []).map(pUrl => `<img src="${pUrl}" onclick="openSinglePhotoPreview('${pUrl}', '${m.date}', '${m.weight}')" class="w-14 h-14 rounded-xl object-cover border border-white/15 cursor-pointer">`).join('');
-        return `
-          <div class="bg-bgCard rounded-3xl p-3.5 text-xs">
-            <div class="flex justify-between items-center mb-1">
-              <div class="font-bold text-white">📅 ${m.date} · <span class="text-striveOrange">${m.weight} kg</span></div>
-              <button onclick="deleteSingleMeasurement(${m.id})" class="text-gray-400 px-2 py-0.5">✕</button>
-            </div>
-            <div class="text-gray-300 mb-2">Klatka: ${m.chest}cm · Pas: ${m.waist}cm · Bic L/P: ${m.bicepsL}/${m.bicepsR}cm · Udo L/P: ${m.thighL}/${m.thighR}cm</div>${photosRow ? `<div class="flex flex-wrap gap-2 pt-1.5 border-t border-white/5">${photosRow}</div>` : ''}
-          </div>`;
-      }).join('')}
-    </div>
-  `);
-}
-
-async function attachPhotoToMeasurementDraft(event) {
-  const files = Array.from(event.target.files || []);
-  if (!files.length) return;
-  for (const file of files) {
-    const dataUrl = await compressImageFileToDataUrl(file);
-    state.tempMeasurementPhotos.push(dataUrl);
-  }
-  renderMeasurementsModalContent();
-}
-
-async function saveMeasurement() {
-  const wVal = parseFloat(document.getElementById('m-weight').value);
-  if (!wVal) return alert('Podaj przynajmniej aktualną wagę w kg');
-  const todayIso = toLocalIso(new Date());
-  const photosCopy = [...state.tempMeasurementPhotos];
-
-  const mId = await db.measurements.add({
-    date: todayIso,
-    weight: wVal,
-    chest: parseFloat(document.getElementById('m-chest').value) || 0,
-    waist: parseFloat(document.getElementById('m-waist').value) || 0,
-    bicepsL: parseFloat(document.getElementById('m-bicL').value) || 0,
-    bicepsR: parseFloat(document.getElementById('m-bicR').value) || 0,
-    forearmL: parseFloat(document.getElementById('m-forL').value) || 0,
-    forearmR: parseFloat(document.getElementById('m-forR').value) || 0,
-    thighL: parseFloat(document.getElementById('m-thiL').value) || 0,
-    thighR: parseFloat(document.getElementById('m-thiR').value) || 0,
-    calfL: parseFloat(document.getElementById('m-calL').value) || 0,
-    calfR: parseFloat(document.getElementById('m-calR').value) || 0,
-    photos: photosCopy
-  });
-
-  for (const dataUrl of photosCopy) {
-    await db.photos.add({ date: todayIso, weight: wVal, measurementId: mId, dataUrl });
-  }
-
-  state.tempMeasurementPhotos = [];
-  closeModal();
-  renderCurrentView();
-}
-
-function openSinglePhotoPreview(url, date, weight) {
-  openModal(`
-    <div class="flex justify-between items-center mb-4">
-      <button onclick="openMeasurementsModal()" class="text-lg">← Wróć</button>
-      <h2 class="text-base font-bold">${date} · ${weight} kg</h2>
-      <div class="w-8"></div>
-    </div>
-    <img src="${url}" class="w-full rounded-3xl border border-white/15">
-  `);
-}
-
-async function deleteSingleMeasurement(id) {
-  await db.measurements.delete(id);
-  renderMeasurementsModalContent();
-}
-
 async function clearAllUserData() {
-  if (!confirm('Czy na pewno chcesz wyczyścić wszystkie pomiary, zdjęcia, plany i historię treningów?')) return;
-  await db.workouts.clear();
-  await db.measurements.clear();
-  await db.photos.clear();
-  await db.plans.clear();
-  await db.routines.clear();
-  alert('Wszystkie dane zostały wyczyszczone.');
-  renderCurrentView();
+  if (!confirm('Czy na pewno wyczyścić dane?')) return;
+  await db.delete();
+  window.location.reload();
 }
 
-async function openBodyProgressModal() {
-  const list = await db.measurements.orderBy('date').toArray();
-  if (!list.length) {
-    return openModal(`
-      <div class="flex justify-between items-center mb-4"><button onclick="closeModal()" class="text-2xl">✕</button><h2 class="text-lg font-bold">Progres części ciała</h2><div class="w-6"></div></div>
-      <p class="text-center text-xs text-gray-400 py-10">Brak zapisanych pomiarów.</p>
-    `);
-  }
-  const first = list[0];
-  const last = list[list.length - 1];
-  const diff = (a, b) => ((b || 0) - (a || 0)).toFixed(1);
-
-  openModal(`
-    <div class="flex justify-between items-center mb-4">
-      <button onclick="closeModal()" class="text-2xl">✕</button>
-      <h2 class="text-lg font-bold">Porównanie obwodów</h2>
-      <div class="w-6"></div>
-    </div>
-    <div class="bg-bgCard rounded-3xl divide-y divide-white/10 text-sm">
-      <div class="p-3.5 flex justify-between"><span>Waga ciała</span><span class="font-bold">${first.weight} → ${last.weight} kg (${diff(first.weight, last.weight)} kg)</span></div>
-      <div class="p-3.5 flex justify-between"><span>Klatka</span><span class="font-bold">${last.chest} cm (${diff(first.chest, last.chest)} cm)</span></div>
-      <div class="p-3.5 flex justify-between"><span>Pas</span><span class="font-bold">${last.waist} cm (${diff(first.waist, last.waist)} cm)</span></div>
-      <div class="p-3.5 flex justify-between"><span>Biceps L / P</span><span class="font-bold text-striveTeal">${last.bicepsL} cm / ${last.bicepsR} cm</span></div>
-      <div class="p-3.5 flex justify-between"><span>Przedramię L / P</span><span class="font-bold text-striveTeal">${last.forearmL} cm / ${last.forearmR} cm</span></div>
-      <div class="p-3.5 flex justify-between"><span>Udo L / P</span><span class="font-bold text-striveTeal">${last.thighL} cm / ${last.thighR} cm</span></div>
-      <div class="p-3.5 flex justify-between"><span>Łydka L / P</span><span class="font-bold text-striveTeal">${last.calfL} cm / ${last.calfR} cm</span></div>
-    </div>
-  `);
-}
-
-// Bezpośrednia Galeria Postępów – ma też szybki przycisk dodania zdjęć z galerii iPhone'a lub z aparatu
-async function openProgressPhotosModal() {
-  const photos = await db.photos.orderBy('date').reverse().toArray();
-  const measurements = await db.measurements.orderBy('date').reverse().toArray();
-  const defaultWeight = measurements.length ? measurements[0].weight : '';
-
-  const compareHtml = photos.length >= 2 ? `
-    <div class="bg-bgCard rounded-3xl p-3.5 mb-4">
-      <div class="text-xs font-bold text-striveTeal mb-2 uppercase">Porównanie Sylwetki (Pierwsze vs Ostatnie)</div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <img src="${photos[photos.length - 1].dataUrl}" class="w-full h-48 object-cover rounded-2xl">
-          <div class="text-[11px] text-center mt-1 font-semibold">${photos[photos.length - 1].date} · ${photos[photos.length - 1].weight} kg</div>
-        </div>
-        <div>
-          <img src="${photos[0].dataUrl}" class="w-full h-48 object-cover rounded-2xl border border-striveOrange">
-          <div class="text-[11px] text-center mt-1 font-semibold text-striveOrange">${photos[0].date} · ${photos[0].weight} kg</div>
-        </div>
-      </div>
-    </div>
-  ` : '';
-
-  const gridHtml = photos.map(p => `
-    <div class="bg-bgCard rounded-3xl p-2 relative">
-      <img src="${p.dataUrl}" class="w-full h-44 object-cover rounded-2xl mb-1.5">
-      <button onclick="deleteSinglePhoto(${p.id})" class="absolute top-3.5 right-3.5 bg-black/60 text-white text-xs w-6 h-6 rounded-full">✕</button>
-      <div class="flex justify-between items-center text-xs px-1">
-        <span class="font-bold text-white">${p.weight ? `${p.weight} kg` : 'Sylwetka'}</span>
-        <span class="text-gray-400">${p.date}</span>
-      </div>
-    </div>
-  `).join('');
-
-  openModal(`
-    <div class="flex justify-between items-center mb-4">
-      <button onclick="closeModal()" class="text-2xl">✕</button>
-      <h2 class="text-lg font-bold">Galeria zdjęć sylwetki</h2>
-      <button onclick="openMeasurementsModal()" class="liquid-pill text-white text-xs font-bold px-3 py-1.5 rounded-full">Pomiary</button>
-    </div>
-
-    <!-- Szybkie dodawanie zdjęcia bezpośrednio z galerii lub aparatu -->
-    <div class="bg-bgCard rounded-3xl p-3.5 mb-4 space-y-2.5">
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="text-[10px] text-gray-400 block mb-0.5">Data zdjęcia</label>
-          <input id="direct-photo-date" type="date" value="${toLocalIso(new Date())}" class="w-full bg-bgInput rounded-xl p-2 text-xs font-bold text-white">
-        </div>
-        <div>
-          <label class="text-[10px] text-gray-400 block mb-0.5">Waga w tym dniu (kg)</label>
-          <input id="direct-photo-weight" type="number" step="0.1" placeholder="np. 85" value="${defaultWeight}" class="w-full bg-bgInput rounded-xl p-2 text-xs font-bold text-center text-white">
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <label class="liquid-pill text-white text-center text-xs font-bold py-3 rounded-2xl cursor-pointer active:scale-95 transition">
-          📷 Zrób aparatem
-          <input type="file" accept="image/*" capture="environment" onchange="addDirectGalleryPhotos(event)" class="hidden">
-        </label>
-        <label class="liquid-orange-btn text-white text-center text-xs font-bold py-3 rounded-2xl cursor-pointer active:scale-95 transition">
-          🖼️ Wybierz z galerii
-          <input type="file" accept="image/*" multiple onchange="addDirectGalleryPhotos(event)" class="hidden">
-        </label>
-      </div>
-    </div>
-
-    ${compareHtml}
-    <div class="grid grid-cols-2 gap-2.5">${gridHtml || '<p class="col-span-2 text-center text-xs text-gray-400 py-10">Brak zdjęć w galerii aplikacji.</p>'}</div>
-  `);
-}
-
-async function addDirectGalleryPhotos(event) {
-  const files = Array.from(event.target.files || []);
-  if (!files.length) return;
-  const dateVal = document.getElementById('direct-photo-date')?.value || toLocalIso(new Date());
-  const weightVal = parseFloat(document.getElementById('direct-photo-weight')?.value) || 0;
-
-  for (const file of files) {
-    const dataUrl = await compressImageFileToDataUrl(file);
-    await db.photos.add({
-      date: dateVal,
-      weight: weightVal,
-      dataUrl
-    });
-  }
-  openProgressPhotosModal();
-}
-
-async function deleteSinglePhoto(photoId) {
-  if (!confirm('Usunąć to zdjęcie z aplikacji?')) return;
-  await db.photos.delete(photoId);
-  openProgressPhotosModal();
-}
-
-// ============================================================================
-// WIDOK 4: KALENDARZ / HISTORIA I KREATOR PLANU
-// ============================================================================
 async function renderCalendarView() {
-  const workouts = await db.workouts.toArray();
-  workouts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-  const itemsHtml = workouts.map(w => {
-    const exSummary = (w.exercises || []).map(e => {
-      const workingSets = (e.sets || []).filter(s => (s.type || 'N') === 'N');
-      const pool = workingSets.length ? workingSets : (e.sets || []);
-      const best = pool.reduce((m, s) => (s.weight > m.weight ? s : m), { weight: 0, reps: 0 });
-      return `<div class="flex justify-between text-xs py-0.5 text-gray-300"><span>${e.name}</span><span class="font-mono text-striveTeal">Top: ${best.weight}kg x ${best.reps}</span></div>`;
-    }).join('');
-
-    return `
-      <div class="bg-bgCard rounded-3xl p-4 mb-3">
-        <div class="flex justify-between items-center mb-2 border-b border-white/10 pb-2">
-          <div><h3 class="font-bold text-base text-white">${w.routineName}</h3><span class="text-xs text-gray-400">📅 ${w.date}</span></div>
-          <div class="text-right text-xs text-striveOrange font-bold"><div>∑ ${w.totalVolume} kg</div><div class="text-gray-400 font-normal">${w.durationMin} min · ${w.totalSets} serii</div></div>
-        </div>
-        <div class="space-y-0.5">${exSummary}</div>
-      </div>`;
-  }).join('');
-
-  return `<div class="text-center pt-1 mb-4"><h1 class="text-lg font-bold">Historia Treningów</h1></div>${itemsHtml || '<p class="text-center text-xs text-gray-400 py-12">Brak zapisanych sesji treningowych.</p>'}`;
+  return `<div class="text-center pt-1 mb-4"><h1 class="text-lg font-bold">Historia</h1></div><p class="text-center text-xs text-gray-400 py-12">Brak wpisów.</p>`;
 }
 
 function openPlanWizard() {
-  state.wizardPlan = {
-    step: 1,
-    name: '',
-    desc: '',
-    goal: 'Hipertrofia (budowanie mięśni)',
-    startDate: toLocalIso(new Date()),
-    endDate: '',
-    calibrationWeek: false,
-    days: ['pon.', 'śr.', 'pt.'],
-    routineIds: [],
-    progressionRule: 'Podwójna progresja'
-  };
-  renderPlanWizardStep();
-}
-
-async function renderPlanWizardStep() {
-  const p = state.wizardPlan;
-  const s = p.step;
-  const routines = await db.routines.toArray();
-  const titles = ['', 'Informacje', 'Struktura', 'Treningi', 'Progres', 'Podsumowanie'];
-
-  const stepperHtml = `
-    <div class="flex items-center justify-between px-2 mb-6">
-      ${[1, 2, 3, 4, 5].map(n => `
-        <div class="flex items-center ${n < 5 ? 'flex-1' : ''}">
-          <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${n < s ? 'liquid-orange-btn text-white' : (n === s ? 'liquid-orange-btn text-white ring-4 ring-striveOrange/30' : 'border border-white/25 text-gray-400')}">${n < s ? '✓' : n}</div>
-          ${n < 5 ? `<div class="flex-1 h-0.5 mx-1 ${n < s ? 'bg-striveOrange' : 'bg-white/15'}"></div>` : ''}
-        </div>
-      `).join('')}
-    </div>`;
-
-  let bodyHtml = '';
-  if (s === 1) {
-    bodyHtml = `
-      <div class="space-y-4">
-        <div><label class="text-sm font-bold block mb-1.5">Nazwa</label><input type="text" placeholder="Podaj nazwę (np. FBW 3x)" value="${p.name}" oninput="state.wizardPlan.name=this.value" class="w-full bg-bgInput rounded-2xl p-3 text-sm"></div>
-        <div><label class="text-sm font-bold block mb-1.5">Opis</label><input type="text" placeholder="Wpisz opis" value="${p.desc}" oninput="state.wizardPlan.desc=this.value" class="w-full bg-bgInput rounded-2xl p-3 text-sm"></div>
-        <div>
-          <label class="text-sm font-bold block mb-1.5">Cel</label>
-          <select onchange="state.wizardPlan.goal=this.value" class="w-full liquid-pill text-white font-semibold rounded-2xl p-3 text-sm">
-            ${['Siła', 'Hipertrofia (budowanie mięśni)', 'Redukcja tkanki tłuszczowej', 'Ogólne zdrowie'].map(g => `<option ${p.goal === g ? 'selected' : ''}>${g}</option>`).join('')}
-          </select>
-        </div>
-      </div>`;
-  } else if (s === 2) {
-    bodyHtml = `
-      <div class="space-y-5">
-        <div><label class="text-xs text-gray-300 block mb-1">📅 Od</label><input type="date" value="${p.startDate}" onchange="state.wizardPlan.startDate=this.value" class="bg-bgInput rounded-2xl p-2.5 text-sm"></div>
-        <div><label class="text-xs text-gray-300 block mb-1">📅 Do (opcjonalnie)</label><input type="date" value="${p.endDate}" onchange="state.wizardPlan.endDate=this.value" class="bg-bgInput rounded-2xl p-2.5 text-sm"></div>
-      </div>`;
-  } else if (s === 3) {
-    bodyHtml = `
-      <div>
-        <h3 class="font-bold text-base mb-2">Dni treningowe</h3>
-        <div class="grid grid-cols-7 gap-1.5 mb-3">
-          ${DAYS_SHORT.map(d => `<button onclick="toggleWizardDay('${d}')" class="h-14 rounded-2xl border text-xs font-semibold ${p.days.includes(d) ? 'liquid-orange-btn border-transparent text-white' : 'border-white/20 text-gray-300'}">${d}</button>`).join('')}
-        </div>
-        <div class="flex justify-between items-center mb-2">
-          <h3 class="font-bold text-base">Przypisz rutyny do planu</h3>
-          <button onclick="openRoutineCreatorModal()" class="text-xs text-striveOrange font-bold">+ Nowa rutyna</button>
-        </div>
-        <div class="space-y-2">
-          ${routines.map(r => `
-            <div class="flex justify-between items-center bg-bgCard p-3.5 rounded-2xl">
-              <div>
-                <div class="font-bold text-sm">${r.name}</div>
-                <div class="text-xs text-striveTeal">${r.assignedDay ? `Dzień: ${r.assignedDay}` : 'Dowolny dzień'} · ${(r.exercises||[]).length} ćw.</div>
-              </div>
-              <button onclick="toggleWizardRoutine(${r.id})" class="px-3.5 py-1.5 rounded-xl text-xs font-bold ${p.routineIds.includes(r.id) ? 'liquid-orange-btn text-white' : 'liquid-pill text-white'}">${p.routineIds.includes(r.id) ? 'Wybrano ✓' : 'Wybierz'}</button>
-            </div>`).join('')}
-        </div>
-      </div>`;
-  } else if (s === 4) {
-    const rules = ['Podwójna progresja', 'Liniowa', 'Cel powtórzeń', '5/3/1'];
-    bodyHtml = `
-      <div class="liquid-pill rounded-3xl p-4 text-xs text-gray-200 leading-relaxed mb-4">
-        Wyniki każdego ćwiczenia są <strong>globalne dla całego planu</strong>. Po osiągnięciu limitu powtórzeń w seriach roboczych na ekranie podsumowania otrzymasz propozycję nowego ciężaru na kolejny trening.
-      </div>
-      <div class="flex flex-wrap gap-2 mb-6">${rules.map(rule => `<button onclick="state.wizardPlan.progressionRule='${rule}'; renderPlanWizardStep()" class="px-3.5 py-2 rounded-2xl border text-xs font-semibold ${p.progressionRule === rule ? 'liquid-orange-btn border-transparent text-white' : 'border-white/30 text-white'}">${rule}</button>`).join('')}</div>`;
-  } else if (s === 5) {
-    bodyHtml = `
-      <div class="grid grid-cols-2 gap-4 text-sm bg-bgCard p-4 rounded-3xl">
-        <div><div class="text-gray-400 text-xs">Nazwa</div><div class="font-bold">${p.name || 'Mój Plan'}</div></div>
-        <div><div class="text-gray-400 text-xs">Cel</div><div class="font-bold">${p.goal}</div></div>
-        <div><div class="text-gray-400 text-xs">Dni treningowe</div><div class="font-bold text-striveOrange">${p.days.join(', ') || 'Elastyczne'}</div></div>
-        <div><div class="text-gray-400 text-xs">Progresja</div><div class="font-bold">${p.progressionRule}</div></div>
-      </div>`;
-  }
-
   openModal(`
     <div class="flex justify-between items-center mb-4">
-      <button onclick="${s > 1 ? 'state.wizardPlan.step--; renderPlanWizardStep()' : 'closeModal()'}" class="text-xl">${s > 1 ? '←' : '✕'}</button>
-      <h2 class="text-lg font-bold">${titles[s]}</h2><div class="w-6"></div>
+      <button onclick="closeModal()" class="text-xl">✕</button>
+      <h2 class="text-lg font-bold">Nowy Plan</h2>
     </div>
-    ${stepperHtml}${bodyHtml}
-    <button onclick="${s < 5 ? 'state.wizardPlan.step++; renderPlanWizardStep()' : 'savePlanFromWizard()'}" class="w-full liquid-orange-btn text-white font-bold py-3.5 rounded-3xl mt-8">${s < 5 ? 'Kontynuuj' : 'Utwórz plan'}</button>
+    <input type="text" id="w-name" placeholder="Nazwa planu..." class="w-full bg-bgInput rounded-2xl p-3 text-sm mb-4">
+    <button onclick="savePlanFromWizard()" class="w-full liquid-orange-btn text-white font-bold py-3.5 rounded-3xl">Zapisz</button>
   `);
 }
 
-function toggleWizardDay(d) {
-  const arr = state.wizardPlan.days;
-  const idx = arr.indexOf(d);
-  if (idx >= 0) arr.splice(idx, 1); else arr.push(d);
-  renderPlanWizardStep();
-}
-
-function toggleWizardRoutine(rId) {
-  const arr = state.wizardPlan.routineIds;
-  const idx = arr.indexOf(rId);
-  if (idx >= 0) arr.splice(idx, 1); else arr.push(rId);
-  renderPlanWizardStep();
-}
-
 async function savePlanFromWizard() {
-  const p = state.wizardPlan;
-  await db.plans.toCollection().modify({ active: 0 });
-  await db.plans.add({
-    name: p.name || 'Mój Plan',
-    desc: p.desc,
-    goal: p.goal,
-    startDate: p.startDate || toLocalIso(new Date()),
-    endDate: p.endDate || 'Zakończ ręcznie',
-    days: p.days,
-    routineIds: p.routineIds,
-    progressionRule: p.progressionRule,
-    active: 1,
-    nextIndex: 0
-  });
+  const name = document.getElementById('w-name').value.trim() || 'Mój Plan';
+  await db.plans.add({ name, active: 1 });
   closeModal();
   renderCurrentView();
-}
-
-async function openRecordsModal() {
-  const workouts = await db.workouts.toArray();
-  const maxMap = {};
-  workouts.forEach(w => {
-    (w.exercises || []).forEach(e => {
-      (e.sets || []).filter(s => (s.type || 'N') === 'N').forEach(s => {
-        const est1RM = Math.round(s.weight * (1 + s.reps / 30));
-        if (!maxMap[e.name] || est1RM > maxMap[e.name].est1RM) maxMap[e.name] = { weight: s.weight, reps: s.reps, est1RM, date: w.date };
-      });
-    });
-  });
-
-  const rows = Object.entries(maxMap).map(([name, rec]) => `
-    <div class="p-3.5 flex justify-between items-center">
-      <div><div class="font-bold text-sm text-white">${name}</div><div class="text-xs text-gray-400">Top seria robocza: ${rec.weight}kg x ${rec.reps} (${rec.date})</div></div>
-      <div class="text-right"><div class="text-sm font-bold text-striveOrange">~${rec.est1RM} kg</div><div class="text-[10px] text-gray-400">1RM</div></div>
-    </div>
-  `).join('');
-
-  openModal(`<div class="flex justify-between items-center mb-4"><button onclick="closeModal()" class="text-2xl">✕</button><h2 class="text-lg font-bold">🏆 Rekordy (Serie robocze)</h2><div class="w-6"></div></div><div class="bg-bgCard rounded-3xl divide-y divide-white/10">${rows || '<p class="p-4 text-xs text-gray-400 text-center">Brak zapisanych rekordów.</p>'}</div>`);
-}
-
-async function exportFullBackup() {
-  const data = {
-    exercises: await db.exercises.toArray(),
-    routines: await db.routines.toArray(),
-    plans: await db.plans.toArray(),
-    workouts: await db.workouts.toArray(),
-    measurements: await db.measurements.toArray(),
-    photos: await db.photos.toArray(),
-    settings: await db.settings.toArray()
-  };
-  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `gymWK_backup_${toLocalIso(new Date())}.json`;
-  a.click();
-}
-
-function importFullBackup(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    try {
-      const data = JSON.parse(e.target.result);
-      await db.transaction('rw', db.exercises, db.routines, db.plans, db.workouts, db.measurements, db.photos, db.settings, async () => {
-        await db.exercises.clear(); await db.exercises.bulkAdd(data.exercises || []);
-        await db.routines.clear(); await db.routines.bulkAdd(data.routines || []);
-        await db.plans.clear(); await db.plans.bulkAdd(data.plans || []);
-        await db.workouts.clear(); await db.workouts.bulkAdd(data.workouts || []);
-        await db.measurements.clear(); await db.measurements.bulkAdd(data.measurements || []);
-        await db.photos.clear(); await db.photos.bulkAdd(data.photos || []);
-        await db.settings.clear(); await db.settings.bulkAdd(data.settings || []);
-      });
-      alert('Kopia zapasowa wgrana!');
-      renderCurrentView();
-    } catch (err) { alert('Błąd pliku.'); }
-  };
-  reader.readAsText(file);
 }
 
 function openModal(html) {
