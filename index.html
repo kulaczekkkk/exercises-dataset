@@ -130,6 +130,24 @@
       padding-bottom: calc(90px + env(safe-area-inset-bottom));
     }
 
+    /* Animacja FLASH EKRANU na koniec przerwy */
+    @keyframes screenFlashPulse {
+      0%, 100% { opacity: 0; }
+      20%, 60% { opacity: 1; }
+      40%, 80% { opacity: 0.25; }
+    }
+    .rest-flash-active {
+      animation: screenFlashPulse 2.4s ease-in-out forwards;
+    }
+
+    /* Efekt poświaty dla mocno przepracowanych mięśni na ludziku SVG */
+    .muscle-glow-heavy {
+      filter: drop-shadow(0 0 6px rgba(255, 90, 0, 0.85));
+    }
+    .muscle-glow-medium {
+      filter: drop-shadow(0 0 4px rgba(255, 146, 51, 0.6));
+    }
+
     @media print {
       body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
       nav, #active-workout-bar, #workout-subnav, .no-print { display: none !important; }
@@ -137,6 +155,15 @@
   </style>
 </head>
 <body class="flex flex-col justify-between">
+
+  <!-- PEŁNOEKRANOWY FLASH VIZUALNY I BANER ALARMU KOŃCA PRZERWY -->
+  <div id="rest-flash-overlay" onclick="dismissRestAlarm()" class="hidden fixed inset-0 z-[100] pointer-events-auto flex flex-col items-center justify-start pt-16 px-4 bg-gradient-to-b from-orange-600/60 via-red-600/35 to-transparent backdrop-blur-sm">
+    <div class="liquid-orange-btn border-2 border-white rounded-3xl p-5 shadow-[0_0_50px_rgba(255,122,24,0.95)] text-center max-w-sm w-full animate-bounce">
+      <div class="text-3xl mb-1">🔔⚡</div>
+      <div class="text-lg font-extrabold text-white tracking-tight uppercase">Koniec Przerwy!</div>
+      <div class="text-xs text-white/90 font-semibold mt-0.5">Czas wracać pod sztangę · Dotknij, aby zamknąć</div>
+    </div>
+  </div>
 
   <!-- BANER INSTRUKCJI INSTALACJI (Widoczny tylko w zwykłym Safari, znika automatycznie po otwarciu z ikony na pulpicie iPhone'a!) -->
   <div id="ios-pwa-hint" class="hidden max-w-md mx-auto px-3 mb-2">
@@ -161,14 +188,14 @@
 
   <!-- PŁYWAJĄCA KAPSUŁA AKTYWNEGO TRENINGU / TIMERA (Dynamic Island Style) -->
   <div id="active-workout-bar" class="hidden fixed left-0 right-0 max-w-md mx-auto px-3.5 z-40" style="bottom: calc(86px + env(safe-area-inset-bottom));">
-    <div class="liquid-dock rounded-3xl p-3 flex items-center justify-between border border-striveTeal/40">
+    <div id="active-workout-bar-inner" class="liquid-dock rounded-3xl p-3 flex items-center justify-between border border-striveTeal/40 transition-all duration-300">
       <div onclick="openActiveWorkoutModal()" class="flex-1 cursor-pointer pl-1">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-striveOrange animate-ping"></span>
           <span id="bar-routine-name" class="font-bold text-sm text-white tracking-tight">Trwa trening</span>
           <span id="bar-elapsed-time" class="text-xs text-striveTeal font-mono font-semibold">00:00</span>
         </div>
-        <div id="bar-timer-status" class="text-[11px] text-orange-300 mt-0.5 font-medium">Dotknij, aby wrócić do serii</div>
+        <div id="bar-timer-status" class="text-[11px] text-orange-300 mt-0.5 font-medium">Auto-zapis aktywny · Dotknij, by wrócić</div>
       </div>
       <div class="flex items-center gap-1.5">
         <button onclick="adjustRestTimer(-15)" class="bg-white/10 active:scale-90 transition px-2.5 py-1.5 rounded-xl text-xs font-bold text-gray-100">-15s</button>
@@ -223,6 +250,7 @@
 // ============================================================================
 const DAYS_SHORT = ['pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.', 'niedz.'];
 const REPO_RAW = 'https://raw.githubusercontent.com/kulaczekkkk/exercises-dataset/main';
+const ACTIVE_WORKOUT_STORAGE_KEY = 'gymWK_active_workout_autosave_v1';
 
 const db = new Dexie('gymWK_GitHubPro_v15');
 db.version(1).stores({
@@ -252,8 +280,287 @@ let state = {
   exerciseFilterCat: 'ALL',
   exerciseFilterPart: 'ALL',
   exerciseSearch: '',
-  exerciseDisplayLimit: 80
+  exerciseDisplayLimit: 80,
+  sharedAudioCtx: null,
+  flashTimeout: null
 };
+
+// ============================================================================
+// AUTO-ZAPIS AKTYWNEGO TRENINGU (CHRONI PRZED ODŚWIEŻENIEM STRONY W SAFARI)
+// ============================================================================
+function persistActiveWorkoutState() {
+  try {
+    if (!state.activeWorkout) {
+      localStorage.removeItem(ACTIVE_WORKOUT_STORAGE_KEY);
+      return;
+    }
+    const payload = {
+      activeWorkout: state.activeWorkout,
+      restTimerEnd: state.restTimerEnd,
+      restTimerLabel: state.restTimerLabel,
+      savedAt: Date.now()
+    };
+    localStorage.setItem(ACTIVE_WORKOUT_STORAGE_KEY, JSON.stringify(payload));
+  } catch (e) {
+    console.warn('Błąd auto-zapisu treningu:', e);
+  }
+}
+
+function restoreActiveWorkoutState() {
+  try {
+    const raw = localStorage.getItem(ACTIVE_WORKOUT_STORAGE_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.activeWorkout && Array.isArray(parsed.activeWorkout.exercises)) {
+      state.activeWorkout = parsed.activeWorkout;
+      state.restTimerLabel = parsed.restTimerLabel || 'Przerwa';
+      if (parsed.restTimerEnd && parsed.restTimerEnd > Date.now()) {
+        state.restTimerEnd = parsed.restTimerEnd;
+      } else {
+        state.restTimerEnd = null;
+      }
+      document.getElementById('active-workout-bar').classList.remove('hidden');
+      document.getElementById('bar-routine-name').textContent = state.activeWorkout.routineName || 'Trwa trening';
+      startGlobalWorkoutClock();
+      openActiveWorkoutModal();
+    }
+  } catch (e) {
+    console.warn('Nie udało się przywrócić treningu:', e);
+  }
+}
+
+// ============================================================================
+// ODBLOKOWANIE DŹWIĘKU I POWIADOMIEŃ NA iOS + FLASH EKRANU PO PRZERWIE
+// ============================================================================
+function unlockIosAudioAndNotifications() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx && !state.sharedAudioCtx) {
+      state.sharedAudioCtx = new AudioCtx();
+    }
+    if (state.sharedAudioCtx && state.sharedAudioCtx.state === 'suspended') {
+      state.sharedAudioCtx.resume();
+    }
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {});
+    }
+  } catch (e) {}
+}
+window.addEventListener('touchstart', unlockIosAudioAndNotifications, { passive: true });
+window.addEventListener('click', unlockIosAudioAndNotifications, { passive: true });
+
+function triggerRestFinishedAlert() {
+  // 1. Wizualny Flash całego ekranu + wyskakujący baner
+  const overlay = document.getElementById('rest-flash-overlay');
+  const barInner = document.getElementById('active-workout-bar-inner');
+  if (overlay) {
+    overlay.classList.remove('hidden');
+    overlay.classList.add('rest-flash-active');
+    if (state.flashTimeout) clearTimeout(state.flashTimeout);
+    state.flashTimeout = setTimeout(() => {
+      dismissRestAlarm();
+    }, 5500);
+  }
+  if (barInner) {
+    barInner.classList.add('ring-4', 'ring-striveOrange', 'bg-striveOrange/30');
+    setTimeout(() => {
+      barInner.classList.remove('ring-4', 'ring-striveOrange', 'bg-striveOrange/30');
+    }, 4000);
+  }
+
+  // 2. Głośny 4-tonowy sygnał dźwiękowy (Web Audio API)
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!state.sharedAudioCtx && AudioCtx) state.sharedAudioCtx = new AudioCtx();
+    const ctx = state.sharedAudioCtx;
+    if (ctx) {
+      if (ctx.state === 'suspended') ctx.resume();
+      [587.33, 783.99, 987.77, 1174.66].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.value = freq;
+        osc.type = 'triangle';
+        gain.gain.setValueAtTime(0.35, ctx.currentTime + idx * 0.16);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.16 + 0.15);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + idx * 0.16);
+        osc.stop(ctx.currentTime + idx * 0.16 + 0.15);
+      });
+    }
+  } catch (e) {}
+
+  // 3. Wibracja oraz powiadomienie systemowe (jeśli wspierane)
+  try {
+    if (navigator.vibrate) navigator.vibrate([300, 120, 300, 120, 400]);
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('🔔 Koniec przerwy!', { body: 'Czas wracać pod sztangę!' });
+    }
+  } catch (e) {}
+}
+
+function dismissRestAlarm() {
+  const overlay = document.getElementById('rest-flash-overlay');
+  if (overlay) {
+    overlay.classList.add('hidden');
+    overlay.classList.remove('rest-flash-active');
+  }
+}
+
+// ============================================================================
+// GENERATOR ANATOMICZNEGO "LUDZIKA" SVG (PRZÓD + TYŁ) NA PODSUMOWANIE TRENINGU
+// ============================================================================
+function renderAnatomicalMuscleMap(exercisesList = []) {
+  // Zliczamy liczbę serii dla każdej partii ciała
+  const partSets = {};
+  exercisesList.forEach(ex => {
+    const setsCount = (ex.sets || []).length;
+    if (setsCount > 0) {
+      const bp = ex.bodyPart || 'Klatka';
+      partSets[bp] = (partSets[bp] || 0) + setsCount;
+    }
+  });
+
+  // Pomocnik zwracający kolor i klasę poświaty dla danej partii
+  const getMuscleStyle = (...partNames) => {
+    let total = 0;
+    partNames.forEach(p => { total += (partSets[p] || 0); });
+    if (total >= 4) return { fill: '#ff5500', cls: 'muscle-glow-heavy', active: true };
+    if (total >= 1) return { fill: '#ff9a3c', cls: 'muscle-glow-medium', active: true };
+    return { fill: '#222938', cls: '', active: false };
+  };
+
+  const cChest = getMuscleStyle('Klatka');
+  const cShoulders = getMuscleStyle('Barki');
+  const cBiceps = getMuscleStyle('Bicepsy');
+  const cForearms = getMuscleStyle('Przedramiona', 'Bicepsy');
+  const cAbs = getMuscleStyle('Brzuch', 'Pas');
+  const cQuads = getMuscleStyle('Czworogłowe ud', 'Przywodziciele ud');
+  const cCalves = getMuscleStyle('Łydki');
+  const cTraps = getMuscleStyle('Czworoboczny grzbietu', 'Plecy (Góra)', 'Kark');
+  const cLats = getMuscleStyle('Najszerszy grzbietu', 'Plecy', 'Plecy (Góra)');
+  const cLowerBack = getMuscleStyle('Prostowniki grzbietu', 'Najszerszy grzbietu');
+  const cTriceps = getMuscleStyle('Tricepsy');
+  const cGlutes = getMuscleStyle('Pośladki');
+  const cHams = getMuscleStyle('Dwugłowe ud');
+
+  const badgesHtml = Object.entries(partSets).map(([part, cnt]) => `
+    <span class="inline-flex items-center gap-1.5 bg-white/5 border border-striveOrange/40 rounded-full px-3 py-1 text-xs font-bold text-white">
+      <span class="w-2 h-2 rounded-full bg-striveOrange"></span>
+      <span>${part}: <strong class="text-striveOrange">${cnt} serii</strong></span>
+    </span>
+  `).join('');
+
+  return `
+    <div class="bg-bgCard rounded-3xl p-4 mb-4">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-xs font-bold uppercase text-striveTeal">🧬 Mapa zaangażowanych mięśni</h3>
+        <div class="flex items-center gap-2 text-[10px] text-gray-400">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#222938] inline-block"></span>0</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ff9a3c] inline-block"></span>1-3</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ff5500] inline-block"></span>4+ serii</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 items-center justify-items-center py-2">
+        <!-- SYLWETKA PRZÓD -->
+        <div class="flex flex-col items-center">
+          <span class="text-[10px] font-bold uppercase text-gray-400 mb-1">Przód</span>
+          <svg viewBox="0 0 140 260" class="w-32 h-56">
+            <!-- Głowa i szyja -->
+            <circle cx="70" cy="22" r="14" fill="#1b202c" stroke="#333d52" stroke-width="1.5"/>
+            <rect x="64" y="35" width="12" height="9" rx="3" fill="#1b202c"/>
+
+            <!-- Kaptury przód (Traps) -->
+            <polygon points="50,44 64,38 64,45" fill="${cTraps.fill}" class="${cTraps.cls}" stroke="#0b0e14" stroke-width="1"/>
+            <polygon points="90,44 76,38 76,45" fill="${cTraps.fill}" class="${cTraps.cls}" stroke="#0b0e14" stroke-width="1"/>
+
+            <!-- Barki przód (Delts) -->
+            <path d="M49,44 C37,45 33,55 35,66 L48,64 L50,45 Z" fill="${cShoulders.fill}" class="${cShoulders.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M91,44 C103,45 107,55 105,66 L92,64 L90,45 Z" fill="${cShoulders.fill}" class="${cShoulders.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Klatka piersiowa (Pectorals) -->
+            <path d="M50,45 L69,45 L69,73 C60,75 51,71 48,64 Z" fill="${cChest.fill}" class="${cChest.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M90,45 L71,45 L71,73 C80,75 89,71 92,64 Z" fill="${cChest.fill}" class="${cChest.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Bicepsy -->
+            <rect x="33" y="67" width="13" height="26" rx="6" transform="rotate(6 39 80)" fill="${cBiceps.fill}" class="${cBiceps.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <rect x="94" y="67" width="13" height="26" rx="6" transform="rotate(-6 101 80)" fill="${cBiceps.fill}" class="${cBiceps.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Przedramiona przód -->
+            <path d="M30,94 L43,94 L39,124 L27,122 Z" fill="${cForearms.fill}" class="${cForearms.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M110,94 L97,94 L101,124 L113,122 Z" fill="${cForearms.fill}" class="${cForearms.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Brzuch (Abs + Skośne) -->
+            <rect x="55" y="75" width="13" height="12" rx="3" fill="${cAbs.fill}" class="${cAbs.cls}" stroke="#0b0e14" stroke-width="1"/>
+            <rect x="72" y="75" width="13" height="12" rx="3" fill="${cAbs.fill}" class="${cAbs.cls}" stroke="#0b0e14" stroke-width="1"/>
+            <rect x="55" y="89" width="13" height="12" rx="3" fill="${cAbs.fill}" class="${cAbs.cls}" stroke="#0b0e14" stroke-width="1"/>
+            <rect x="72" y="89" width="13" height="12" rx="3" fill="${cAbs.fill}" class="${cAbs.cls}" stroke="#0b0e14" stroke-width="1"/>
+            <rect x="56" y="103" width="12" height="13" rx="3" fill="${cAbs.fill}" class="${cAbs.cls}" stroke="#0b0e14" stroke-width="1"/>
+            <rect x="72" y="103" width="12" height="13" rx="3" fill="${cAbs.fill}" class="${cAbs.cls}" stroke="#0b0e14" stroke-width="1"/>
+
+            <!-- Czworogłowe ud (Quads) -->
+            <path d="M49,119 L68,121 L65,178 L47,176 C44,155 45,136 49,119 Z" fill="${cQuads.fill}" class="${cQuads.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M91,119 L72,121 L75,178 L93,176 C96,155 95,136 91,119 Z" fill="${cQuads.fill}" class="${cQuads.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Kolana -->
+            <ellipse cx="56" cy="184" rx="7" ry="6" fill="#1b202c"/>
+            <ellipse cx="84" cy="184" rx="7" ry="6" fill="#1b202c"/>
+
+            <!-- Łydki przód -->
+            <path d="M48,191 L63,191 L60,238 L50,238 C46,220 46,205 48,191 Z" fill="${cCalves.fill}" class="${cCalves.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M92,191 L77,191 L80,238 L90,238 C94,220 94,205 92,191 Z" fill="${cCalves.fill}" class="${cCalves.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+          </svg>
+        </div>
+
+        <!-- SYLWETKA TYŁ -->
+        <div class="flex flex-col items-center">
+          <span class="text-[10px] font-bold uppercase text-gray-400 mb-1">Tył</span>
+          <svg viewBox="0 0 140 260" class="w-32 h-56">
+            <!-- Głowa -->
+            <circle cx="70" cy="22" r="14" fill="#1b202c" stroke="#333d52" stroke-width="1.5"/>
+
+            <!-- Czworoboczny grzbietu (Traps - diament) -->
+            <polygon points="70,34 50,44 70,74 90,44" fill="${cTraps.fill}" class="${cTraps.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Tylny akton barków -->
+            <path d="M49,44 C37,45 33,55 35,65 L48,63 Z" fill="${cShoulders.fill}" class="${cShoulders.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M91,44 C103,45 107,55 105,65 L92,63 Z" fill="${cShoulders.fill}" class="${cShoulders.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Najszerszy grzbietu (Lats - skrzydła V) -->
+            <path d="M48,63 L68,74 L63,106 L51,98 C46,86 46,74 48,63 Z" fill="${cLats.fill}" class="${cLats.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M92,63 L72,74 L77,106 L89,98 C94,86 94,74 92,63 Z" fill="${cLats.fill}" class="${cLats.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Prostowniki grzbietu (Lower Back) -->
+            <rect x="61" y="96" width="18" height="22" rx="4" fill="${cLowerBack.fill}" class="${cLowerBack.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Tricepsy -->
+            <rect x="33" y="66" width="13" height="27" rx="6" transform="rotate(6 39 80)" fill="${cTriceps.fill}" class="${cTriceps.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <rect x="94" y="66" width="13" height="27" rx="6" transform="rotate(-6 101 80)" fill="${cTriceps.fill}" class="${cTriceps.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Przedramiona tył -->
+            <path d="M30,94 L43,94 L39,124 L27,122 Z" fill="${cForearms.fill}" class="${cForearms.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M110,94 L97,94 L101,124 L113,122 Z" fill="${cForearms.fill}" class="${cForearms.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Pośladki (Glutes) -->
+            <path d="M51,116 L69,116 L69,142 C56,144 47,136 51,116 Z" fill="${cGlutes.fill}" class="${cGlutes.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M89,116 L71,116 L71,142 C84,144 93,136 89,116 Z" fill="${cGlutes.fill}" class="${cGlutes.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Dwugłowe ud (Hamstrings) -->
+            <path d="M48,143 L67,143 L64,182 L48,180 C45,166 46,154 48,143 Z" fill="${cHams.fill}" class="${cHams.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M92,143 L73,143 L76,182 L92,180 C95,166 94,154 92,143 Z" fill="${cHams.fill}" class="${cHams.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+
+            <!-- Łydki tył (Calves) -->
+            <path d="M47,190 L64,190 L60,238 L50,238 C45,218 45,204 47,190 Z" fill="${cCalves.fill}" class="${cCalves.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+            <path d="M93,190 L76,190 L80,238 L90,238 C95,218 95,204 93,190 Z" fill="${cCalves.fill}" class="${cCalves.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+          </svg>
+        </div>
+      </div>
+
+      ${badgesHtml ? `<div class="flex flex-wrap gap-1.5 justify-center mt-2 pt-2.5 border-t border-white/10">${badgesHtml}</div>` : '<p class="text-center text-xs text-gray-400 mt-1">Zaznacz serie jako wykonane, aby podświetlić mięśnie.</p>'}
+    </div>
+  `;
+}
 
 function checkIosStandaloneMode() {
   const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
@@ -339,7 +646,6 @@ function renderAnimatedExerciseThumb(ex, sizeClass = 'w-14 h-14') {
   return `<div class="${sizeClass} rounded-2xl bg-striveTealDark/60 border border-striveTeal/50 flex items-center justify-center shrink-0 text-xs font-bold text-striveTeal">🏋️</div>`;
 }
 
-// Kompresja zdjęć sylwetki (z aparatu lub galerii) do lekkiego formatu JPEG Base64
 function compressImageFileToDataUrl(file) {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -456,7 +762,6 @@ async function initCatalogOnly(forceReload = false) {
 
     const exercisesData = await response.json();
 
-    // Zachowujemy historię sesji i celów ciężarowych użytkownika, jeśli odświeża bazę
     const existingList = await db.exercises.toArray();
     const existingMetaMap = {};
     existingList.forEach(old => {
@@ -1496,7 +1801,7 @@ async function saveCustomExercise(returnToPicker) {
 }
 
 // ============================================================================
-// AKTYWNY TRENING
+// AKTYWNY TRENING (Z AUTO-ZAPISEM W LOCIE I SYGNAŁEM KOŃCA PRZERWY)
 // ============================================================================
 async function openQuickStartModal() {
   if (state.activeWorkout) {
@@ -1539,6 +1844,7 @@ async function openQuickStartModal() {
 }
 
 async function startWorkout(routineId) {
+  unlockIosAudioAndNotifications();
   const routine = await db.routines.get(routineId);
   if (!routine) return;
   const allExercises = await db.exercises.toArray();
@@ -1552,7 +1858,7 @@ async function startWorkout(routineId) {
 
   const workoutExercises = (routine.exercises || []).map(item => {
     const exObj = item.isPlaceholder
-      ? { id: 0, name: item.placeholderName, bodyPart: 'Wybierz na siłowni', isPlaceholder: true }
+      ? { id: 0, name: item.placeholderName, bodyPart: 'Klatka', isPlaceholder: true }
       : (exMap[item.exId] || { id: item.exId, name: 'Ćwiczenie', bodyPart: 'Klatka', slug: '0001' });
 
     let lastAllSets = [];
@@ -1685,6 +1991,7 @@ async function startWorkout(routineId) {
     exercises: workoutExercises
   };
 
+  persistActiveWorkoutState();
   document.getElementById('active-workout-bar').classList.remove('hidden');
   document.getElementById('bar-routine-name').textContent = routine.name;
   startGlobalWorkoutClock();
@@ -1712,12 +2019,12 @@ function openActiveWorkoutModal() {
           </div>
           <div class="col-span-2">
             <input type="number" step="0.5" placeholder="kg" value="${s.weight}"
-              onchange="updateSetField(${exIdx}, ${sIdx}, 'weight', this.value)"
+              oninput="updateSetField(${exIdx}, ${sIdx}, 'weight', this.value)"
               class="w-full bg-bgInput rounded-xl py-1.5 text-center text-sm font-bold text-white">
           </div>
           <div class="col-span-2">
             <input type="number" placeholder="powt" value="${s.reps}"
-              onchange="updateSetField(${exIdx}, ${sIdx}, 'reps', this.value)"
+              oninput="updateSetField(${exIdx}, ${sIdx}, 'reps', this.value)"
               class="w-full bg-bgInput rounded-xl py-1.5 text-center text-sm font-bold text-white">
           </div>
           <div class="col-span-2 flex justify-end gap-1">
@@ -1762,15 +2069,28 @@ function openActiveWorkoutModal() {
 
   openModal(`
     <div class="flex justify-between items-center mb-4 sticky top-0 liquid-dock rounded-2xl px-3 py-2.5 z-10">
-      <button onclick="closeModal()" class="text-xs bg-white/10 px-3 py-1.5 rounded-xl">Minimalizuj ↓</button>
+      <div class="flex items-center gap-1.5">
+        <button onclick="closeModal()" class="text-xs bg-white/10 px-2.5 py-1.5 rounded-xl">↓ Ukryj</button>
+        <button onclick="discardActiveWorkout()" class="text-xs bg-red-950/60 text-red-300 border border-red-500/30 px-2 py-1.5 rounded-xl">🗑</button>
+      </div>
       <div class="text-center">
-        <h2 class="font-bold text-sm">${w.routineName}</h2>
-        <span id="modal-timer-status" class="text-[11px] text-striveOrange font-mono">⏱ R: ${w.warmupRestSec}s | Robocza: ${w.workingRestSec}s</span>
+        <h2 class="font-bold text-sm truncate max-w-[140px]">${w.routineName}</h2>
+        <span id="modal-timer-status" class="text-[10px] text-striveOrange font-mono">💾 Auto-zapis aktywny</span>
       </div>
       <button onclick="prepareWorkoutSummaryModal()" class="liquid-orange-btn text-white text-xs font-bold px-3.5 py-1.5 rounded-xl">Zakończ</button>
     </div>
     ${exBlocks}
   `);
+}
+
+function discardActiveWorkout() {
+  if (!confirm('Czy na pewno chcesz anulować i porzucić ten trening bez zapisywania?')) return;
+  state.activeWorkout = null;
+  state.restTimerEnd = null;
+  persistActiveWorkoutState();
+  document.getElementById('active-workout-bar').classList.add('hidden');
+  closeModal();
+  renderCurrentView();
 }
 
 function cycleActiveWorkoutSetType(exIdx, sIdx) {
@@ -1780,15 +2100,18 @@ function cycleActiveWorkoutSetType(exIdx, sIdx) {
   if (s.type === 'R') s.hintText = `Rozgrzewka (${w.warmupRestSec}s)`;
   else if (s.type === 'D') s.hintText = `Drop set (${w.warmupRestSec}s)`;
   else s.hintText = `Cel (${s.repsRangeText || '8-10'})`;
+  persistActiveWorkoutState();
   openActiveWorkoutModal();
 }
 
 function updateSetField(exIdx, sIdx, field, val) {
   if (!state.activeWorkout) return;
-  state.activeWorkout.exercises[exIdx].sets[sIdx][field] = parseFloat(val) || 0;
+  state.activeWorkout.exercises[exIdx].sets[sIdx][field] = val === '' ? '' : (parseFloat(val) || 0);
+  persistActiveWorkoutState();
 }
 
 function toggleSetDone(exIdx, sIdx) {
+  unlockIosAudioAndNotifications();
   const w = state.activeWorkout;
   const s = w.exercises[exIdx].sets[sIdx];
   s.done = !s.done;
@@ -1798,6 +2121,7 @@ function toggleSetDone(exIdx, sIdx) {
     const label = isWarmup ? 'Przerwa (Rozgrzewka)' : 'Przerwa (Seria robocza)';
     startRestTimer(sec, label);
   }
+  persistActiveWorkoutState();
   openActiveWorkoutModal();
 }
 
@@ -1811,6 +2135,7 @@ function addExtraSet(exIdx, setType = 'N') {
     done: false,
     hintText: setType === 'R' ? `Rozgrzewka (${w.warmupRestSec}s)` : (setType === 'D' ? `Drop set (${w.warmupRestSec}s)` : `Cel (${last.repsRangeText || '8-10'})`)
   });
+  persistActiveWorkoutState();
   openActiveWorkoutModal();
 }
 
@@ -1833,13 +2158,17 @@ async function swapExerciseInFlight(exIdx, bodyPart) {
     state.activeWorkout.exercises[exIdx].customGifUrl = picked.customGifUrl;
     state.activeWorkout.exercises[exIdx].imageUrl = picked.imageUrl;
     state.activeWorkout.exercises[exIdx].isPlaceholder = false;
+    persistActiveWorkoutState();
     openActiveWorkoutModal();
   }
 }
 
 function startRestTimer(seconds, label = 'Przerwa') {
+  unlockIosAudioAndNotifications();
+  dismissRestAlarm();
   state.restTimerEnd = Date.now() + seconds * 1000;
   state.restTimerLabel = label;
+  persistActiveWorkoutState();
   updateRestTimerUI();
 }
 
@@ -1849,6 +2178,7 @@ function adjustRestTimer(deltaSec) {
     return;
   }
   state.restTimerEnd += deltaSec * 1000;
+  persistActiveWorkoutState();
   updateRestTimerUI();
 }
 
@@ -1880,33 +2210,16 @@ function updateRestTimerUI() {
     if (modalStatus) modalStatus.textContent = `⏱ ${state.restTimerLabel}: ${m}:${s}`;
   } else {
     state.restTimerEnd = null;
-    if (btn) btn.textContent = `⏱ Gotowe`;
-    if (status) status.textContent = `🔔 Koniec przerwy! Czas pod sztangę!`;
-    if (modalStatus) modalStatus.textContent = `🔔 Koniec przerwy!`;
-    playFinishBeep();
+    persistActiveWorkoutState();
+    if (btn) btn.textContent = `⏱ Gotowe!`;
+    if (status) status.textContent = `🔔 KONIEC PRZERWY! Czas pod sztangę!`;
+    if (modalStatus) modalStatus.textContent = `🔔 KONIEC PRZERWY!`;
+    triggerRestFinishedAlert();
   }
 }
 
-function playFinishBeep() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [520, 680, 880].forEach((freq, idx) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.frequency.value = freq;
-      osc.type = 'sine';
-      gain.gain.value = 0.15;
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + idx * 0.14);
-      osc.stop(ctx.currentTime + idx * 0.14 + 0.12);
-    });
-    if (navigator.vibrate) navigator.vibrate([200, 100, 250]);
-  } catch (e) {}
-}
-
 // ============================================================================
-// PODSUMOWANIE TRENINGU + WYKRYWANIE LIMITU POWTÓRZEŃ + PROPOZYCJA CIĘŻARU
+// PODSUMOWANIE TRENINGU + LUDZIK SVG + PROPOZYCJA CIĘŻARU
 // ============================================================================
 function prepareWorkoutSummaryModal() {
   const w = state.activeWorkout;
@@ -1932,6 +2245,7 @@ function prepareWorkoutSummaryModal() {
       cleanedExercises.push({
         exId: ex.exId,
         name: ex.name,
+        bodyPart: ex.bodyPart || 'Klatka',
         sets: usedSets.map(s => ({
           type: s.type || 'N',
           weight: Number(s.weight) || 0,
@@ -1986,6 +2300,8 @@ function renderWorkoutSummaryModal() {
   const sum = state.pendingSummary;
   if (!sum) return;
 
+  const muscleMapSectionHtml = renderAnatomicalMuscleMap(sum.exercises);
+
   const doneExHtml = sum.exercises.map(ex => {
     const setsBadges = ex.sets.map(s => {
       const prefix = s.type === 'R' ? '[R] ' : (s.type === 'D' ? '[D] ' : '');
@@ -1993,7 +2309,10 @@ function renderWorkoutSummaryModal() {
     }).join('');
     return `
       <div class="py-2 border-b border-white/10 last:border-none">
-        <div class="font-bold text-xs text-white mb-1">${ex.name}</div>
+        <div class="flex justify-between items-center mb-1">
+          <span class="font-bold text-xs text-white">${ex.name}</span>
+          <span class="text-[10px] text-striveTeal">${ex.bodyPart || ''}</span>
+        </div>
         <div class="flex flex-wrap">${setsBadges}</div>
       </div>`;
   }).join('');
@@ -2046,6 +2365,9 @@ function renderWorkoutSummaryModal() {
         <div class="text-lg font-extrabold text-striveOrange mt-0.5">${sum.totalVolume} kg</div>
       </div>
     </div>
+
+    <!-- Punkt 3: Anatomiczny Ludzik SVG z podświetlonymi partiami mięśniowymi -->
+    ${muscleMapSectionHtml}
 
     <div class="liquid-pill rounded-3xl p-3.5 mb-4">
       <h3 class="text-xs font-bold uppercase text-white mb-2 flex items-center gap-1.5">
@@ -2121,6 +2443,7 @@ async function confirmAndSaveWorkoutSummary() {
   state.pendingSummary = null;
   state.restTimerEnd = null;
   state.selectedTodayRoutineId = null;
+  persistActiveWorkoutState(); // Czyści auto-zapis po pomyślnym zapisaniu treningu do bazy
   document.getElementById('active-workout-bar').classList.add('hidden');
   closeModal();
   navigate('home');
@@ -2311,7 +2634,6 @@ async function renderMeasurementsModalContent() {
         <div><label class="text-gray-300">Łydka Prawa</label><input id="m-calR" type="number" step="0.1" value="${latest.calfR}" class="w-full bg-bgInput rounded-2xl p-2 font-bold mt-0.5"></div>
       </div>
 
-      <!-- Dodawanie zdjęć sylwetki: Aparat LUB Galeria iPhone'a (obsługa wielu zdjęć naraz!) -->
       <div class="border-t border-white/10 pt-3">
         <label class="text-xs font-bold text-striveOrange block mb-2">📷 Zdjęcia sylwetki do tego pomiaru (${state.tempMeasurementPhotos.length})</label>
         ${tempThumbsHtml ? `<div class="flex flex-wrap gap-2 mb-2.5">${tempThumbsHtml}</div>` : ''}
@@ -2406,6 +2728,7 @@ async function deleteSingleMeasurement(id) {
 
 async function clearAllUserData() {
   if (!confirm('Czy na pewno chcesz wyczyścić wszystkie pomiary, zdjęcia, plany i historię treningów?')) return;
+  localStorage.removeItem(ACTIVE_WORKOUT_STORAGE_KEY);
   await db.workouts.clear();
   await db.measurements.clear();
   await db.photos.clear();
@@ -2536,7 +2859,7 @@ async function deleteSinglePhoto(photoId) {
 }
 
 // ============================================================================
-// WIDOK 4: KALENDARZ / HISTORIA I KREATOR PLANU
+// WIDOK 4: KALENDARZ / HISTORIA (Z PODGLĄDEM MAPY MIĘŚNIOWEJ DLA KAŻDEJ SESJI)
 // ============================================================================
 async function renderCalendarView() {
   const workouts = await db.workouts.toArray();
@@ -2551,9 +2874,9 @@ async function renderCalendarView() {
     }).join('');
 
     return `
-      <div class="bg-bgCard rounded-3xl p-4 mb-3">
+      <div onclick="openPastWorkoutDetailModal(${w.id})" class="bg-bgCard rounded-3xl p-4 mb-3 cursor-pointer active:scale-[0.99] transition">
         <div class="flex justify-between items-center mb-2 border-b border-white/10 pb-2">
-          <div><h3 class="font-bold text-base text-white">${w.routineName}</h3><span class="text-xs text-gray-400">📅 ${w.date}</span></div>
+          <div><h3 class="font-bold text-base text-white">${w.routineName}</h3><span class="text-xs text-gray-400">📅 ${w.date} · Dotknij po mapę mięśni 🧬</span></div>
           <div class="text-right text-xs text-striveOrange font-bold"><div>∑ ${w.totalVolume} kg</div><div class="text-gray-400 font-normal">${w.durationMin} min · ${w.totalSets} serii</div></div>
         </div>
         <div class="space-y-0.5">${exSummary}</div>
@@ -2561,6 +2884,36 @@ async function renderCalendarView() {
   }).join('');
 
   return `<div class="text-center pt-1 mb-4"><h1 class="text-lg font-bold">Historia Treningów</h1></div>${itemsHtml || '<p class="text-center text-xs text-gray-400 py-12">Brak zapisanych sesji treningowych.</p>'}`;
+}
+
+async function openPastWorkoutDetailModal(workoutId) {
+  const w = await db.workouts.get(workoutId);
+  if (!w) return;
+  const allEx = await db.exercises.toArray();
+  const exMap = Object.fromEntries(allEx.map(e => [e.id, e]));
+
+  const enrichedExercises = (w.exercises || []).map(ex => ({
+    ...ex,
+    bodyPart: ex.bodyPart || (exMap[ex.exId] ? exMap[ex.exId].bodyPart : 'Klatka')
+  }));
+
+  const setsHtml = enrichedExercises.map(ex => {
+    const badges = (ex.sets || []).map(s => `<span class="inline-block bg-bgInput rounded-xl px-2.5 py-1 text-[11px] font-mono mr-1 mb-1">${s.type === 'R' ? '[R] ' : (s.type === 'D' ? '[D] ' : '')}${s.weight}kg x ${s.reps}</span>`).join('');
+    return `<div class="py-2 border-b border-white/10 last:border-none"><div class="text-xs font-bold text-white mb-1">${ex.name}</div><div>${badges}</div></div>`;
+  }).join('');
+
+  openModal(`
+    <div class="flex justify-between items-center mb-4">
+      <button onclick="closeModal()" class="text-2xl">✕</button>
+      <div class="text-center">
+        <h2 class="text-base font-bold">${w.routineName}</h2>
+        <span class="text-xs text-gray-400">${w.date} · ${w.durationMin} min · ${w.totalVolume} kg</span>
+      </div>
+      <div class="w-6"></div>
+    </div>
+    ${renderAnatomicalMuscleMap(enrichedExercises)}
+    <div class="bg-bgCard rounded-3xl p-4">${setsHtml}</div>
+  `);
 }
 
 function openPlanWizard() {
@@ -2772,6 +3125,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   checkIosStandaloneMode();
   navigate('home');
   await initCatalogOnly(false);
+  restoreActiveWorkoutState();
 });
 </script>
 </body>
