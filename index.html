@@ -136,9 +136,9 @@
       animation: screenFlashPulse 2.4s ease-in-out forwards;
     }
 
-    .muscle-glow-max { filter: drop-shadow(0 0 7px rgba(255, 59, 48, 0.9)); }
-    .muscle-glow-heavy { filter: drop-shadow(0 0 5px rgba(255, 122, 24, 0.8)); }
-    .muscle-glow-sec { filter: drop-shadow(0 0 3px rgba(251, 191, 36, 0.55)); }
+    .muscle-glow-max { filter: drop-shadow(0 0 7px rgba(255, 59, 48, 0.85)); }
+    .muscle-glow-heavy { filter: drop-shadow(0 0 5px rgba(255, 122, 24, 0.75)); }
+    .muscle-glow-sec { filter: drop-shadow(0 0 3px rgba(251, 191, 36, 0.5)); }
 
     @media print {
       body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
@@ -242,9 +242,10 @@
 // ============================================================================
 const DAYS_SHORT = ['pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.', 'niedz.'];
 const REPO_RAW = 'https://raw.githubusercontent.com/kulaczekkkk/exercises-dataset/main';
+const RN_BODY_CDN = 'https://cdn.jsdelivr.net/npm/react-native-body-highlighter@3.2.0/dist';
 const ACTIVE_WORKOUT_STORAGE_KEY = 'gymWK_active_workout_autosave_v6';
+const RN_BODY_CACHE_KEY = 'gymWK_rn_body_highlighter_v320';
 
-// Wersja v20 wymusza pobranie dodatkowych partii mięśniowych (secondary_muscles)
 const db = new Dexie('gymWK_GitHubPro_v20');
 db.version(1).stores({
   exercises: '++id, name, category, bodyPart, slug, nextTargetWeight',
@@ -268,6 +269,7 @@ let state = {
   routineDraft: null,
   pickerSelectedIds: [],
   pickerSupersetMode: false,
+  pickerScrollTop: 0,
   selectedTodayRoutineId: null,
   tempMeasurementPhotos: [],
   exerciseFilterCat: 'ALL',
@@ -275,8 +277,73 @@ let state = {
   exerciseSearch: '',
   exerciseDisplayLimit: 80,
   sharedAudioCtx: null,
-  flashTimeout: null
+  flashTimeout: null,
+  rnBodyAssets: null
 };
+
+// ============================================================================
+// ŁADOWANIE ORYGINALNYCH ŚCIEŻEK SVG Z REACT-NATIVE-BODY-HIGHLIGHTER (v3.2.0)
+// ============================================================================
+async function initBodyHighlighterAssets() {
+  try {
+    const cached = localStorage.getItem(RN_BODY_CACHE_KEY);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (parsed && Array.isArray(parsed.front) && Array.isArray(parsed.back) && parsed.front.length > 5) {
+        state.rnBodyAssets = parsed;
+        return;
+      }
+    }
+
+    const evalCommonJs = (code) => {
+      const exports = {};
+      const module = { exports };
+      new Function('exports', 'module', code)(exports, module);
+      return module.exports || exports;
+    };
+
+    const [frontRes, backRes, wrapperRes] = await Promise.all([
+      fetch(`${RN_BODY_CDN}/assets/bodyFront.js`),
+      fetch(`${RN_BODY_CDN}/assets/bodyBack.js`),
+      fetch(`${RN_BODY_CDN}/components/SvgMaleWrapper.js`).catch(() => null)
+    ]);
+
+    if (!frontRes.ok || !backRes.ok) return;
+
+    const frontCode = await frontRes.text();
+    const backCode = await backRes.text();
+    const frontMod = evalCommonJs(frontCode);
+    const backMod = evalCommonJs(backCode);
+
+    let borderFront = [];
+    let borderBack = [];
+    if (wrapperRes && wrapperRes.ok) {
+      const wrapText = await wrapperRes.text();
+      const dMatches = [...wrapText.matchAll(/d:\s*["']([^"']+)["']/g)].map(m => m[1]);
+      if (dMatches.length >= 2) {
+        borderFront = [dMatches[0]];
+        borderBack = [dMatches[1]];
+      } else if (dMatches.length === 1) {
+        borderFront = [dMatches[0]];
+      }
+    }
+
+    if (Array.isArray(frontMod.bodyFront) && Array.isArray(backMod.bodyBack)) {
+      state.rnBodyAssets = {
+        front: frontMod.bodyFront,
+        back: backMod.bodyBack,
+        borderFront,
+        borderBack
+      };
+      try {
+        localStorage.setItem(RN_BODY_CACHE_KEY, JSON.stringify(state.rnBodyAssets));
+      } catch (e) {}
+      if (state.tab === 'home') renderCurrentView();
+    }
+  } catch (err) {
+    console.warn('Używam wbudowanego modelu SVG sylwetki:', err);
+  }
+}
 
 // ============================================================================
 // AUTO-ZAPIS TRENINGU W LOCIE
@@ -387,7 +454,7 @@ function dismissRestAlarm() {
 }
 
 // ============================================================================
-// MAPOWANIE SLUGÓW WG REACT-NATIVE-BODY-HIGHLIGHTER (22 PARTIE ANATOMICZNE)
+// MAPOWANIE SLUGÓW WG REACT-NATIVE-BODY-HIGHLIGHTER (24 PARTIE ANATOMICZNE)
 // ============================================================================
 function mapPolishPartToSlugs(partName = '') {
   const p = String(partName).toLowerCase();
@@ -410,6 +477,42 @@ function mapPolishPartToSlugs(partName = '') {
   if (p.includes('piszczel')) return ['tibialis'];
   if (p.includes('kark') || p.includes('szyja')) return ['neck'];
   return ['chest'];
+}
+
+// Funkcja pomocnicza renderująca dokładne tablice bodyFront / bodyBack z react-native-body-highlighter (index.tsx)
+function renderExactRnBodySvg(bodyToRender, borderPaths, getSlugStyle) {
+  const defaultFill = '#3f3f3f';
+  const borderOutlines = (borderPaths || []).map(d =>
+    `<path d="${d}" fill="#dfdfdf" opacity="0.85" />`
+  ).join('');
+
+  const partsMarkup = bodyToRender.map(bodyPart => {
+    const slug = bodyPart.slug;
+    const isNonMuscle = slug === 'head' || slug === 'hair' || slug === 'hands' || slug === 'feet' || slug === 'ankles' || slug === 'knees';
+    const st = isNonMuscle
+      ? { fill: (slug === 'hair' ? '#1f2430' : '#2d323e'), cls: '' }
+      : getSlugStyle(slug);
+
+    const fillColor = st.fill || defaultFill;
+    const clsName = st.cls || '';
+
+    const allD = [
+      ...(bodyPart.path?.common || []),
+      ...(bodyPart.path?.left || []),
+      ...(bodyPart.path?.right || [])
+    ];
+
+    return allD.map(d =>
+      `<path id="${slug}" d="${d}" fill="${fillColor}" class="${clsName}" stroke="#12161f" stroke-width="1.2" />`
+    ).join('');
+  }).join('');
+
+  return `
+    <svg viewBox="0 0 724 1448" class="w-36 h-64 overflow-visible">
+      ${borderOutlines}
+      ${partsMarkup}
+    </svg>
+  `;
 }
 
 // Renderowanie człowieka wg architektury react-native-body-highlighter (Przód + Tył)
@@ -439,34 +542,162 @@ function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Ciepl
     }
   });
 
-  // Domyślny kolor bazowy #3f3f3f zgodny z react-native-body-highlighter
+  // Kolory i priorytety zgodne z react-native-body-highlighter (defaultFill = #3f3f3f)
   const getSlugStyle = (slug) => {
     const pts = slugIntensityPoints[slug] || 0;
     if (pts >= 5) return { fill: '#ff3b30', cls: 'muscle-glow-max' };     // Intensywność 3: Czerwień
     if (pts >= 2.5) return { fill: '#ff7a18', cls: 'muscle-glow-heavy' }; // Intensywność 2: Pomarańcz
-    if (pts > 0) return { fill: '#fbbf24', cls: 'muscle-glow-sec' };      // Intensywność 1 (Poboczne): Złoty/Bursztyn
+    if (pts > 0) return { fill: '#fbbf24', cls: 'muscle-glow-sec' };      // Intensywność 1 (Poboczne): Bursztyn
     return { fill: '#3f3f3f', cls: '' };                                  // DefaultFill: #3f3f3f
   };
 
-  const sHead = { fill: '#333842', cls: '' };
-  const sNeck = getSlugStyle('neck');
-  const sTraps = getSlugStyle('trapezius');
-  const sDelts = getSlugStyle('deltoids');
-  const sChest = getSlugStyle('chest');
-  const sBiceps = getSlugStyle('biceps');
-  const sTriceps = getSlugStyle('triceps');
-  const sForearm = getSlugStyle('forearm');
-  const sAbs = getSlugStyle('abs');
-  const sObliques = getSlugStyle('obliques');
-  const sUpperBack = getSlugStyle('upper-back');
-  const sLowerBack = getSlugStyle('lower-back');
-  const sGlutes = getSlugStyle('gluteal');
-  const sAbductors = getSlugStyle('abductors');
-  const sAdductors = getSlugStyle('adductors');
-  const sQuads = getSlugStyle('quadriceps');
-  const sHams = getSlugStyle('hamstring');
-  const sCalves = getSlugStyle('calves');
-  const sTibialis = getSlugStyle('tibialis');
+  let frontSvgHtml = '';
+  let backSvgHtml = '';
+
+  // Jeśli pobrano oryginalne wektory 1:1 z paczki react-native-body-highlighter@3.2.0, używamy ich bezpośrednio!
+  if (state.rnBodyAssets && Array.isArray(state.rnBodyAssets.front) && Array.isArray(state.rnBodyAssets.back)) {
+    frontSvgHtml = renderExactRnBodySvg(state.rnBodyAssets.front, state.rnBodyAssets.borderFront, getSlugStyle);
+    backSvgHtml = renderExactRnBodySvg(state.rnBodyAssets.back, state.rnBodyAssets.borderBack, getSlugStyle);
+  } else {
+    // Zaawansowany, wielosegmentowy model wbudowany (offline fallback w stylu react-native-body-highlighter)
+    const sNeck = getSlugStyle('neck');
+    const sTraps = getSlugStyle('trapezius');
+    const sDelts = getSlugStyle('deltoids');
+    const sChest = getSlugStyle('chest');
+    const sBiceps = getSlugStyle('biceps');
+    const sTriceps = getSlugStyle('triceps');
+    const sForearm = getSlugStyle('forearm');
+    const sAbs = getSlugStyle('abs');
+    const sObliques = getSlugStyle('obliques');
+    const sUpperBack = getSlugStyle('upper-back');
+    const sLowerBack = getSlugStyle('lower-back');
+    const sGlutes = getSlugStyle('gluteal');
+    const sAbductors = getSlugStyle('abductors');
+    const sAdductors = getSlugStyle('adductors');
+    const sQuads = getSlugStyle('quadriceps');
+    const sHams = getSlugStyle('hamstring');
+    const sCalves = getSlugStyle('calves');
+    const sTibialis = getSlugStyle('tibialis');
+
+    frontSvgHtml = `
+      <svg viewBox="0 0 220 430" class="w-36 h-64">
+        <!-- Zewnętrzny obrys sylwetki (#dfdfdf jak w SvgMaleWrapper) -->
+        <path d="M93,14 C93,4 127,4 127,14 L129,36 C129,46 123,52 119,55 L122,63 L148,71 C165,75 172,89 169,108 L171,142 L182,190 L187,208 L173,214 L167,194 L156,154 L152,112 L147,120 L146,164 C154,195 153,230 146,265 L144,285 C151,310 150,338 142,368 L148,392 L120,392 L119,368 L117,285 L114,252 L110,192 L106,252 L103,285 L101,368 L100,392 L72,392 L78,368 C70,338 69,310 76,285 L74,265 C67,230 66,195 74,164 L73,120 L68,112 L64,154 L53,194 L47,214 L33,208 L38,190 L49,142 L51,108 C48,89 55,75 72,71 L98,63 L101,55 C97,52 91,46 91,36 Z"
+          fill="none" stroke="#dfdfdf" stroke-width="2.2" opacity="0.65" stroke-linejoin="round"/>
+        <g stroke="#141821" stroke-width="1.35" stroke-linejoin="round">
+          <!-- hair & head -->
+          <path d="M94,18 C94,7 126,7 126,18 C123,14 97,14 94,18 Z" fill="#1f2430"/>
+          <path d="M94,18 C94,11 126,11 126,18 L127,36 C127,47 119,55 110,55 C101,55 93,47 93,36 Z" fill="#2d323e"/>
+          <!-- neck -->
+          <path d="M101,53 L109,56 L109,68 L97,65 Z" fill="${sNeck.fill}" class="${sNeck.cls}"/>
+          <path d="M119,53 L111,56 L111,68 L123,65 Z" fill="${sNeck.fill}" class="${sNeck.cls}"/>
+          <!-- trapezius -->
+          <path d="M97,60 L74,69 L92,73 L100,65 Z" fill="${sTraps.fill}" class="${sTraps.cls}"/>
+          <path d="M123,60 L146,69 L128,73 L120,65 Z" fill="${sTraps.fill}" class="${sTraps.cls}"/>
+          <!-- deltoids (przedni i boczny akton) -->
+          <path d="M73,69 C57,73 50,86 53,104 L69,101 C71,89 75,79 81,72 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
+          <path d="M147,69 C163,73 170,86 167,104 L151,101 C149,89 145,79 139,72 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
+          <!-- chest (pectoralis major + clavicular head) -->
+          <path d="M81,71 L109,73 L109,114 C91,117 77,111 71,99 C73,87 76,78 81,71 Z" fill="${sChest.fill}" class="${sChest.cls}"/>
+          <path d="M139,71 L111,73 L111,114 C129,117 143,111 149,99 C147,87 144,78 139,71 Z" fill="${sChest.fill}" class="${sChest.cls}"/>
+          <!-- biceps & brachialis -->
+          <path d="M53,105 L68,103 C70,119 68,134 64,145 L49,142 C47,129 49,115 53,105 Z" fill="${sBiceps.fill}" class="${sBiceps.cls}"/>
+          <path d="M167,105 L152,103 C150,119 152,134 156,145 L171,142 C173,129 171,115 167,105 Z" fill="${sBiceps.fill}" class="${sBiceps.cls}"/>
+          <!-- forearm (brachioradialis + flexors) -->
+          <path d="M48,144 L64,147 C61,166 56,183 51,196 L39,191 C40,175 44,158 48,144 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
+          <path d="M172,144 L156,147 C159,166 164,183 169,196 L181,191 C180,175 176,158 172,144 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
+          <!-- hands -->
+          <path d="M38,193 L50,198 L45,215 L33,209 Z" fill="#2d323e"/>
+          <path d="M182,193 L170,198 L175,215 L187,209 Z" fill="#2d323e"/>
+          <!-- obliques & serratus anterior (skośne + zębaty) -->
+          <path d="M73,102 L88,114 L87,174 L74,162 C70,142 70,121 73,102 Z" fill="${sObliques.fill}" class="${sObliques.cls}"/>
+          <path d="M147,102 L132,114 L133,174 L146,162 C150,142 150,121 147,102 Z" fill="${sObliques.fill}" class="${sObliques.cls}"/>
+          <!-- abs (8-segment rectus abdominis) -->
+          <rect x="90" y="116" width="18" height="14" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+          <rect x="112" y="116" width="18" height="14" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+          <rect x="90" y="132" width="18" height="14" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+          <rect x="112" y="132" width="18" height="14" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+          <rect x="90" y="148" width="18" height="14" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+          <rect x="112" y="148" width="18" height="14" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+          <path d="M91,164 L108,164 L108,184 L94,179 Z" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+          <path d="M129,164 L112,164 L112,184 L126,179 Z" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+          <!-- adductors (przywodziciele ud) -->
+          <path d="M94,183 L108,186 L104,248 L95,240 Z" fill="${sAdductors.fill}" class="${sAdductors.cls}"/>
+          <path d="M126,183 L112,186 L116,248 L125,240 Z" fill="${sAdductors.fill}" class="${sAdductors.cls}"/>
+          <!-- quadriceps: vastus lateralis & rectus femoris (zewnętrzna i środkowa głowa) -->
+          <path d="M74,165 L93,181 L86,262 L73,258 C65,226 66,194 74,165 Z" fill="${sQuads.fill}" class="${sQuads.cls}"/>
+          <path d="M146,165 L127,181 L134,262 L147,258 C155,226 154,194 146,165 Z" fill="${sQuads.fill}" class="${sQuads.cls}"/>
+          <!-- quadriceps: vastus medialis ("łezka" nad kolanem) -->
+          <path d="M93,218 C101,226 103,245 99,262 L87,262 Z" fill="${sQuads.fill}" class="${sQuads.cls}"/>
+          <path d="M127,218 C119,226 117,245 121,262 L133,262 Z" fill="${sQuads.fill}" class="${sQuads.cls}"/>
+          <!-- knees -->
+          <rect x="74" y="264" width="25" height="19" rx="6" fill="#2d323e"/>
+          <rect x="121" y="264" width="25" height="19" rx="6" fill="#2d323e"/>
+          <!-- calves (gastrocnemius medialis - wewnętrzna głowa łydki z przodu) -->
+          <path d="M89,286 L101,286 L98,364 L89,364 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
+          <path d="M131,286 L119,286 L122,364 L131,364 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
+          <!-- tibialis anterior (piszczelowy przedni) -->
+          <path d="M74,286 L88,286 L88,364 L78,364 C70,336 70,309 74,286 Z" fill="${sTibialis.fill}" class="${sTibialis.cls}"/>
+          <path d="M146,286 L132,286 L132,364 L142,364 C150,336 150,309 146,286 Z" fill="${sTibialis.fill}" class="${sTibialis.cls}"/>
+          <!-- ankles & feet -->
+          <path d="M76,366 L98,366 L101,392 L71,392 Z" fill="#2d323e"/>
+          <path d="M144,366 L122,366 L119,392 L149,392 Z" fill="#2d323e"/>
+        </g>
+      </svg>`;
+
+    backSvgHtml = `
+      <svg viewBox="0 0 220 430" class="w-36 h-64">
+        <!-- Zewnętrzny obrys sylwetki (#dfdfdf jak w SvgMaleWrapper) -->
+        <path d="M93,14 C93,4 127,4 127,14 L129,36 C129,46 123,52 119,55 L122,63 L148,71 C165,75 172,89 169,108 L171,142 L182,190 L187,208 L173,214 L167,194 L156,154 L152,112 L147,120 L146,164 C154,195 153,230 146,265 L144,285 C151,310 150,338 142,368 L148,392 L120,392 L119,368 L117,285 L114,252 L110,192 L106,252 L103,285 L101,368 L100,392 L72,392 L78,368 C70,338 69,310 76,285 L74,265 C67,230 66,195 74,164 L73,120 L68,112 L64,154 L53,194 L47,214 L33,208 L38,190 L49,142 L51,108 C48,89 55,75 72,71 L98,63 L101,55 C97,52 91,46 91,36 Z"
+          fill="none" stroke="#dfdfdf" stroke-width="2.2" opacity="0.65" stroke-linejoin="round"/>
+        <g stroke="#141821" stroke-width="1.35" stroke-linejoin="round">
+          <!-- head & hair -->
+          <path d="M94,18 C94,9 126,9 126,18 L127,36 C127,47 119,55 110,55 C101,55 93,47 93,36 Z" fill="#2d323e"/>
+          <!-- neck -->
+          <path d="M99,51 L121,51 L123,61 L97,61 Z" fill="${sNeck.fill}" class="${sNeck.cls}"/>
+          <!-- trapezius (kaptury - góra, środek, dół) -->
+          <polygon points="110,56 75,69 109,119 109,56" fill="${sTraps.fill}" class="${sTraps.cls}"/>
+          <polygon points="110,56 145,69 111,119 111,56" fill="${sTraps.fill}" class="${sTraps.cls}"/>
+          <!-- deltoids (tylny i boczny akton) -->
+          <path d="M74,69 C57,72 51,85 53,102 L72,99 C73,89 77,78 82,72 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
+          <path d="M146,69 C163,72 169,85 167,102 L148,99 C147,89 143,78 138,72 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
+          <!-- upper-back (najszerszy grzbietu + obły większy) -->
+          <path d="M72,99 L108,119 L103,162 L78,150 C71,133 70,115 72,99 Z" fill="${sUpperBack.fill}" class="${sUpperBack.cls}"/>
+          <path d="M148,99 L112,119 L117,162 L142,150 C149,133 150,115 148,99 Z" fill="${sUpperBack.fill}" class="${sUpperBack.cls}"/>
+          <!-- lower-back (prostowniki grzbietu / erector spinae) -->
+          <path d="M81,151 L108,162 L108,186 L81,179 Z" fill="${sLowerBack.fill}" class="${sLowerBack.cls}"/>
+          <path d="M139,151 L112,162 L112,186 L139,179 Z" fill="${sLowerBack.fill}" class="${sLowerBack.cls}"/>
+          <!-- triceps (głowa długa i boczna) -->
+          <path d="M53,104 L69,102 C71,119 69,135 65,146 L49,143 C47,129 49,115 53,104 Z" fill="${sTriceps.fill}" class="${sTriceps.cls}"/>
+          <path d="M167,104 L151,102 C149,119 151,135 155,146 L171,143 C173,129 171,115 167,104 Z" fill="${sTriceps.fill}" class="${sTriceps.cls}"/>
+          <!-- forearm (extensors) -->
+          <path d="M48,145 L64,148 C61,167 56,184 51,196 L39,191 C40,175 44,159 48,145 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
+          <path d="M172,145 L156,148 C159,167 164,184 169,196 L181,191 C180,175 176,159 172,145 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
+          <!-- hands -->
+          <path d="M38,193 L50,198 L45,215 L33,209 Z" fill="#2d323e"/>
+          <path d="M182,193 L170,198 L175,215 L187,209 Z" fill="#2d323e"/>
+          <!-- abductors (pośladkowy średni / odwodziciele) -->
+          <path d="M75,177 L87,181 L83,206 L70,198 C70,190 72,182 75,177 Z" fill="${sAbductors.fill}" class="${sAbductors.cls}"/>
+          <path d="M145,177 L133,181 L137,206 L150,198 C150,190 148,182 145,177 Z" fill="${sAbductors.fill}" class="${sAbductors.cls}"/>
+          <!-- gluteal (pośladkowy wielki) -->
+          <path d="M87,181 L109,186 L109,224 C89,227 73,218 71,199 L83,205 Z" fill="${sGlutes.fill}" class="${sGlutes.cls}"/>
+          <path d="M133,181 L111,186 L111,224 C131,227 147,218 149,199 L137,205 Z" fill="${sGlutes.fill}" class="${sGlutes.cls}"/>
+          <!-- hamstring (biceps femoris + semitendinosus) -->
+          <path d="M72,222 L90,225 L88,278 L75,275 C69,257 69,239 72,222 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
+          <path d="M91,225 L106,226 L102,278 L89,278 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
+          <path d="M148,222 L130,225 L132,278 L145,275 C151,257 151,239 148,222 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
+          <path d="M129,225 L114,226 L118,278 L131,278 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
+          <!-- calves (brzuchaty łydki - głowa boczna i przyśrodkowa + płaszczkowaty) -->
+          <path d="M73,282 L87,282 L86,364 L77,364 C70,336 70,308 73,282 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
+          <path d="M88,282 L101,282 L97,364 L87,364 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
+          <path d="M147,282 L133,282 L134,364 L143,364 C150,336 150,308 147,282 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
+          <path d="M132,282 L119,282 L123,364 L133,364 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
+          <!-- feet -->
+          <path d="M76,366 L98,366 L101,392 L71,392 Z" fill="#2d323e"/>
+          <path d="M144,366 L122,366 L119,392 L149,392 Z" fill="#2d323e"/>
+        </g>
+      </svg>`;
+  }
 
   const sortedBadges = Object.entries(partSets).sort((a, b) => b[1] - a[1]);
   const badgesHtml = sortedBadges.map(([part, cnt]) => {
@@ -491,112 +722,13 @@ function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Ciepl
       </div>
 
       <div class="grid grid-cols-2 gap-2 items-center justify-items-center py-1">
-        <!-- SYLWETKA MĘSKA PRZÓD (Wg react-native-body-highlighter) -->
         <div class="flex flex-col items-center">
           <span class="text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Przód (Front)</span>
-          <svg viewBox="0 0 200 400" class="w-36 h-64">
-            <!-- Obrys zewnętrzny SvgMaleWrapper -->
-            <g stroke="#12161f" stroke-width="1.4" stroke-linejoin="round">
-              <!-- head & hair -->
-              <path d="M86,18 C86,8 114,8 114,18 L115,34 C115,45 108,52 100,52 C92,52 85,45 85,34 Z" fill="${sHead.fill}" stroke="#dfdfdf" stroke-width="0.6"/>
-              <!-- neck -->
-              <path d="M91,51 L109,51 L112,64 L88,64 Z" fill="${sNeck.fill}" class="${sNeck.cls}"/>
-              <!-- trapezius (front) -->
-              <path d="M88,58 L66,67 L84,70 L91,62 Z" fill="${sTraps.fill}" class="${sTraps.cls}"/>
-              <path d="M112,58 L134,67 L116,70 L109,62 Z" fill="${sTraps.fill}" class="${sTraps.cls}"/>
-              <!-- deltoids (front left & right) -->
-              <path d="M65,67 C50,70 44,82 47,99 L63,97 C64,86 68,77 73,70 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
-              <path d="M135,67 C150,70 156,82 153,99 L137,97 C136,86 132,77 127,70 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
-              <!-- chest (left & right pectorals) -->
-              <path d="M73,69 L99,70 L99,110 C83,113 70,107 65,96 C66,85 69,76 73,69 Z" fill="${sChest.fill}" class="${sChest.cls}"/>
-              <path d="M127,69 L101,70 L101,110 C117,113 130,107 135,96 C134,85 131,76 127,69 Z" fill="${sChest.fill}" class="${sChest.cls}"/>
-              <!-- biceps (left & right) -->
-              <path d="M47,100 L63,98 C64,113 62,127 59,138 L44,136 C42,123 44,110 47,100 Z" fill="${sBiceps.fill}" class="${sBiceps.cls}"/>
-              <path d="M153,100 L137,98 C136,113 138,127 141,138 L156,136 C158,123 156,110 153,100 Z" fill="${sBiceps.fill}" class="${sBiceps.cls}"/>
-              <!-- forearm (front left & right) -->
-              <path d="M43,138 L58,140 C56,158 51,175 46,188 L35,184 C36,169 39,152 43,138 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
-              <path d="M157,138 L142,140 C144,158 149,175 154,188 L165,184 C164,169 161,152 157,138 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
-              <!-- hands -->
-              <path d="M34,186 L45,190 L41,206 L30,201 Z" fill="#333842"/>
-              <path d="M166,186 L155,190 L159,206 L170,201 Z" fill="#333842"/>
-              <!-- obliques (skośne brzucha left & right) -->
-              <path d="M66,99 L79,109 L78,168 L67,158 C64,139 64,118 66,99 Z" fill="${sObliques.fill}" class="${sObliques.cls}"/>
-              <path d="M134,99 L121,109 L122,168 L133,158 C136,139 136,118 134,99 Z" fill="${sObliques.fill}" class="${sObliques.cls}"/>
-              <!-- abs (6-pack + lower abs) -->
-              <rect x="81" y="111" width="17" height="16" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
-              <rect x="102" y="111" width="17" height="16" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
-              <rect x="81" y="129" width="17" height="16" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
-              <rect x="102" y="129" width="17" height="16" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
-              <path d="M81,147 L98,147 L98,174 L84,170 Z" fill="${sAbs.fill}" class="${sAbs.cls}"/>
-              <path d="M119,147 L102,147 L102,174 L116,170 Z" fill="${sAbs.fill}" class="${sAbs.cls}"/>
-              <!-- adductors (przywodziciele ud - wewnętrzne) -->
-              <path d="M85,176 L98,178 L95,238 L86,232 Z" fill="${sAdductors.fill}" class="${sAdductors.cls}"/>
-              <path d="M115,176 L102,178 L105,238 L114,232 Z" fill="${sAdductors.fill}" class="${sAdductors.cls}"/>
-              <!-- quadriceps (czworogłowe ud - zewnętrzne i proste) -->
-              <path d="M67,162 L84,174 L85,254 L66,252 C59,222 60,190 67,162 Z" fill="${sQuads.fill}" class="${sQuads.cls}"/>
-              <path d="M133,162 L116,174 L115,254 L134,252 C141,222 140,190 133,162 Z" fill="${sQuads.fill}" class="${sQuads.cls}"/>
-              <!-- knees -->
-              <rect x="67" y="256" width="24" height="18" rx="6" fill="#2d323b"/>
-              <rect x="109" y="256" width="24" height="18" rx="6" fill="#2d323b"/>
-              <!-- calves (front gastrocnemius - wewnętrzna krawędź) -->
-              <path d="M81,276 L92,276 L89,348 L81,348 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
-              <path d="M119,276 L108,276 L111,348 L119,348 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
-              <!-- tibialis (piszczelowy przedni - zewnętrzna część podudzia) -->
-              <path d="M66,276 L80,276 L80,348 L70,348 C63,322 63,298 66,276 Z" fill="${sTibialis.fill}" class="${sTibialis.cls}"/>
-              <path d="M134,276 L120,276 L120,348 L130,348 C137,322 137,298 134,276 Z" fill="${sTibialis.fill}" class="${sTibialis.cls}"/>
-              <!-- ankles & feet -->
-              <path d="M69,350 L88,350 L91,374 L64,374 Z" fill="#2d323b"/>
-              <path d="M131,350 L112,350 L109,374 L136,374 Z" fill="#2d323b"/>
-            </g>
-          </svg>
+          ${frontSvgHtml}
         </div>
-
-        <!-- SYLWETKA MĘSKA TYŁ (Wg react-native-body-highlighter) -->
         <div class="flex flex-col items-center">
           <span class="text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Tył (Back)</span>
-          <svg viewBox="0 0 200 400" class="w-36 h-64">
-            <g stroke="#12161f" stroke-width="1.4" stroke-linejoin="round">
-              <!-- head & hair -->
-              <path d="M86,18 C86,8 114,8 114,18 L115,34 C115,45 108,52 100,52 C92,52 85,45 85,34 Z" fill="${sHead.fill}" stroke="#dfdfdf" stroke-width="0.6"/>
-              <!-- neck -->
-              <path d="M90,48 L110,48 L112,58 L88,58 Z" fill="${sNeck.fill}" class="${sNeck.cls}"/>
-              <!-- trapezius (back diamond) -->
-              <polygon points="100,54 68,66 100,112 132,66" fill="${sTraps.fill}" class="${sTraps.cls}"/>
-              <!-- deltoids (rear left & right) -->
-              <path d="M67,66 C51,69 45,81 47,97 L65,95 C66,85 69,75 74,69 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
-              <path d="M133,66 C149,69 155,81 153,97 L135,95 C134,85 131,75 126,69 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
-              <!-- upper-back (lats + teres + rhomboids) -->
-              <path d="M65,95 L98,112 L94,154 L70,144 C64,127 63,111 65,95 Z" fill="${sUpperBack.fill}" class="${sUpperBack.cls}"/>
-              <path d="M135,95 L102,112 L106,154 L130,144 C136,127 137,111 135,95 Z" fill="${sUpperBack.fill}" class="${sUpperBack.cls}"/>
-              <!-- lower-back (erector spinae / prostowniki) -->
-              <path d="M74,145 L98,154 L98,177 L74,171 Z" fill="${sLowerBack.fill}" class="${sLowerBack.cls}"/>
-              <path d="M126,145 L102,154 L102,177 L126,171 Z" fill="${sLowerBack.fill}" class="${sLowerBack.cls}"/>
-              <!-- triceps (left & right) -->
-              <path d="M47,99 L63,97 C64,114 62,128 59,139 L44,137 C42,124 44,110 47,99 Z" fill="${sTriceps.fill}" class="${sTriceps.cls}"/>
-              <path d="M153,99 L137,97 C136,114 138,128 141,139 L156,137 C158,124 156,110 153,99 Z" fill="${sTriceps.fill}" class="${sTriceps.cls}"/>
-              <!-- forearm (back left & right) -->
-              <path d="M43,140 L58,142 C56,160 51,176 46,188 L35,184 C36,169 39,153 43,140 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
-              <path d="M157,140 L142,142 C144,160 149,176 154,188 L165,184 C164,169 161,153 157,140 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
-              <!-- hands -->
-              <path d="M34,186 L45,190 L41,206 L30,201 Z" fill="#333842"/>
-              <path d="M166,186 L155,190 L159,206 L170,201 Z" fill="#333842"/>
-              <!-- abductors (odwodziciele / gluteus medius - boczna góra pośladka) -->
-              <path d="M68,169 L79,172 L75,196 L63,189 C63,181 65,174 68,169 Z" fill="${sAbductors.fill}" class="${sAbductors.cls}"/>
-              <path d="M132,169 L121,172 L125,196 L137,189 C137,181 135,174 132,169 Z" fill="${sAbductors.fill}" class="${sAbductors.cls}"/>
-              <!-- gluteal (pośladki left & right) -->
-              <path d="M79,172 L99,177 L99,214 C81,217 66,208 64,190 L75,195 Z" fill="${sGlutes.fill}" class="${sGlutes.cls}"/>
-              <path d="M121,172 L101,177 L101,214 C119,217 134,208 136,190 L125,195 Z" fill="${sGlutes.fill}" class="${sGlutes.cls}"/>
-              <!-- hamstring (dwugłowe ud left & right) -->
-              <path d="M65,212 L96,216 L92,268 L68,266 C62,248 62,229 65,212 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
-              <path d="M135,212 L104,216 L108,268 L132,266 C138,248 138,229 135,212 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
-              <!-- calves (łydki tył - dwie głowy brzuchatego) -->
-              <path d="M66,272 L92,272 L88,348 L70,348 C63,322 63,296 66,272 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
-              <path d="M134,272 L108,272 L112,348 L130,348 C137,322 137,296 134,272 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
-              <!-- feet -->
-              <path d="M69,350 L88,350 L91,374 L64,374 Z" fill="#2d323b"/>
-              <path d="M131,350 L112,350 L109,374 L136,374 Z" fill="#2d323b"/>
-            </g>
-          </svg>
+          ${backSvgHtml}
         </div>
       </div>
 
@@ -992,7 +1124,6 @@ async function renderHomeView() {
   const currentMonthPrefix = toLocalIso(today).slice(0, 7);
   const thisMonthCount = workouts.filter(w => w.date.startsWith(currentMonthPrefix)).length;
 
-  // Zbieranie wszystkich ćwiczeń wykonanych w bieżącym tygodniu do Tygodniowej Mapy Mięśni
   const weeklyExercisesAggregated = [];
   thisWeekWorkouts.forEach(w => {
     (w.exercises || []).forEach(ex => {
@@ -1208,7 +1339,7 @@ async function deletePlan(planId) {
 }
 
 // ============================================================================
-// WIDOK 2B: RUTYNY (Z PODGLĄDEM GIF + OPIS BEZ ZAMYKANIA KREATORA)
+// WIDOK 2B: RUTYNY (BEZ COFANIA LISTY ĆWICZEŃ I Z ZACHOWANIEM SCROLLA)
 // ============================================================================
 async function renderRoutinesView() {
   const routines = await db.routines.toArray();
@@ -1335,7 +1466,10 @@ async function openRoutineCreatorModal(editRoutineId = null) {
   await renderRoutineDraftModal();
 }
 
-async function renderRoutineDraftModal() {
+async function renderRoutineDraftModal(preserveModalScroll = false) {
+  const overlayEl = document.getElementById('modal-overlay');
+  const prevOverlayScroll = preserveModalScroll && overlayEl ? overlayEl.scrollTop : 0;
+
   const d = state.routineDraft;
   const allEx = await db.exercises.toArray();
   const exMap = Object.fromEntries(allEx.map(e => [e.id, e]));
@@ -1372,7 +1506,7 @@ async function renderRoutineDraftModal() {
           </div>
           <div class="col-span-4">
             <input type="text" placeholder="np. 8-10 lub 12-15" value="${s.reps || '8-10'}"
-              onchange="state.routineDraft.exercises[${exIdx}].setsList[${sIdx}].reps = this.value; renderRoutineDraftModal()"
+              onchange="state.routineDraft.exercises[${exIdx}].setsList[${sIdx}].reps = this.value; renderRoutineDraftModal(true)"
               class="w-full bg-bgInput rounded-xl py-1.5 text-center text-xs font-bold text-white">
           </div>
           <div class="col-span-4">
@@ -1444,7 +1578,7 @@ async function renderRoutineDraftModal() {
         <label class="text-sm font-bold block mb-1.5">Przypisz dzień tygodnia</label>
         <div class="grid grid-cols-4 gap-1.5">
           ${[...DAYS_SHORT, 'Dowolny'].map(day => `
-            <button onclick="state.routineDraft.assignedDay = '${day === 'Dowolny' ? '' : day}'; renderRoutineDraftModal()"
+            <button onclick="state.routineDraft.assignedDay = '${day === 'Dowolny' ? '' : day}'; renderRoutineDraftModal(true)"
               class="py-2 rounded-2xl border text-xs font-bold ${(d.assignedDay || '') === (day === 'Dowolny' ? '' : day) ? 'liquid-orange-btn border-transparent text-white' : 'bg-bgCard border-white/15 text-gray-300'}">
               ${day}
             </button>
@@ -1458,13 +1592,13 @@ async function renderRoutineDraftModal() {
           <div>
             <label class="text-[11px] text-striveOrange font-semibold block mb-1">Rozgrzewka (R)</label>
             <input type="number" step="15" value="${d.warmupRestSec || 60}"
-              onchange="state.routineDraft.warmupRestSec = parseInt(this.value)||60; renderRoutineDraftModal()"
+              onchange="state.routineDraft.warmupRestSec = parseInt(this.value)||60; renderRoutineDraftModal(true)"
               class="w-full bg-bgInput rounded-2xl p-2 text-center text-sm font-bold text-white">
           </div>
           <div>
             <label class="text-[11px] text-striveTeal font-semibold block mb-1">Robocza (1,2,3)</label>
             <input type="number" step="15" value="${d.workingRestSec || 120}"
-              onchange="state.routineDraft.workingRestSec = parseInt(this.value)||120; renderRoutineDraftModal()"
+              onchange="state.routineDraft.workingRestSec = parseInt(this.value)||120; renderRoutineDraftModal(true)"
               class="w-full bg-bgInput rounded-2xl p-2 text-center text-sm font-bold text-white">
           </div>
         </div>
@@ -1484,6 +1618,10 @@ async function renderRoutineDraftModal() {
       </div>
     </div>
   `);
+
+  if (preserveModalScroll && overlayEl) {
+    overlayEl.scrollTop = prevOverlayScroll;
+  }
 }
 
 async function openExerciseDetailFromDraft(exId) {
@@ -1493,7 +1631,7 @@ async function openExerciseDetailFromDraft(exId) {
 
   openModal(`
     <div class="flex justify-between items-center mb-4">
-      <button onclick="openRoutineCreatorModal()" class="text-sm liquid-pill text-white font-bold px-3 py-1.5 rounded-xl">← Powrót do rutyny</button>
+      <button onclick="renderRoutineDraftModal(true)" class="text-sm liquid-pill text-white font-bold px-3 py-1.5 rounded-xl">← Powrót do rutyny</button>
       <h2 class="font-bold text-sm truncate px-1">${ex.name}</h2>
       <div class="w-10"></div>
     </div>
@@ -1510,7 +1648,7 @@ async function openExerciseDetailFromDraft(exId) {
       <p class="text-xs text-gray-200 leading-relaxed">${ex.tip || 'Kontroluj fazę opuszczania i pilnuj zakresu ruchu.'}</p>
     </div>
 
-    <button onclick="openRoutineCreatorModal()" class="w-full liquid-orange-btn text-white font-bold py-3.5 rounded-2xl text-sm">
+    <button onclick="renderRoutineDraftModal(true)" class="w-full liquid-orange-btn text-white font-bold py-3.5 rounded-2xl text-sm">
       ✓ Zamknij podgląd i wróć do rutyny
     </button>
   `);
@@ -1521,13 +1659,13 @@ function applyRangeToAllWorkingSets(exIdx, newRange) {
   list.forEach(s => {
     if ((s.type || 'N') === 'N') s.reps = newRange;
   });
-  renderRoutineDraftModal();
+  renderRoutineDraftModal(true);
 }
 
 function cycleDraftSetType(exIdx, sIdx) {
   const s = state.routineDraft.exercises[exIdx].setsList[sIdx];
   s.type = nextSetType(s.type);
-  renderRoutineDraftModal();
+  renderRoutineDraftModal(true);
 }
 
 function addDraftSet(exIdx, setType = 'N') {
@@ -1538,14 +1676,14 @@ function addDraftSet(exIdx, setType = 'N') {
     reps: lastWorking.reps || '8-10',
     weight: ''
   });
-  renderRoutineDraftModal();
+  renderRoutineDraftModal(true);
 }
 
 function removeDraftSet(exIdx, sIdx) {
   const list = state.routineDraft.exercises[exIdx].setsList;
   if (list.length <= 1) return;
   list.splice(sIdx, 1);
-  renderRoutineDraftModal();
+  renderRoutineDraftModal(true);
 }
 
 function moveDraftExercise(idx, dir) {
@@ -1555,12 +1693,12 @@ function moveDraftExercise(idx, dir) {
   const temp = arr[idx];
   arr[idx] = arr[target];
   arr[target] = temp;
-  renderRoutineDraftModal();
+  renderRoutineDraftModal(true);
 }
 
 function removeDraftExercise(idx) {
   state.routineDraft.exercises.splice(idx, 1);
-  renderRoutineDraftModal();
+  renderRoutineDraftModal(true);
 }
 
 function addPlaceholderToDraft() {
@@ -1575,17 +1713,25 @@ function addPlaceholderToDraft() {
       { type: 'N', reps: '8-10', weight: '' }
     ]
   });
-  renderRoutineDraftModal();
+  renderRoutineDraftModal(true);
 }
 
 async function openExercisePickerForDraft() {
   state.pickerSelectedIds = [];
   state.pickerSupersetMode = false;
+  state.pickerScrollTop = 0;
   state.exerciseDisplayLimit = 80;
-  await renderExercisePickerModal();
+  await renderExercisePickerModal(false);
 }
 
-async function renderExercisePickerModal() {
+async function renderExercisePickerModal(preserveScroll = true) {
+  const existingScrollEl = document.getElementById('picker-exercises-scroll');
+  if (preserveScroll && existingScrollEl) {
+    state.pickerScrollTop = existingScrollEl.scrollTop;
+  } else if (!preserveScroll) {
+    state.pickerScrollTop = 0;
+  }
+
   const allEx = await db.exercises.toArray();
   const categories = ['ALL', ...new Set(allEx.map(e => e.category))];
   const parts = ['ALL', ...new Set(allEx.map(e => e.bodyPart))];
@@ -1604,18 +1750,18 @@ async function renderExercisePickerModal() {
     const picked = state.pickerSelectedIds.includes(ex.id);
     const secInfo = (ex.secondaryMuscles && ex.secondaryMuscles.length) ? ` (+${ex.secondaryMuscles.slice(0,2).join(', ')})` : '';
     return `
-      <div class="bg-bgCard border ${picked ? 'border-striveOrange bg-striveOrange/10' : 'border-white/15'} rounded-3xl p-2.5 flex items-center gap-3 transition">
+      <div id="picker-row-${ex.id}" class="bg-bgCard border ${picked ? 'border-striveOrange bg-striveOrange/10' : 'border-white/15'} rounded-3xl p-2.5 flex items-center gap-3 transition">
         <div onclick="openExerciseDetailFromPicker(${ex.id})" class="cursor-pointer shrink-0" title="Podejrzyj GIF i opis">
           ${renderAnimatedExerciseThumb(ex, 'w-14 h-14')}
         </div>
         <div onclick="togglePickerExercise(${ex.id})" class="flex-1 min-w-0 cursor-pointer">
           <div class="flex justify-between items-start gap-2">
             <h3 class="font-semibold text-sm text-white truncate">${ex.name}</h3>
-            <span class="text-xs ${picked ? 'text-striveOrange font-bold' : 'text-gray-400'}">${picked ? 'Wybrano ✓' : 'Wybierz'}</span>
+            <span id="picker-status-${ex.id}" class="text-xs ${picked ? 'text-striveOrange font-bold' : 'text-gray-400'}">${picked ? 'Wybrano ✓' : 'Wybierz'}</span>
           </div>
           <div class="flex justify-between items-center text-xs text-gray-400 mt-2">
             <span class="truncate">${ex.category} · ${ex.bodyPart}${secInfo}</span>
-            <span class="text-[10px] text-striveTeal underline shrink-0 ml-1">👁️ Podgląd</span>
+            <span onclick="event.stopPropagation(); openExerciseDetailFromPicker(${ex.id})" class="text-[10px] text-striveTeal underline shrink-0 ml-1">👁️ Podgląd</span>
           </div>
         </div>
       </div>`;
@@ -1628,53 +1774,89 @@ async function renderExercisePickerModal() {
 
     <div class="flex justify-between items-center mb-3">
       <button onclick="openCustomExerciseModal(true)" class="liquid-pill text-white font-bold text-xs px-4 py-2 rounded-2xl">Dodaj własne +</button>
-      <button onclick="state.pickerSupersetMode = !state.pickerSupersetMode; renderExercisePickerModal()"
+      <button onclick="togglePickerSupersetMode()"
         class="liquid-pill text-white font-semibold text-xs px-3.5 py-2 rounded-2xl flex items-center gap-2">
         <span>Seria łączona</span>
-        <span class="w-4 h-4 rounded-full border-2 border-white flex items-center justify-center ${state.pickerSupersetMode ? 'bg-striveOrange' : ''}"></span>
+        <span id="picker-superset-dot" class="w-4 h-4 rounded-full border-2 border-white flex items-center justify-center ${state.pickerSupersetMode ? 'bg-striveOrange' : ''}"></span>
       </button>
     </div>
 
     <div class="flex gap-2 mb-2.5">
       <input type="text" placeholder="🔍 Szukaj ćwiczenia..." value="${state.exerciseSearch}"
-        oninput="state.exerciseSearch = this.value; state.exerciseDisplayLimit = 80; renderExercisePickerModal()"
+        oninput="state.exerciseSearch = this.value; state.exerciseDisplayLimit = 80; renderExercisePickerModal(false)"
         class="flex-1 bg-bgInput rounded-2xl px-3.5 py-2 text-sm">
     </div>
 
     <div class="grid grid-cols-2 gap-2 mb-3">
-      <select onchange="state.exerciseFilterCat = this.value; state.exerciseDisplayLimit = 80; renderExercisePickerModal()" class="liquid-pill text-white font-semibold text-xs rounded-2xl px-3 py-2">
+      <select onchange="state.exerciseFilterCat = this.value; state.exerciseDisplayLimit = 80; renderExercisePickerModal(false)" class="liquid-pill text-white font-semibold text-xs rounded-2xl px-3 py-2">
         <option value="ALL">Dowolna Kategoria</option>
         ${categories.filter(c => c !== 'ALL').map(c => `<option value="${c}" ${state.exerciseFilterCat === c ? 'selected' : ''}>${c}</option>`).join('')}
       </select>
-      <select onchange="state.exerciseFilterPart = this.value; state.exerciseDisplayLimit = 80; renderExercisePickerModal()" class="liquid-pill text-white font-semibold text-xs rounded-2xl px-3 py-2">
+      <select onchange="state.exerciseFilterPart = this.value; state.exerciseDisplayLimit = 80; renderExercisePickerModal(false)" class="liquid-pill text-white font-semibold text-xs rounded-2xl px-3 py-2">
         <option value="ALL">Dowolna Część Ciała</option>
         ${parts.filter(p => p !== 'ALL').map(p => `<option value="${p}" ${state.exerciseFilterPart === p ? 'selected' : ''}>${p}</option>`).join('')}
       </select>
     </div>
 
-    <div class="space-y-2 max-h-[52vh] overflow-y-auto pb-4">
+    <div id="picker-exercises-scroll" onscroll="state.pickerScrollTop = this.scrollTop" class="space-y-2 max-h-[52vh] overflow-y-auto pb-4">
       ${rowsHtml}
       ${filtered.length > state.exerciseDisplayLimit ? `
-        <button onclick="state.exerciseDisplayLimit += 100; renderExercisePickerModal()" class="w-full liquid-pill text-white text-xs font-bold py-3 rounded-2xl mt-2">
+        <button onclick="state.exerciseDisplayLimit += 100; renderExercisePickerModal(true)" class="w-full liquid-pill text-white text-xs font-bold py-3 rounded-2xl mt-2">
           Pokaż więcej (${visible.length} z ${filtered.length})
         </button>
       ` : ''}
     </div>
 
     <div class="space-y-2 pt-2 border-t border-white/10">
-      <button onclick="renderRoutineDraftModal()" class="w-full bg-white/10 text-white font-bold py-3 rounded-2xl text-sm">Powrót do rutyny</button>
-      <button onclick="confirmPickerExercises()" class="w-full ${state.pickerSelectedIds.length ? 'liquid-orange-btn text-white' : 'bg-white/5 text-gray-500'} font-bold py-3 rounded-2xl text-sm">
+      <button onclick="renderRoutineDraftModal(true)" class="w-full bg-white/10 text-white font-bold py-3 rounded-2xl text-sm">Powrót do rutyny</button>
+      <button id="picker-confirm-btn" onclick="confirmPickerExercises()" class="w-full ${state.pickerSelectedIds.length ? 'liquid-orange-btn text-white' : 'bg-white/5 text-gray-500'} font-bold py-3 rounded-2xl text-sm transition">
         Zatwierdź wybrane (${state.pickerSelectedIds.length})
       </button>
     </div>
   `);
+
+  const newScrollEl = document.getElementById('picker-exercises-scroll');
+  if (newScrollEl && state.pickerScrollTop > 0) {
+    newScrollEl.scrollTop = state.pickerScrollTop;
+  }
 }
 
+function togglePickerSupersetMode() {
+  state.pickerSupersetMode = !state.pickerSupersetMode;
+  const dot = document.getElementById('picker-superset-dot');
+  if (dot) {
+    dot.className = `w-4 h-4 rounded-full border-2 border-white flex items-center justify-center ${state.pickerSupersetMode ? 'bg-striveOrange' : ''}`;
+  }
+}
+
+// Bezpośrednia aktualizacja DOM bez przeładowywania listy = ZERO skakania na początek listy!
 function togglePickerExercise(exId) {
   const idx = state.pickerSelectedIds.indexOf(exId);
-  if (idx >= 0) state.pickerSelectedIds.splice(idx, 1);
-  else state.pickerSelectedIds.push(exId);
-  renderExercisePickerModal();
+  let isPicked = false;
+  if (idx >= 0) {
+    state.pickerSelectedIds.splice(idx, 1);
+    isPicked = false;
+  } else {
+    state.pickerSelectedIds.push(exId);
+    isPicked = true;
+  }
+
+  const rowEl = document.getElementById(`picker-row-${exId}`);
+  const statusEl = document.getElementById(`picker-status-${exId}`);
+  const confirmBtn = document.getElementById('picker-confirm-btn');
+
+  if (rowEl) {
+    rowEl.className = `bg-bgCard border ${isPicked ? 'border-striveOrange bg-striveOrange/10' : 'border-white/15'} rounded-3xl p-2.5 flex items-center gap-3 transition`;
+  }
+  if (statusEl) {
+    statusEl.className = `text-xs ${isPicked ? 'text-striveOrange font-bold' : 'text-gray-400'}`;
+    statusEl.textContent = isPicked ? 'Wybrano ✓' : 'Wybierz';
+  }
+  if (confirmBtn) {
+    const count = state.pickerSelectedIds.length;
+    confirmBtn.className = `w-full ${count ? 'liquid-orange-btn text-white' : 'bg-white/5 text-gray-500'} font-bold py-3 rounded-2xl text-sm transition`;
+    confirmBtn.textContent = `Zatwierdź wybrane (${count})`;
+  }
 }
 
 function confirmPickerExercises() {
@@ -1690,7 +1872,7 @@ function confirmPickerExercises() {
       ]
     });
   });
-  renderRoutineDraftModal();
+  renderRoutineDraftModal(true);
 }
 
 async function saveRoutineDraft() {
@@ -1721,13 +1903,16 @@ async function saveRoutineDraft() {
 }
 
 async function openExerciseDetailFromPicker(exId) {
+  const scrollEl = document.getElementById('picker-exercises-scroll');
+  if (scrollEl) state.pickerScrollTop = scrollEl.scrollTop;
+
   const ex = await db.exercises.get(exId);
   if (!ex) return;
   const secStr = (ex.secondaryMuscles && ex.secondaryMuscles.length) ? ex.secondaryMuscles.join(', ') : 'Brak';
 
   openModal(`
     <div class="flex justify-between items-center mb-4">
-      <button onclick="openExercisePickerForDraft()" class="text-sm liquid-pill text-white font-bold px-3 py-1.5 rounded-xl">← Powrót do listy</button>
+      <button onclick="renderExercisePickerModal(true)" class="text-sm liquid-pill text-white font-bold px-3 py-1.5 rounded-xl">← Powrót do listy</button>
       <h2 class="font-bold text-sm truncate px-1">${ex.name}</h2>
       <div class="w-10"></div>
     </div>
@@ -1744,8 +1929,8 @@ async function openExerciseDetailFromPicker(exId) {
       <p class="text-xs text-gray-200 leading-relaxed">${ex.tip || 'Kontroluj fazę opuszczania i pilnuj zakresu ruchu.'}</p>
     </div>
 
-    <button onclick="openExercisePickerForDraft()" class="w-full liquid-orange-btn text-white font-bold py-3.5 rounded-2xl text-sm">
-      ✓ Zamknij podgląd i wróć do wyboru
+    <button onclick="renderExercisePickerModal(true)" class="w-full liquid-orange-btn text-white font-bold py-3.5 rounded-2xl text-sm">
+      ✓ Zamknij podgląd i wróć w to samo miejsce listy
     </button>
   `);
 }
@@ -1880,7 +2065,7 @@ async function renameSingleExercise(exId) {
 function openCustomExerciseModal(returnToPicker = false) {
   openModal(`
     <div class="flex justify-between items-center mb-4">
-      <button onclick="${returnToPicker ? 'renderExercisePickerModal()' : 'closeModal()'}" class="text-2xl">✕</button>
+      <button onclick="${returnToPicker ? 'renderExercisePickerModal(true)' : 'closeModal()'}" class="text-2xl">✕</button>
       <h2 class="text-lg font-bold">Dodaj własne ćwiczenie</h2>
       <div class="w-6"></div>
     </div>
@@ -1926,7 +2111,7 @@ async function saveCustomExercise(returnToPicker) {
     secondaryMuscles: [],
     sessions: 0
   });
-  if (returnToPicker) renderExercisePickerModal();
+  if (returnToPicker) renderExercisePickerModal(true);
   else { closeModal(); renderCurrentView(); }
 }
 
@@ -2127,8 +2312,11 @@ async function startWorkout(routineId) {
   openActiveWorkoutModal();
 }
 
-function openActiveWorkoutModal() {
+function openActiveWorkoutModal(preserveScroll = false) {
   if (!state.activeWorkout) return;
+  const overlayEl = document.getElementById('modal-overlay');
+  const prevScroll = preserveScroll && overlayEl ? overlayEl.scrollTop : 0;
+
   const w = state.activeWorkout;
 
   const exBlocks = w.exercises.map((ex, exIdx) => {
@@ -2210,6 +2398,10 @@ function openActiveWorkoutModal() {
     </div>
     ${exBlocks}
   `);
+
+  if (preserveScroll && overlayEl) {
+    overlayEl.scrollTop = prevScroll;
+  }
 }
 
 function discardActiveWorkout() {
@@ -2230,7 +2422,7 @@ function cycleActiveWorkoutSetType(exIdx, sIdx) {
   else if (s.type === 'D') s.hintText = `Drop set (${w.warmupRestSec}s)`;
   else s.hintText = `Cel (${s.repsRangeText || '8-10'})`;
   persistActiveWorkoutState();
-  openActiveWorkoutModal();
+  openActiveWorkoutModal(true);
 }
 
 function updateSetField(exIdx, sIdx, field, val) {
@@ -2251,7 +2443,7 @@ function toggleSetDone(exIdx, sIdx) {
     startRestTimer(sec, label);
   }
   persistActiveWorkoutState();
-  openActiveWorkoutModal();
+  openActiveWorkoutModal(true);
 }
 
 function addExtraSet(exIdx, setType = 'N') {
@@ -2265,7 +2457,7 @@ function addExtraSet(exIdx, setType = 'N') {
     hintText: setType === 'R' ? `Rozgrzewka (${w.warmupRestSec}s)` : (setType === 'D' ? `Drop set (${w.warmupRestSec}s)` : `Cel (${last.repsRangeText || '8-10'})`)
   });
   persistActiveWorkoutState();
-  openActiveWorkoutModal();
+  openActiveWorkoutModal(true);
 }
 
 async function swapExerciseInFlight(exIdx, bodyPart) {
@@ -2284,7 +2476,7 @@ async function swapExerciseInFlight(exIdx, bodyPart) {
     state.activeWorkout.exercises[exIdx].customGifUrl = picked.customGifUrl;
     state.activeWorkout.exercises[exIdx].isPlaceholder = false;
     persistActiveWorkoutState();
-    openActiveWorkoutModal();
+    openActiveWorkoutModal(true);
   }
 }
 
@@ -3243,6 +3435,7 @@ function closeModal() {
 
 window.addEventListener('DOMContentLoaded', async () => {
   checkIosStandaloneMode();
+  initBodyHighlighterAssets();
   navigate('home');
   await initCatalogOnly(false);
   restoreActiveWorkoutState();
