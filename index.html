@@ -4,17 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   
-  <!-- Pełnoekranowy tryb natywnej aplikacji iOS (usuwa pasek adresu Safari po dodaniu do ekranu głównego) -->
+  <!-- Pełnoekranowy tryb natywnej aplikacji iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="gymWK">
   <meta name="theme-color" content="#030407">
 
-  <!-- Wbudowana ikona na pulpit iPhone'a (Liquid Glass SVG) -->
+  <!-- Ikona na pulpit iPhone'a -->
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%2316222f'/><stop offset='50%' stop-color='%23080b11'/><stop offset='100%' stop-color='%23291508'/></linearGradient></defs><rect width='180' height='180' rx='42' fill='url(%23g)'/><rect x='8' y='8' width='164' height='164' rx='36' fill='none' stroke='rgba(255,255,255,0.22)' stroke-width='2'/><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' font-family='-apple-system, sans-serif' font-weight='900' font-size='44' fill='%23ffffff'>WK</text><circle cx='142' cy='42' r='10' fill='%23ff7a18'/></svg>">
-
-  <!-- Wbudowany Web App Manifest w jednym pliku (dla pełnego standalone PWA) -->
   <link rel="manifest" href='data:application/manifest+json,{"name":"gymWK Pro","short_name":"gymWK","start_url":".","display":"standalone","background_color":"#030407","theme_color":"#030407","orientation":"portrait"}'>
 
   <title>gymWK — Liquid Glass</title>
@@ -73,7 +71,6 @@
     }
     ::-webkit-scrollbar { width: 0px; background: transparent; }
 
-    /* Silnik Liquid Glass (iPhone 18 Pro Specular Glassmorphism) */
     .bg-bgCard, .liquid-card {
       background: linear-gradient(145deg, rgba(255, 255, 255, 0.085) 0%, rgba(255, 255, 255, 0.025) 100%) !important;
       backdrop-filter: blur(30px) saturate(190%);
@@ -130,7 +127,6 @@
       padding-bottom: calc(90px + env(safe-area-inset-bottom));
     }
 
-    /* Animacja FLASH EKRANU na koniec przerwy */
     @keyframes screenFlashPulse {
       0%, 100% { opacity: 0; }
       20%, 60% { opacity: 1; }
@@ -140,13 +136,9 @@
       animation: screenFlashPulse 2.4s ease-in-out forwards;
     }
 
-    /* Efekt poświaty dla mocno przepracowanych mięśni na ludziku SVG */
-    .muscle-glow-heavy {
-      filter: drop-shadow(0 0 6px rgba(255, 90, 0, 0.85));
-    }
-    .muscle-glow-medium {
-      filter: drop-shadow(0 0 4px rgba(255, 146, 51, 0.6));
-    }
+    .muscle-glow-max { filter: drop-shadow(0 0 7px rgba(255, 59, 48, 0.9)); }
+    .muscle-glow-heavy { filter: drop-shadow(0 0 5px rgba(255, 122, 24, 0.8)); }
+    .muscle-glow-sec { filter: drop-shadow(0 0 3px rgba(251, 191, 36, 0.55)); }
 
     @media print {
       body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
@@ -156,7 +148,7 @@
 </head>
 <body class="flex flex-col justify-between">
 
-  <!-- PEŁNOEKRANOWY FLASH VIZUALNY I BANER ALARMU KOŃCA PRZERWY -->
+  <!-- PEŁNOEKRANOWY FLASH I ALARM KOŃCA PRZERWY -->
   <div id="rest-flash-overlay" onclick="dismissRestAlarm()" class="hidden fixed inset-0 z-[100] pointer-events-auto flex flex-col items-center justify-start pt-16 px-4 bg-gradient-to-b from-orange-600/60 via-red-600/35 to-transparent backdrop-blur-sm">
     <div class="liquid-orange-btn border-2 border-white rounded-3xl p-5 shadow-[0_0_50px_rgba(255,122,24,0.95)] text-center max-w-sm w-full animate-bounce">
       <div class="text-3xl mb-1">🔔⚡</div>
@@ -165,39 +157,39 @@
     </div>
   </div>
 
-  <!-- BANER INSTRUKCJI INSTALACJI (Widoczny tylko w zwykłym Safari, znika automatycznie po otwarciu z ikony na pulpicie iPhone'a!) -->
+  <!-- BANER PWA -->
   <div id="ios-pwa-hint" class="hidden max-w-md mx-auto px-3 mb-2">
     <div class="liquid-pill rounded-2xl px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs">
       <div class="leading-snug">
         <span class="font-bold text-white">Tryb pełnoekranowy iPhone:</span>
-        <span class="text-gray-200"> kliknij <strong>Udostępnij</strong> na dole Safari i wybierz <strong>„Dodaj do ekranu początkowego”</strong> – pasek z linkiem zniknie.</span>
+        <span class="text-gray-200"> kliknij <strong>Udostępnij</strong> w Safari i wybierz <strong>„Dodaj do ekranu początkowego”</strong>.</span>
       </div>
       <button onclick="dismissPwaHint()" class="text-gray-300 font-bold px-2 py-1">✕</button>
     </div>
   </div>
 
-  <!-- PASEK SYNCHRONIZACJI BAZY ĆWICZEŃ Z GITHUBA -->
+  <!-- PASEK SYNCHRONIZACJI BAZY -->
   <div id="sync-banner" class="hidden max-w-md mx-auto px-3.5 mb-2">
     <div class="bg-bgCard rounded-2xl px-3.5 py-2 flex items-center justify-between text-xs border border-striveTeal/40">
-      <span id="sync-banner-text" class="text-striveTeal font-semibold animate-pulse">⚡ Ładowanie bazy 1,324 ćwiczeń i GIF-ów z repozytorium...</span>
+      <span id="sync-banner-text" class="text-striveTeal font-semibold animate-pulse">⚡ Synchronizuję 1,324 ćwiczenia oraz mięśnie poboczne z GitHuba...</span>
     </div>
   </div>
 
   <!-- GŁÓWNY KONTENER WIDOKÓW -->
   <main id="app-content" class="w-full max-w-md mx-auto px-3.5 pt-1 pb-24"></main>
 
-  <!-- PŁYWAJĄCA KAPSUŁA AKTYWNEGO TRENINGU / TIMERA (Dynamic Island Style) -->
+  <!-- PŁYWAJĄCA KAPSUŁA TRENINGU (Stabilna wysokość h-[64px]) -->
   <div id="active-workout-bar" class="hidden fixed left-0 right-0 max-w-md mx-auto px-3.5 z-40" style="bottom: calc(86px + env(safe-area-inset-bottom));">
-    <div id="active-workout-bar-inner" class="liquid-dock rounded-3xl p-3 flex items-center justify-between border border-striveTeal/40 transition-all duration-300">
-      <div onclick="openActiveWorkoutModal()" class="flex-1 cursor-pointer pl-1">
-        <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-striveOrange animate-ping"></span>
-          <span id="bar-routine-name" class="font-bold text-sm text-white tracking-tight">Trwa trening</span>
-          <span id="bar-elapsed-time" class="text-xs text-striveTeal font-mono font-semibold">00:00</span>
+    <div id="active-workout-bar-inner" class="liquid-dock rounded-3xl p-3 flex items-center justify-between border border-striveTeal/40 h-[64px] transition-all">
+      <div onclick="openActiveWorkoutModal()" class="flex-1 cursor-pointer pl-1 min-w-0">
+        <div class="flex items-center gap-2 truncate">
+          <span class="w-2.5 h-2.5 rounded-full bg-striveOrange animate-ping shrink-0"></span>
+          <span id="bar-routine-name" class="font-bold text-sm text-white tracking-tight truncate">Trwa trening</span>
+          <span id="bar-elapsed-time" class="text-xs text-striveTeal font-mono font-semibold shrink-0">00:00</span>
         </div>
-        <div id="bar-timer-status" class="text-[11px] text-orange-300 mt-0.5 font-medium">Auto-zapis aktywny · Dotknij, by wrócić</div>
+        <div id="bar-timer-status" class="text-[11px] text-orange-300 mt-0.5 font-medium truncate">Dotknij, by wrócić do serii</div>
       </div>
-      <div class="flex items-center gap-1.5">
+      <div class="flex items-center gap-1.5 shrink-0">
         <button onclick="adjustRestTimer(-15)" class="bg-white/10 active:scale-90 transition px-2.5 py-1.5 rounded-xl text-xs font-bold text-gray-100">-15s</button>
         <button onclick="startRestTimer(90, 'Przerwa')" id="bar-timer-btn" class="liquid-orange-btn px-3 py-1.5 rounded-xl text-xs font-bold text-white min-w-[66px] text-center">⏱ 90s</button>
         <button onclick="adjustRestTimer(15)" class="bg-white/10 active:scale-90 transition px-2.5 py-1.5 rounded-xl text-xs font-bold text-gray-100">+15s</button>
@@ -205,7 +197,7 @@
     </div>
   </div>
 
-  <!-- PŁYWAJĄCY PRZEŁĄCZNIK SUB-ZAKŁADEK (PLANY / RUTYNY / ĆWICZENIA) -->
+  <!-- PŁYWAJĄCY PRZEŁĄCZNIK SUB-ZAKŁADEK -->
   <div id="workout-subnav" class="hidden fixed left-0 right-0 max-w-md mx-auto px-8 z-30" style="bottom: calc(84px + env(safe-area-inset-bottom));">
     <div class="liquid-dock p-1 rounded-2xl grid grid-cols-3 text-center text-xs font-semibold">
       <button onclick="switchWorkoutSubTab('plans')" id="subtab-plans" class="py-2 rounded-xl transition">Plany</button>
@@ -214,7 +206,7 @@
     </div>
   </div>
 
-  <!-- PŁYWAJĄCY SZKLANY DOCK NAWIGACJI (iPhone 18 Pro Liquid Glass Dock) -->
+  <!-- DOCK NAWIGACJI -->
   <div class="fixed left-0 right-0 max-w-md mx-auto px-4 z-40 pointer-events-none" style="bottom: max(12px, env(safe-area-inset-bottom));">
     <nav class="liquid-dock rounded-[28px] px-3 py-2 flex justify-between items-center h-[64px] pointer-events-auto">
       <button onclick="navigate('calendar')" id="nav-calendar" class="flex flex-col items-center justify-center w-12 h-12 text-gray-300 active:scale-90 transition">
@@ -239,20 +231,21 @@
     </nav>
   </div>
 
-  <!-- UNIWERSALNY MODAL PEŁNOEKRANOWY (SZKLANE TŁO) -->
+  <!-- MODAL -->
   <div id="modal-overlay" class="hidden fixed inset-0 bg-bgMain/90 backdrop-blur-2xl z-50 overflow-y-auto safe-modal-padding">
     <div id="modal-body" class="max-w-md mx-auto px-4"></div>
   </div>
 
 <script>
 // ============================================================================
-// 1. BAZA DANYCH I KONFIGURACJA REPOZYTORIUM GITHUB (kulaczekkkk/exercises-dataset)
+// BAZA DANYCH I KONFIGURACJA GITHUB
 // ============================================================================
 const DAYS_SHORT = ['pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sob.', 'niedz.'];
 const REPO_RAW = 'https://raw.githubusercontent.com/kulaczekkkk/exercises-dataset/main';
-const ACTIVE_WORKOUT_STORAGE_KEY = 'gymWK_active_workout_autosave_v1';
+const ACTIVE_WORKOUT_STORAGE_KEY = 'gymWK_active_workout_autosave_v6';
 
-const db = new Dexie('gymWK_GitHubPro_v15');
+// Wersja v20 wymusza pobranie dodatkowych partii mięśniowych (secondary_muscles)
+const db = new Dexie('gymWK_GitHubPro_v20');
 db.version(1).stores({
   exercises: '++id, name, category, bodyPart, slug, nextTargetWeight',
   routines: '++id, name, tag, assignedDay',
@@ -286,7 +279,7 @@ let state = {
 };
 
 // ============================================================================
-// AUTO-ZAPIS AKTYWNEGO TRENINGU (CHRONI PRZED ODŚWIEŻENIEM STRONY W SAFARI)
+// AUTO-ZAPIS TRENINGU W LOCIE
 // ============================================================================
 function persistActiveWorkoutState() {
   try {
@@ -302,7 +295,7 @@ function persistActiveWorkoutState() {
     };
     localStorage.setItem(ACTIVE_WORKOUT_STORAGE_KEY, JSON.stringify(payload));
   } catch (e) {
-    console.warn('Błąd auto-zapisu treningu:', e);
+    console.warn('Błąd zapisu:', e);
   }
 }
 
@@ -322,53 +315,40 @@ function restoreActiveWorkoutState() {
       document.getElementById('active-workout-bar').classList.remove('hidden');
       document.getElementById('bar-routine-name').textContent = state.activeWorkout.routineName || 'Trwa trening';
       startGlobalWorkoutClock();
-      openActiveWorkoutModal();
     }
   } catch (e) {
-    console.warn('Nie udało się przywrócić treningu:', e);
+    console.warn('Błąd odzyskiwania:', e);
   }
 }
 
 // ============================================================================
-// ODBLOKOWANIE DŹWIĘKU I POWIADOMIEŃ NA iOS + FLASH EKRANU PO PRZERWIE
+// AUDIO I ALARM KOŃCA PRZERWY
 // ============================================================================
 function unlockIosAudioAndNotifications() {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (AudioCtx && !state.sharedAudioCtx) {
-      state.sharedAudioCtx = new AudioCtx();
-    }
-    if (state.sharedAudioCtx && state.sharedAudioCtx.state === 'suspended') {
-      state.sharedAudioCtx.resume();
-    }
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().catch(() => {});
-    }
+    if (AudioCtx && !state.sharedAudioCtx) state.sharedAudioCtx = new AudioCtx();
+    if (state.sharedAudioCtx && state.sharedAudioCtx.state === 'suspended') state.sharedAudioCtx.resume();
+    if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(() => {});
   } catch (e) {}
 }
 window.addEventListener('touchstart', unlockIosAudioAndNotifications, { passive: true });
 window.addEventListener('click', unlockIosAudioAndNotifications, { passive: true });
 
 function triggerRestFinishedAlert() {
-  // 1. Wizualny Flash całego ekranu + wyskakujący baner
   const overlay = document.getElementById('rest-flash-overlay');
   const barInner = document.getElementById('active-workout-bar-inner');
   if (overlay) {
     overlay.classList.remove('hidden');
     overlay.classList.add('rest-flash-active');
     if (state.flashTimeout) clearTimeout(state.flashTimeout);
-    state.flashTimeout = setTimeout(() => {
-      dismissRestAlarm();
-    }, 5500);
+    state.flashTimeout = setTimeout(() => { dismissRestAlarm(); }, 5500);
   }
   if (barInner) {
     barInner.classList.add('ring-4', 'ring-striveOrange', 'bg-striveOrange/30');
-    setTimeout(() => {
-      barInner.classList.remove('ring-4', 'ring-striveOrange', 'bg-striveOrange/30');
-    }, 4000);
+    setTimeout(() => { barInner.classList.remove('ring-4', 'ring-striveOrange', 'bg-striveOrange/30'); }, 4000);
   }
 
-  // 2. Głośny 4-tonowy sygnał dźwiękowy (Web Audio API)
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!state.sharedAudioCtx && AudioCtx) state.sharedAudioCtx = new AudioCtx();
@@ -390,7 +370,6 @@ function triggerRestFinishedAlert() {
     }
   } catch (e) {}
 
-  // 3. Wibracja oraz powiadomienie systemowe (jeśli wspierane)
   try {
     if (navigator.vibrate) navigator.vibrate([300, 120, 300, 120, 400]);
     if ('Notification' in window && Notification.permission === 'granted') {
@@ -408,167 +387,395 @@ function dismissRestAlarm() {
 }
 
 // ============================================================================
-// GENERATOR ANATOMICZNEGO "LUDZIKA" SVG (PRZÓD + TYŁ) NA PODSUMOWANIE TRENINGU
+// MAPOWANIE SLUGÓW WG REACT-NATIVE-BODY-HIGHLIGHTER (22 PARTIE ANATOMICZNE)
 // ============================================================================
-function renderAnatomicalMuscleMap(exercisesList = []) {
-  // Zliczamy liczbę serii dla każdej partii ciała
+function mapPolishPartToSlugs(partName = '') {
+  const p = String(partName).toLowerCase();
+  if (p.includes('klatka')) return ['chest'];
+  if (p.includes('skośne')) return ['obliques'];
+  if (p.includes('brzuch') || p.includes('pas')) return ['abs', 'obliques'];
+  if (p.includes('biceps') || p.includes('ramienny')) return ['biceps'];
+  if (p.includes('triceps')) return ['triceps'];
+  if (p.includes('przedram')) return ['forearm'];
+  if (p.includes('barki') || p.includes('naramien')) return ['deltoids'];
+  if (p.includes('czworoboczny') || p.includes('kaptur')) return ['trapezius'];
+  if (p.includes('najszerszy') || p.includes('plecy (góra)') || p === 'plecy') return ['upper-back'];
+  if (p.includes('prostownik') || p.includes('lędźw') || p.includes('dolny grzbiet')) return ['lower-back'];
+  if (p.includes('pośladk')) return ['gluteal'];
+  if (p.includes('odwodziciel')) return ['abductors'];
+  if (p.includes('przywodziciel')) return ['adductors'];
+  if (p.includes('czworogłow')) return ['quadriceps'];
+  if (p.includes('dwugłow') || p.includes('kulszowo')) return ['hamstring'];
+  if (p.includes('łydk') || p.includes('płaszczkowat')) return ['calves'];
+  if (p.includes('piszczel')) return ['tibialis'];
+  if (p.includes('kark') || p.includes('szyja')) return ['neck'];
+  return ['chest'];
+}
+
+// Renderowanie człowieka wg architektury react-native-body-highlighter (Przód + Tył)
+function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Cieplna Mapa Mięśni (Główne + Poboczne)') {
   const partSets = {};
+  const slugIntensityPoints = {};
+
   exercisesList.forEach(ex => {
     const setsCount = (ex.sets || []).length;
     if (setsCount > 0) {
       const bp = ex.bodyPart || 'Klatka';
       partSets[bp] = (partSets[bp] || 0) + setsCount;
+      mapPolishPartToSlugs(bp).forEach(slug => {
+        slugIntensityPoints[slug] = (slugIntensityPoints[slug] || 0) + setsCount;
+      });
+
+      if (Array.isArray(ex.secondaryMuscles)) {
+        ex.secondaryMuscles.forEach(sec => {
+          if (sec && sec !== bp && sec !== 'Inne' && sec !== 'Cardio') {
+            partSets[sec] = (partSets[sec] || 0) + (setsCount * 0.5);
+            mapPolishPartToSlugs(sec).forEach(slug => {
+              slugIntensityPoints[slug] = (slugIntensityPoints[slug] || 0) + (setsCount * 0.5);
+            });
+          }
+        });
+      }
     }
   });
 
-  // Pomocnik zwracający kolor i klasę poświaty dla danej partii
-  const getMuscleStyle = (...partNames) => {
-    let total = 0;
-    partNames.forEach(p => { total += (partSets[p] || 0); });
-    if (total >= 4) return { fill: '#ff5500', cls: 'muscle-glow-heavy', active: true };
-    if (total >= 1) return { fill: '#ff9a3c', cls: 'muscle-glow-medium', active: true };
-    return { fill: '#222938', cls: '', active: false };
+  // Domyślny kolor bazowy #3f3f3f zgodny z react-native-body-highlighter
+  const getSlugStyle = (slug) => {
+    const pts = slugIntensityPoints[slug] || 0;
+    if (pts >= 5) return { fill: '#ff3b30', cls: 'muscle-glow-max' };     // Intensywność 3: Czerwień
+    if (pts >= 2.5) return { fill: '#ff7a18', cls: 'muscle-glow-heavy' }; // Intensywność 2: Pomarańcz
+    if (pts > 0) return { fill: '#fbbf24', cls: 'muscle-glow-sec' };      // Intensywność 1 (Poboczne): Złoty/Bursztyn
+    return { fill: '#3f3f3f', cls: '' };                                  // DefaultFill: #3f3f3f
   };
 
-  const cChest = getMuscleStyle('Klatka');
-  const cShoulders = getMuscleStyle('Barki');
-  const cBiceps = getMuscleStyle('Bicepsy');
-  const cForearms = getMuscleStyle('Przedramiona', 'Bicepsy');
-  const cAbs = getMuscleStyle('Brzuch', 'Pas');
-  const cQuads = getMuscleStyle('Czworogłowe ud', 'Przywodziciele ud');
-  const cCalves = getMuscleStyle('Łydki');
-  const cTraps = getMuscleStyle('Czworoboczny grzbietu', 'Plecy (Góra)', 'Kark');
-  const cLats = getMuscleStyle('Najszerszy grzbietu', 'Plecy', 'Plecy (Góra)');
-  const cLowerBack = getMuscleStyle('Prostowniki grzbietu', 'Najszerszy grzbietu');
-  const cTriceps = getMuscleStyle('Tricepsy');
-  const cGlutes = getMuscleStyle('Pośladki');
-  const cHams = getMuscleStyle('Dwugłowe ud');
+  const sHead = { fill: '#333842', cls: '' };
+  const sNeck = getSlugStyle('neck');
+  const sTraps = getSlugStyle('trapezius');
+  const sDelts = getSlugStyle('deltoids');
+  const sChest = getSlugStyle('chest');
+  const sBiceps = getSlugStyle('biceps');
+  const sTriceps = getSlugStyle('triceps');
+  const sForearm = getSlugStyle('forearm');
+  const sAbs = getSlugStyle('abs');
+  const sObliques = getSlugStyle('obliques');
+  const sUpperBack = getSlugStyle('upper-back');
+  const sLowerBack = getSlugStyle('lower-back');
+  const sGlutes = getSlugStyle('gluteal');
+  const sAbductors = getSlugStyle('abductors');
+  const sAdductors = getSlugStyle('adductors');
+  const sQuads = getSlugStyle('quadriceps');
+  const sHams = getSlugStyle('hamstring');
+  const sCalves = getSlugStyle('calves');
+  const sTibialis = getSlugStyle('tibialis');
 
-  const badgesHtml = Object.entries(partSets).map(([part, cnt]) => `
-    <span class="inline-flex items-center gap-1.5 bg-white/5 border border-striveOrange/40 rounded-full px-3 py-1 text-xs font-bold text-white">
-      <span class="w-2 h-2 rounded-full bg-striveOrange"></span>
-      <span>${part}: <strong class="text-striveOrange">${cnt} serii</strong></span>
-    </span>
-  `).join('');
+  const sortedBadges = Object.entries(partSets).sort((a, b) => b[1] - a[1]);
+  const badgesHtml = sortedBadges.map(([part, cnt]) => {
+    const isPrimary = cnt >= 2.5;
+    return `
+      <span class="inline-flex items-center gap-1.5 bg-white/5 border ${isPrimary ? 'border-striveOrange/50' : 'border-yellow-400/35'} rounded-full px-2.5 py-1 text-[11px] font-bold text-white">
+        <span class="w-2 h-2 rounded-full ${isPrimary ? 'bg-striveOrange' : 'bg-yellow-400'}"></span>
+        <span>${part}: <strong class="${isPrimary ? 'text-striveOrange' : 'text-yellow-300'}">${Number.isInteger(cnt) ? cnt : cnt.toFixed(1)} s.</strong></span>
+      </span>`;
+  }).join('');
 
   return `
-    <div class="bg-bgCard rounded-3xl p-4 mb-4">
-      <div class="flex justify-between items-center mb-2">
-        <h3 class="text-xs font-bold uppercase text-striveTeal">🧬 Mapa zaangażowanych mięśni</h3>
-        <div class="flex items-center gap-2 text-[10px] text-gray-400">
-          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#222938] inline-block"></span>0</span>
-          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ff9a3c] inline-block"></span>1-3</span>
-          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ff5500] inline-block"></span>4+ serii</span>
+    <div class="bg-bgCard rounded-3xl p-4 mb-3.5">
+      <div class="flex justify-between items-center mb-2 flex-wrap gap-1">
+        <h3 class="text-xs font-bold uppercase text-striveTeal">${customTitle}</h3>
+        <div class="flex items-center gap-2 text-[10px] text-gray-300">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#3f3f3f] inline-block"></span>0</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#fbbf24] inline-block"></span>Poboczne</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ff7a18] inline-block"></span>Główne</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ff3b30] inline-block"></span>Max</span>
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-2 items-center justify-items-center py-2">
-        <!-- SYLWETKA PRZÓD -->
+      <div class="grid grid-cols-2 gap-2 items-center justify-items-center py-1">
+        <!-- SYLWETKA MĘSKA PRZÓD (Wg react-native-body-highlighter) -->
         <div class="flex flex-col items-center">
-          <span class="text-[10px] font-bold uppercase text-gray-400 mb-1">Przód</span>
-          <svg viewBox="0 0 140 260" class="w-32 h-56">
-            <!-- Głowa i szyja -->
-            <circle cx="70" cy="22" r="14" fill="#1b202c" stroke="#333d52" stroke-width="1.5"/>
-            <rect x="64" y="35" width="12" height="9" rx="3" fill="#1b202c"/>
-
-            <!-- Kaptury przód (Traps) -->
-            <polygon points="50,44 64,38 64,45" fill="${cTraps.fill}" class="${cTraps.cls}" stroke="#0b0e14" stroke-width="1"/>
-            <polygon points="90,44 76,38 76,45" fill="${cTraps.fill}" class="${cTraps.cls}" stroke="#0b0e14" stroke-width="1"/>
-
-            <!-- Barki przód (Delts) -->
-            <path d="M49,44 C37,45 33,55 35,66 L48,64 L50,45 Z" fill="${cShoulders.fill}" class="${cShoulders.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <path d="M91,44 C103,45 107,55 105,66 L92,64 L90,45 Z" fill="${cShoulders.fill}" class="${cShoulders.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Klatka piersiowa (Pectorals) -->
-            <path d="M50,45 L69,45 L69,73 C60,75 51,71 48,64 Z" fill="${cChest.fill}" class="${cChest.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <path d="M90,45 L71,45 L71,73 C80,75 89,71 92,64 Z" fill="${cChest.fill}" class="${cChest.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Bicepsy -->
-            <rect x="33" y="67" width="13" height="26" rx="6" transform="rotate(6 39 80)" fill="${cBiceps.fill}" class="${cBiceps.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <rect x="94" y="67" width="13" height="26" rx="6" transform="rotate(-6 101 80)" fill="${cBiceps.fill}" class="${cBiceps.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Przedramiona przód -->
-            <path d="M30,94 L43,94 L39,124 L27,122 Z" fill="${cForearms.fill}" class="${cForearms.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <path d="M110,94 L97,94 L101,124 L113,122 Z" fill="${cForearms.fill}" class="${cForearms.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Brzuch (Abs + Skośne) -->
-            <rect x="55" y="75" width="13" height="12" rx="3" fill="${cAbs.fill}" class="${cAbs.cls}" stroke="#0b0e14" stroke-width="1"/>
-            <rect x="72" y="75" width="13" height="12" rx="3" fill="${cAbs.fill}" class="${cAbs.cls}" stroke="#0b0e14" stroke-width="1"/>
-            <rect x="55" y="89" width="13" height="12" rx="3" fill="${cAbs.fill}" class="${cAbs.cls}" stroke="#0b0e14" stroke-width="1"/>
-            <rect x="72" y="89" width="13" height="12" rx="3" fill="${cAbs.fill}" class="${cAbs.cls}" stroke="#0b0e14" stroke-width="1"/>
-            <rect x="56" y="103" width="12" height="13" rx="3" fill="${cAbs.fill}" class="${cAbs.cls}" stroke="#0b0e14" stroke-width="1"/>
-            <rect x="72" y="103" width="12" height="13" rx="3" fill="${cAbs.fill}" class="${cAbs.cls}" stroke="#0b0e14" stroke-width="1"/>
-
-            <!-- Czworogłowe ud (Quads) -->
-            <path d="M49,119 L68,121 L65,178 L47,176 C44,155 45,136 49,119 Z" fill="${cQuads.fill}" class="${cQuads.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <path d="M91,119 L72,121 L75,178 L93,176 C96,155 95,136 91,119 Z" fill="${cQuads.fill}" class="${cQuads.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Kolana -->
-            <ellipse cx="56" cy="184" rx="7" ry="6" fill="#1b202c"/>
-            <ellipse cx="84" cy="184" rx="7" ry="6" fill="#1b202c"/>
-
-            <!-- Łydki przód -->
-            <path d="M48,191 L63,191 L60,238 L50,238 C46,220 46,205 48,191 Z" fill="${cCalves.fill}" class="${cCalves.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <path d="M92,191 L77,191 L80,238 L90,238 C94,220 94,205 92,191 Z" fill="${cCalves.fill}" class="${cCalves.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+          <span class="text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Przód (Front)</span>
+          <svg viewBox="0 0 200 400" class="w-36 h-64">
+            <!-- Obrys zewnętrzny SvgMaleWrapper -->
+            <g stroke="#12161f" stroke-width="1.4" stroke-linejoin="round">
+              <!-- head & hair -->
+              <path d="M86,18 C86,8 114,8 114,18 L115,34 C115,45 108,52 100,52 C92,52 85,45 85,34 Z" fill="${sHead.fill}" stroke="#dfdfdf" stroke-width="0.6"/>
+              <!-- neck -->
+              <path d="M91,51 L109,51 L112,64 L88,64 Z" fill="${sNeck.fill}" class="${sNeck.cls}"/>
+              <!-- trapezius (front) -->
+              <path d="M88,58 L66,67 L84,70 L91,62 Z" fill="${sTraps.fill}" class="${sTraps.cls}"/>
+              <path d="M112,58 L134,67 L116,70 L109,62 Z" fill="${sTraps.fill}" class="${sTraps.cls}"/>
+              <!-- deltoids (front left & right) -->
+              <path d="M65,67 C50,70 44,82 47,99 L63,97 C64,86 68,77 73,70 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
+              <path d="M135,67 C150,70 156,82 153,99 L137,97 C136,86 132,77 127,70 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
+              <!-- chest (left & right pectorals) -->
+              <path d="M73,69 L99,70 L99,110 C83,113 70,107 65,96 C66,85 69,76 73,69 Z" fill="${sChest.fill}" class="${sChest.cls}"/>
+              <path d="M127,69 L101,70 L101,110 C117,113 130,107 135,96 C134,85 131,76 127,69 Z" fill="${sChest.fill}" class="${sChest.cls}"/>
+              <!-- biceps (left & right) -->
+              <path d="M47,100 L63,98 C64,113 62,127 59,138 L44,136 C42,123 44,110 47,100 Z" fill="${sBiceps.fill}" class="${sBiceps.cls}"/>
+              <path d="M153,100 L137,98 C136,113 138,127 141,138 L156,136 C158,123 156,110 153,100 Z" fill="${sBiceps.fill}" class="${sBiceps.cls}"/>
+              <!-- forearm (front left & right) -->
+              <path d="M43,138 L58,140 C56,158 51,175 46,188 L35,184 C36,169 39,152 43,138 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
+              <path d="M157,138 L142,140 C144,158 149,175 154,188 L165,184 C164,169 161,152 157,138 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
+              <!-- hands -->
+              <path d="M34,186 L45,190 L41,206 L30,201 Z" fill="#333842"/>
+              <path d="M166,186 L155,190 L159,206 L170,201 Z" fill="#333842"/>
+              <!-- obliques (skośne brzucha left & right) -->
+              <path d="M66,99 L79,109 L78,168 L67,158 C64,139 64,118 66,99 Z" fill="${sObliques.fill}" class="${sObliques.cls}"/>
+              <path d="M134,99 L121,109 L122,168 L133,158 C136,139 136,118 134,99 Z" fill="${sObliques.fill}" class="${sObliques.cls}"/>
+              <!-- abs (6-pack + lower abs) -->
+              <rect x="81" y="111" width="17" height="16" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+              <rect x="102" y="111" width="17" height="16" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+              <rect x="81" y="129" width="17" height="16" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+              <rect x="102" y="129" width="17" height="16" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+              <path d="M81,147 L98,147 L98,174 L84,170 Z" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+              <path d="M119,147 L102,147 L102,174 L116,170 Z" fill="${sAbs.fill}" class="${sAbs.cls}"/>
+              <!-- adductors (przywodziciele ud - wewnętrzne) -->
+              <path d="M85,176 L98,178 L95,238 L86,232 Z" fill="${sAdductors.fill}" class="${sAdductors.cls}"/>
+              <path d="M115,176 L102,178 L105,238 L114,232 Z" fill="${sAdductors.fill}" class="${sAdductors.cls}"/>
+              <!-- quadriceps (czworogłowe ud - zewnętrzne i proste) -->
+              <path d="M67,162 L84,174 L85,254 L66,252 C59,222 60,190 67,162 Z" fill="${sQuads.fill}" class="${sQuads.cls}"/>
+              <path d="M133,162 L116,174 L115,254 L134,252 C141,222 140,190 133,162 Z" fill="${sQuads.fill}" class="${sQuads.cls}"/>
+              <!-- knees -->
+              <rect x="67" y="256" width="24" height="18" rx="6" fill="#2d323b"/>
+              <rect x="109" y="256" width="24" height="18" rx="6" fill="#2d323b"/>
+              <!-- calves (front gastrocnemius - wewnętrzna krawędź) -->
+              <path d="M81,276 L92,276 L89,348 L81,348 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
+              <path d="M119,276 L108,276 L111,348 L119,348 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
+              <!-- tibialis (piszczelowy przedni - zewnętrzna część podudzia) -->
+              <path d="M66,276 L80,276 L80,348 L70,348 C63,322 63,298 66,276 Z" fill="${sTibialis.fill}" class="${sTibialis.cls}"/>
+              <path d="M134,276 L120,276 L120,348 L130,348 C137,322 137,298 134,276 Z" fill="${sTibialis.fill}" class="${sTibialis.cls}"/>
+              <!-- ankles & feet -->
+              <path d="M69,350 L88,350 L91,374 L64,374 Z" fill="#2d323b"/>
+              <path d="M131,350 L112,350 L109,374 L136,374 Z" fill="#2d323b"/>
+            </g>
           </svg>
         </div>
 
-        <!-- SYLWETKA TYŁ -->
+        <!-- SYLWETKA MĘSKA TYŁ (Wg react-native-body-highlighter) -->
         <div class="flex flex-col items-center">
-          <span class="text-[10px] font-bold uppercase text-gray-400 mb-1">Tył</span>
-          <svg viewBox="0 0 140 260" class="w-32 h-56">
-            <!-- Głowa -->
-            <circle cx="70" cy="22" r="14" fill="#1b202c" stroke="#333d52" stroke-width="1.5"/>
-
-            <!-- Czworoboczny grzbietu (Traps - diament) -->
-            <polygon points="70,34 50,44 70,74 90,44" fill="${cTraps.fill}" class="${cTraps.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Tylny akton barków -->
-            <path d="M49,44 C37,45 33,55 35,65 L48,63 Z" fill="${cShoulders.fill}" class="${cShoulders.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <path d="M91,44 C103,45 107,55 105,65 L92,63 Z" fill="${cShoulders.fill}" class="${cShoulders.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Najszerszy grzbietu (Lats - skrzydła V) -->
-            <path d="M48,63 L68,74 L63,106 L51,98 C46,86 46,74 48,63 Z" fill="${cLats.fill}" class="${cLats.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <path d="M92,63 L72,74 L77,106 L89,98 C94,86 94,74 92,63 Z" fill="${cLats.fill}" class="${cLats.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Prostowniki grzbietu (Lower Back) -->
-            <rect x="61" y="96" width="18" height="22" rx="4" fill="${cLowerBack.fill}" class="${cLowerBack.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Tricepsy -->
-            <rect x="33" y="66" width="13" height="27" rx="6" transform="rotate(6 39 80)" fill="${cTriceps.fill}" class="${cTriceps.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <rect x="94" y="66" width="13" height="27" rx="6" transform="rotate(-6 101 80)" fill="${cTriceps.fill}" class="${cTriceps.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Przedramiona tył -->
-            <path d="M30,94 L43,94 L39,124 L27,122 Z" fill="${cForearms.fill}" class="${cForearms.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <path d="M110,94 L97,94 L101,124 L113,122 Z" fill="${cForearms.fill}" class="${cForearms.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Pośladki (Glutes) -->
-            <path d="M51,116 L69,116 L69,142 C56,144 47,136 51,116 Z" fill="${cGlutes.fill}" class="${cGlutes.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <path d="M89,116 L71,116 L71,142 C84,144 93,136 89,116 Z" fill="${cGlutes.fill}" class="${cGlutes.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Dwugłowe ud (Hamstrings) -->
-            <path d="M48,143 L67,143 L64,182 L48,180 C45,166 46,154 48,143 Z" fill="${cHams.fill}" class="${cHams.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <path d="M92,143 L73,143 L76,182 L92,180 C95,166 94,154 92,143 Z" fill="${cHams.fill}" class="${cHams.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-
-            <!-- Łydki tył (Calves) -->
-            <path d="M47,190 L64,190 L60,238 L50,238 C45,218 45,204 47,190 Z" fill="${cCalves.fill}" class="${cCalves.cls}" stroke="#0b0e14" stroke-width="1.2"/>
-            <path d="M93,190 L76,190 L80,238 L90,238 C95,218 95,204 93,190 Z" fill="${cCalves.fill}" class="${cCalves.cls}" stroke="#0b0e14" stroke-width="1.2"/>
+          <span class="text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Tył (Back)</span>
+          <svg viewBox="0 0 200 400" class="w-36 h-64">
+            <g stroke="#12161f" stroke-width="1.4" stroke-linejoin="round">
+              <!-- head & hair -->
+              <path d="M86,18 C86,8 114,8 114,18 L115,34 C115,45 108,52 100,52 C92,52 85,45 85,34 Z" fill="${sHead.fill}" stroke="#dfdfdf" stroke-width="0.6"/>
+              <!-- neck -->
+              <path d="M90,48 L110,48 L112,58 L88,58 Z" fill="${sNeck.fill}" class="${sNeck.cls}"/>
+              <!-- trapezius (back diamond) -->
+              <polygon points="100,54 68,66 100,112 132,66" fill="${sTraps.fill}" class="${sTraps.cls}"/>
+              <!-- deltoids (rear left & right) -->
+              <path d="M67,66 C51,69 45,81 47,97 L65,95 C66,85 69,75 74,69 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
+              <path d="M133,66 C149,69 155,81 153,97 L135,95 C134,85 131,75 126,69 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
+              <!-- upper-back (lats + teres + rhomboids) -->
+              <path d="M65,95 L98,112 L94,154 L70,144 C64,127 63,111 65,95 Z" fill="${sUpperBack.fill}" class="${sUpperBack.cls}"/>
+              <path d="M135,95 L102,112 L106,154 L130,144 C136,127 137,111 135,95 Z" fill="${sUpperBack.fill}" class="${sUpperBack.cls}"/>
+              <!-- lower-back (erector spinae / prostowniki) -->
+              <path d="M74,145 L98,154 L98,177 L74,171 Z" fill="${sLowerBack.fill}" class="${sLowerBack.cls}"/>
+              <path d="M126,145 L102,154 L102,177 L126,171 Z" fill="${sLowerBack.fill}" class="${sLowerBack.cls}"/>
+              <!-- triceps (left & right) -->
+              <path d="M47,99 L63,97 C64,114 62,128 59,139 L44,137 C42,124 44,110 47,99 Z" fill="${sTriceps.fill}" class="${sTriceps.cls}"/>
+              <path d="M153,99 L137,97 C136,114 138,128 141,139 L156,137 C158,124 156,110 153,99 Z" fill="${sTriceps.fill}" class="${sTriceps.cls}"/>
+              <!-- forearm (back left & right) -->
+              <path d="M43,140 L58,142 C56,160 51,176 46,188 L35,184 C36,169 39,153 43,140 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
+              <path d="M157,140 L142,142 C144,160 149,176 154,188 L165,184 C164,169 161,153 157,140 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
+              <!-- hands -->
+              <path d="M34,186 L45,190 L41,206 L30,201 Z" fill="#333842"/>
+              <path d="M166,186 L155,190 L159,206 L170,201 Z" fill="#333842"/>
+              <!-- abductors (odwodziciele / gluteus medius - boczna góra pośladka) -->
+              <path d="M68,169 L79,172 L75,196 L63,189 C63,181 65,174 68,169 Z" fill="${sAbductors.fill}" class="${sAbductors.cls}"/>
+              <path d="M132,169 L121,172 L125,196 L137,189 C137,181 135,174 132,169 Z" fill="${sAbductors.fill}" class="${sAbductors.cls}"/>
+              <!-- gluteal (pośladki left & right) -->
+              <path d="M79,172 L99,177 L99,214 C81,217 66,208 64,190 L75,195 Z" fill="${sGlutes.fill}" class="${sGlutes.cls}"/>
+              <path d="M121,172 L101,177 L101,214 C119,217 134,208 136,190 L125,195 Z" fill="${sGlutes.fill}" class="${sGlutes.cls}"/>
+              <!-- hamstring (dwugłowe ud left & right) -->
+              <path d="M65,212 L96,216 L92,268 L68,266 C62,248 62,229 65,212 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
+              <path d="M135,212 L104,216 L108,268 L132,266 C138,248 138,229 135,212 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
+              <!-- calves (łydki tył - dwie głowy brzuchatego) -->
+              <path d="M66,272 L92,272 L88,348 L70,348 C63,322 63,296 66,272 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
+              <path d="M134,272 L108,272 L112,348 L130,348 C137,322 137,296 134,272 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
+              <!-- feet -->
+              <path d="M69,350 L88,350 L91,374 L64,374 Z" fill="#2d323b"/>
+              <path d="M131,350 L112,350 L109,374 L136,374 Z" fill="#2d323b"/>
+            </g>
           </svg>
         </div>
       </div>
 
-      ${badgesHtml ? `<div class="flex flex-wrap gap-1.5 justify-center mt-2 pt-2.5 border-t border-white/10">${badgesHtml}</div>` : '<p class="text-center text-xs text-gray-400 mt-1">Zaznacz serie jako wykonane, aby podświetlić mięśnie.</p>'}
+      ${badgesHtml ? `<div class="flex flex-wrap gap-1.5 justify-center mt-2 pt-2.5 border-t border-white/10">${badgesHtml}</div>` : '<p class="text-center text-[11px] text-gray-400 mt-1">Brak zaliczonych serii w wybranym okresie – wykonaj trening, aby rozgrzać mapę mięśni!</p>'}
     </div>
   `;
 }
 
+// ============================================================================
+// POBIERANIE BAZY Z GITHUBA (WRAZ Z WSZYSTKIMI DODATKOWYMI PARTIAMI)
+// ============================================================================
+function translateEquipmentToPolish(equipment = '') {
+  const eq = String(equipment).toLowerCase().trim();
+  const map = {
+    'body weight': 'Masa ciała', 'barbell': 'Sztanga', 'dumbbell': 'Hantle',
+    'cable': 'Wyciąg', 'kettlebell': 'Kettlebell', 'band': 'Taśma oporowa',
+    'weighted': 'Obciążenie', 'stability ball': 'Piłka gimnastyczna',
+    'ez barbell': 'Sztanga łamana EZ', 'leverage machine': 'Maszyna',
+    'smith machine': 'Suwnica Smitha', 'assisted': 'Maszyna wspomagana'
+  };
+  if (map[eq]) return map[eq];
+  if (eq.includes('machine') || eq.includes('leverage')) return 'Maszyna';
+  if (eq.includes('cable')) return 'Wyciąg';
+  if (eq.includes('dumbbell')) return 'Hantle';
+  if (eq.includes('barbell')) return 'Sztanga';
+  return equipment ? (equipment.charAt(0).toUpperCase() + equipment.slice(1)) : 'Inne';
+}
+
+function translateTargetToPolish(target = '', category = '') {
+  const t = String(target).toLowerCase().trim();
+  const c = String(category).toLowerCase().trim();
+  const map = {
+    'abs': 'Brzuch',
+    'abdominals': 'Brzuch',
+    'core': 'Brzuch',
+    'waist': 'Brzuch',
+    'obliques': 'Skośne brzucha',
+    'hip flexors': 'Brzuch',
+    'pectorals': 'Klatka',
+    'pectoralis major': 'Klatka',
+    'chest': 'Klatka',
+    'serratus anterior': 'Klatka',
+    'biceps': 'Bicepsy',
+    'brachialis': 'Bicepsy',
+    'glutes': 'Pośladki',
+    'gluteus maximus': 'Pośladki',
+    'abductors': 'Odwodziciele',
+    'adductors': 'Przywodziciele ud',
+    'groin': 'Przywodziciele ud',
+    'delts': 'Barki',
+    'deltoids': 'Barki',
+    'shoulders': 'Barki',
+    'rear deltoids': 'Barki',
+    'anterior deltoid': 'Barki',
+    'rotator cuff': 'Barki',
+    'triceps': 'Tricepsy',
+    'upper back': 'Plecy (Góra)',
+    'rhomboids': 'Plecy (Góra)',
+    'lats': 'Najszerszy grzbietu',
+    'latissimus dorsi': 'Najszerszy grzbietu',
+    'back': 'Najszerszy grzbietu',
+    'lower back': 'Prostowniki grzbietu',
+    'spine': 'Prostowniki grzbietu',
+    'erector spinae': 'Prostowniki grzbietu',
+    'traps': 'Czworoboczny grzbietu',
+    'trapezius': 'Czworoboczny grzbietu',
+    'levator scapulae': 'Czworoboczny grzbietu',
+    'calves': 'Łydki',
+    'soleus': 'Łydki',
+    'gastrocnemius': 'Łydki',
+    'lower legs': 'Łydki',
+    'tibialis': 'Piszczelowy',
+    'ankles': 'Łydki',
+    'ankle stabilizers': 'Łydki',
+    'quads': 'Czworogłowe ud',
+    'quadriceps': 'Czworogłowe ud',
+    'upper legs': 'Czworogłowe ud',
+    'forearms': 'Przedramiona',
+    'lower arms': 'Przedramiona',
+    'wrist flexors': 'Przedramiona',
+    'wrist extensors': 'Przedramiona',
+    'grip': 'Przedramiona',
+    'hamstrings': 'Dwugłowe ud',
+    'cardiovascular system': 'Cardio',
+    'cardio': 'Cardio',
+    'neck': 'Kark',
+    'sternocleidomastoid': 'Kark'
+  };
+  return map[t] || map[c] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : 'Inne');
+}
+
+function formatExerciseTitle(rawName = '') {
+  return String(rawName).split(' ').map(w => w ? w.charAt(0).toUpperCase() + w.slice(1) : '').join(' ');
+}
+
+async function initCatalogOnly(forceReload = false) {
+  const exCount = await db.exercises.count();
+  if (exCount >= 1000 && !forceReload) return;
+
+  const banner = document.getElementById('sync-banner');
+  const bannerTxt = document.getElementById('sync-banner-text');
+  if (banner) banner.classList.remove('hidden');
+
+  try {
+    let response = await fetch('data/exercises.json').catch(() => null);
+    if (!response || !response.ok) {
+      response = await fetch(`${REPO_RAW}/data/exercises.json`);
+    }
+    if (!response || !response.ok) throw new Error('Błąd pobierania');
+
+    const exercisesData = await response.json();
+    const existingList = await db.exercises.toArray();
+    const existingMetaMap = {};
+    existingList.forEach(old => {
+      if (old.slug) existingMetaMap[old.slug] = { sessions: old.sessions || 0, nextTargetWeight: old.nextTargetWeight || null };
+    });
+
+    const catalog = exercisesData.map(ex => {
+      const category = translateEquipmentToPolish(ex.equipment || '');
+      const bodyPart = translateTargetToPolish(ex.target || '', ex.category || ex.body_part || '');
+      const name = formatExerciseTitle(ex.name || 'Ćwiczenie');
+
+      let tip = 'Kontroluj fazę opuszczania i pilnuj zakresu ruchu.';
+      if (ex.instructions) {
+        if (typeof ex.instructions.pl === 'string' && ex.instructions.pl.trim() !== '') {
+          tip = ex.instructions.pl.trim();
+        } else if (typeof ex.instructions.en === 'string' && ex.instructions.en.trim() !== '') {
+          tip = ex.instructions.en.trim();
+        }
+      }
+
+      const rawSec = [
+        ...(Array.isArray(ex.secondary_muscles) ? ex.secondary_muscles : []),
+        ...(ex.muscle_group ? [ex.muscle_group] : [])
+      ];
+      const secondaryMuscles = [...new Set(rawSec.map(m => translateTargetToPolish(m, '')).filter(m => m && m !== bodyPart && m !== 'Inne'))];
+
+      const slug = String(ex.id || ex.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '_'));
+      const cleanGifRel = (ex.gif_url || '').replace(/^\.?\//, '');
+      const cleanImgRel = (ex.image || '').replace(/^\.?\//, '');
+
+      const rawGifUrl = cleanGifRel ? `${REPO_RAW}/${cleanGifRel}` : '';
+      const imageUrl = cleanImgRel ? `${REPO_RAW}/${cleanImgRel}` : '';
+      const prevMeta = existingMetaMap[slug] || {};
+
+      return {
+        slug,
+        name,
+        category,
+        bodyPart,
+        secondaryMuscles,
+        sessions: prevMeta.sessions || 0,
+        nextTargetWeight: prevMeta.nextTargetWeight || null,
+        tip,
+        customGifUrl: rawGifUrl,
+        imageUrl
+      };
+    });
+
+    await db.exercises.clear();
+    await db.exercises.bulkAdd(catalog);
+
+    if (bannerTxt) bannerTxt.textContent = `✓ Załadowano ${catalog.length} ćwiczeń oraz mięśnie poboczne!`;
+    setTimeout(() => { if (banner) banner.classList.add('hidden'); }, 1800);
+    renderCurrentView();
+  } catch (error) {
+    console.error('Błąd:', error);
+    if (banner) banner.classList.add('hidden');
+  }
+}
+
+// ============================================================================
+// NARZĘDZIA POMOCNICZE
+// ============================================================================
 function checkIosStandaloneMode() {
   const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
   const dismissed = localStorage.getItem('gymWK_hide_pwa_hint') === '1';
   const hintEl = document.getElementById('ios-pwa-hint');
-  if (!isStandalone && !dismissed && hintEl) {
-    hintEl.classList.remove('hidden');
-  }
+  if (!isStandalone && !dismissed && hintEl) hintEl.classList.remove('hidden');
 }
 
 function dismissPwaHint() {
@@ -605,12 +812,8 @@ function parseRepRange(rangeStr) {
 function getSetBadgeInfo(setsArray, currentIndex) {
   const current = setsArray[currentIndex];
   const type = current.type || 'N';
-  if (type === 'R') {
-    return { label: 'R', isWorking: false, classes: 'bg-striveOrange/20 text-striveOrange border border-striveOrange/60' };
-  }
-  if (type === 'D') {
-    return { label: 'D', isWorking: false, classes: 'bg-purple-500/20 text-purple-300 border border-purple-400/50' };
-  }
+  if (type === 'R') return { label: 'R', isWorking: false, classes: 'bg-striveOrange/20 text-striveOrange border border-striveOrange/60' };
+  if (type === 'D') return { label: 'D', isWorking: false, classes: 'bg-purple-500/20 text-purple-300 border border-purple-400/50' };
   let workingNumber = 0;
   for (let i = 0; i <= currentIndex; i++) {
     if ((setsArray[i].type || 'N') === 'N') workingNumber++;
@@ -624,25 +827,21 @@ function nextSetType(currentType) {
   return 'N';
 }
 
-// Renderowanie GIF-ów (videos/) oraz miniaturek (images/) z Twojego repozytorium GitHub
 function renderAnimatedExerciseThumb(ex, sizeClass = 'w-14 h-14') {
   if (!ex || ex.isPlaceholder) {
     return `<div class="${sizeClass} rounded-2xl bg-striveTealDark/60 border border-striveTeal/50 flex items-center justify-center shrink-0 text-xs font-bold text-striveTeal">?</div>`;
   }
-
-  const primarySrc = ex.customGifUrl || ex.localGifUrl || ex.imageUrl || '';
-  const rawBackupSrc = ex.rawGifUrl || ex.imageUrl || primarySrc;
-  const imgFallbackSrc = ex.imageUrl || rawBackupSrc;
+  const primarySrc = ex.customGifUrl || ex.imageUrl || '';
+  const fallbackSrc = ex.imageUrl || primarySrc;
 
   if (primarySrc) {
     return `
       <div class="${sizeClass} rounded-2xl bg-white flex items-center justify-center shrink-0 overflow-hidden border border-white/25 shadow-inner relative">
         <img src="${primarySrc}" alt="${ex.name || 'Ćwiczenie'}" loading="lazy"
-          onerror="if(this.src !== '${rawBackupSrc}'){this.src='${rawBackupSrc}';}else if(this.src !== '${imgFallbackSrc}'){this.src='${imgFallbackSrc}';}else{this.style.opacity='0.25';}"
+          onerror="if(this.src !== '${fallbackSrc}'){this.src='${fallbackSrc}';}else{this.style.opacity='0.25';}"
           class="w-full h-full object-contain bg-white" />
       </div>`;
   }
-
   return `<div class="${sizeClass} rounded-2xl bg-striveTealDark/60 border border-striveTeal/50 flex items-center justify-center shrink-0 text-xs font-bold text-striveTeal">🏋️</div>`;
 }
 
@@ -668,158 +867,7 @@ function compressImageFileToDataUrl(file) {
 }
 
 // ============================================================================
-// 2. TŁUMACZENIE I POBIERANIE WSZYSTKICH 1,324 ĆWICZEŃ Z data/exercises.json
-// ============================================================================
-function translateEquipmentToPolish(equipment = '') {
-  const eq = String(equipment).toLowerCase().trim();
-  const equipmentMap = {
-    'body weight': 'Masa ciała',
-    'barbell': 'Sztanga',
-    'dumbbell': 'Hantle',
-    'cable': 'Wyciąg',
-    'kettlebell': 'Kettlebell',
-    'band': 'Taśma oporowa',
-    'weighted': 'Obciążenie',
-    'stability ball': 'Piłka gimnastyczna',
-    'ez barbell': 'Sztanga łamana EZ',
-    'leverage machine': 'Maszyna',
-    'smith machine': 'Suwnica Smitha',
-    'assisted': 'Maszyna wspomagana',
-    'medicine ball': 'Piłka lekarska',
-    'olympic barbell': 'Sztanga olimpijska',
-    'trap bar': 'Gryf Heksagonalny (Trap Bar)',
-    'bosu ball': 'Piłka BOSU',
-    'roller': 'Wałek / Roller',
-    'sled machine': 'Suwnica / Sanki',
-    'rope': 'Lina'
-  };
-  if (equipmentMap[eq]) return equipmentMap[eq];
-  if (eq.includes('machine') || eq.includes('leverage') || eq.includes('sled')) return 'Maszyna';
-  if (eq.includes('cable')) return 'Wyciąg';
-  if (eq.includes('dumbbell')) return 'Hantle';
-  if (eq.includes('barbell')) return 'Sztanga';
-  return equipment ? (equipment.charAt(0).toUpperCase() + equipment.slice(1)) : 'Inne';
-}
-
-function translateTargetToPolish(target = '', category = '') {
-  const t = String(target).toLowerCase().trim();
-  const c = String(category).toLowerCase().trim();
-  const targetMap = {
-    'abs': 'Brzuch',
-    'waist': 'Brzuch',
-    'pectorals': 'Klatka',
-    'chest': 'Klatka',
-    'serratus anterior': 'Klatka',
-    'biceps': 'Bicepsy',
-    'brachialis': 'Bicepsy',
-    'glutes': 'Pośladki',
-    'abductors': 'Pośladki',
-    'delts': 'Barki',
-    'shoulders': 'Barki',
-    'triceps': 'Tricepsy',
-    'upper back': 'Plecy (Góra)',
-    'lats': 'Najszerszy grzbietu',
-    'back': 'Najszerszy grzbietu',
-    'spine': 'Prostowniki grzbietu',
-    'traps': 'Czworoboczny grzbietu',
-    'levator scapulae': 'Czworoboczny grzbietu',
-    'calves': 'Łydki',
-    'lower legs': 'Łydki',
-    'quads': 'Czworogłowe ud',
-    'adductors': 'Przywodziciele ud',
-    'upper legs': 'Czworogłowe ud',
-    'forearms': 'Przedramiona',
-    'lower arms': 'Przedramiona',
-    'hamstrings': 'Dwugłowe ud',
-    'cardiovascular system': 'Cardio',
-    'cardio': 'Cardio',
-    'neck': 'Kark'
-  };
-  return targetMap[t] || targetMap[c] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : 'Inne');
-}
-
-function formatExerciseTitle(rawName = '') {
-  return String(rawName)
-    .split(' ')
-    .map(w => w ? w.charAt(0).toUpperCase() + w.slice(1) : '')
-    .join(' ');
-}
-
-async function initCatalogOnly(forceReload = false) {
-  const exCount = await db.exercises.count();
-  if (exCount >= 1000 && !forceReload) return;
-
-  const banner = document.getElementById('sync-banner');
-  const bannerTxt = document.getElementById('sync-banner-text');
-  if (banner) banner.classList.remove('hidden');
-
-  try {
-    let response = await fetch('data/exercises.json').catch(() => null);
-    if (!response || !response.ok) {
-      response = await fetch(`${REPO_RAW}/data/exercises.json`);
-    }
-    if (!response || !response.ok) throw new Error('Nie udało się pobrać data/exercises.json');
-
-    const exercisesData = await response.json();
-
-    const existingList = await db.exercises.toArray();
-    const existingMetaMap = {};
-    existingList.forEach(old => {
-      if (old.slug) existingMetaMap[old.slug] = { sessions: old.sessions || 0, nextTargetWeight: old.nextTargetWeight || null };
-    });
-
-    const catalog = exercisesData.map(ex => {
-      const category = translateEquipmentToPolish(ex.equipment || '');
-      const bodyPart = translateTargetToPolish(ex.target || '', ex.category || ex.body_part || '');
-      const name = formatExerciseTitle(ex.name || 'Ćwiczenie');
-
-      let tip = 'Kontroluj fazę opuszczania (2-3s) i pilnuj pełnego zakresu ruchu.';
-      if (ex.instructions) {
-        if (typeof ex.instructions.pl === 'string' && ex.instructions.pl.trim() !== '') {
-          tip = ex.instructions.pl.trim();
-        } else if (typeof ex.instructions.en === 'string' && ex.instructions.en.trim() !== '') {
-          tip = ex.instructions.en.trim();
-        }
-      }
-
-      const slug = String(ex.id || ex.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '_'));
-      const cleanGifRel = (ex.gif_url || '').replace(/^\.?\//, '');
-      const cleanImgRel = (ex.image || '').replace(/^\.?\//, '');
-
-      const localGifUrl = cleanGifRel ? `./${cleanGifRel}` : '';
-      const rawGifUrl = cleanGifRel ? `${REPO_RAW}/${cleanGifRel}` : '';
-      const imageUrl = cleanImgRel ? `${REPO_RAW}/${cleanImgRel}` : '';
-      const prevMeta = existingMetaMap[slug] || {};
-
-      return {
-        slug,
-        name,
-        category,
-        bodyPart,
-        sessions: prevMeta.sessions || 0,
-        nextTargetWeight: prevMeta.nextTargetWeight || null,
-        tip,
-        localGifUrl,
-        rawGifUrl,
-        customGifUrl: rawGifUrl,
-        imageUrl
-      };
-    });
-
-    await db.exercises.clear();
-    await db.exercises.bulkAdd(catalog);
-
-    if (bannerTxt) bannerTxt.textContent = `✓ Załadowano ${catalog.length} ćwiczeń i animacji GIF z repozytorium!`;
-    setTimeout(() => { if (banner) banner.classList.add('hidden'); }, 1800);
-    renderCurrentView();
-  } catch (error) {
-    console.error('Błąd ładowania data/exercises.json:', error);
-    if (banner) banner.classList.add('hidden');
-  }
-}
-
-// ============================================================================
-// 3. NAWIGACJA GŁÓWNA
+// NAWIGACJA
 // ============================================================================
 function navigate(tabName) {
   state.tab = tabName;
@@ -878,13 +926,15 @@ async function renderCurrentView() {
 }
 
 // ============================================================================
-// WIDOK 1: EKRAN GŁÓWNY (LIQUID GLASS DASHBOARD)
+// WIDOK 1: HOME (Z TYGODNIOWYM ZESTAWEM DNI I TYGODNIOWĄ MAPĄ MIĘŚNI)
 // ============================================================================
 async function renderHomeView() {
   const workouts = await db.workouts.toArray();
   workouts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
   const measurements = await db.measurements.orderBy('date').toArray();
   const routines = await db.routines.toArray();
+  const allEx = await db.exercises.toArray();
+  const exMap = Object.fromEntries(allEx.map(e => [e.id, e]));
   const activePlan = await db.plans.where('active').equals(1).first();
   const noteObj = await db.settings.get('stickyNote');
   const stickyText = noteObj ? noteObj.value : 'Naciśnij aby edytować tekst';
@@ -935,9 +985,30 @@ async function renderHomeView() {
 
   const startOfWeek = new Date(today.getTime() - currDayIdx * 86400000);
   startOfWeek.setHours(0,0,0,0);
-  const thisWeekCount = workouts.filter(w => new Date(w.date) >= startOfWeek).length;
+  const startOfWeekIso = toLocalIso(startOfWeek);
+
+  const thisWeekWorkouts = workouts.filter(w => w.date >= startOfWeekIso);
+  const thisWeekCount = thisWeekWorkouts.length;
   const currentMonthPrefix = toLocalIso(today).slice(0, 7);
   const thisMonthCount = workouts.filter(w => w.date.startsWith(currentMonthPrefix)).length;
+
+  // Zbieranie wszystkich ćwiczeń wykonanych w bieżącym tygodniu do Tygodniowej Mapy Mięśni
+  const weeklyExercisesAggregated = [];
+  thisWeekWorkouts.forEach(w => {
+    (w.exercises || []).forEach(ex => {
+      const dbEx = exMap[ex.exId];
+      weeklyExercisesAggregated.push({
+        ...ex,
+        bodyPart: ex.bodyPart || (dbEx ? dbEx.bodyPart : 'Klatka'),
+        secondaryMuscles: (ex.secondaryMuscles && ex.secondaryMuscles.length) ? ex.secondaryMuscles : (dbEx ? dbEx.secondaryMuscles : [])
+      });
+    });
+  });
+
+  const weeklyMuscleHeatmapHtml = renderAnatomicalMuscleMap(
+    weeklyExercisesAggregated,
+    `🔥 Tygodniowa Mapa Mięśni (${formatDayMonth(startOfWeek)} – ${formatDayMonth(today)})`
+  );
 
   const lastWorkout = workouts[0];
   const lastWorkoutHtml = lastWorkout ? `
@@ -971,12 +1042,16 @@ async function renderHomeView() {
     </div>
     <p class="text-center text-[11px] text-gray-400 mb-3">Regularność w ostatnich tygodniach</p>
 
+    <!-- Tygodniowy zestaw dni -->
     <div class="bg-bgCard rounded-3xl p-3.5 mb-1">
       <div class="flex justify-between items-center px-0.5">${weekRowHtml}</div>
     </div>
     <p class="text-center text-[11px] text-gray-400 mb-3">
       <span class="text-striveGreen font-bold">✓</span> zrobiony · <span class="text-striveTeal font-bold">•</span> dzień treningowy · <span class="text-gray-500">–</span> wolne
     </p>
+
+    <!-- TYGODNIOWA MAPA MIĘŚNI NA STRONIE GŁÓWNEJ -->
+    ${weeklyMuscleHeatmapHtml}
 
     <div onclick="navigate('profile'); setTimeout(()=>openMeasurementsModal(),100)" class="bg-bgCard rounded-3xl p-4 mb-1 relative overflow-hidden cursor-pointer min-h-[104px] flex flex-col justify-between active:scale-[0.99] transition">
       <div><span class="liquid-orange-btn text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">Waga i Sylwetka</span></div>
@@ -1039,7 +1114,7 @@ async function renderPlansView() {
     return `
       <div class="text-center py-14 px-4 bg-bgCard rounded-3xl mt-2">
         <h2 class="text-xl font-bold mb-2">Brak aktywnego planu</h2>
-        <p class="text-xs text-gray-300 mb-6 leading-relaxed">Utwórz swoje rutyny w zakładce „Rutyny”, a następnie połącz je w Plan. Wyniki ćwiczeń są globalne dla całego planu!</p>
+        <p class="text-xs text-gray-300 mb-6 leading-relaxed">Utwórz swoje rutyny w zakładce „Rutyny”, a następnie połącz je w Plan.</p>
         <div class="flex justify-center gap-3">
           <button onclick="switchWorkoutSubTab('routines')" class="liquid-pill text-white font-bold text-xs px-4 py-3 rounded-2xl">Przejdź do Rutyn</button>
           <button onclick="openPlanWizard()" class="liquid-orange-btn text-white font-bold text-xs px-5 py-3 rounded-2xl">+ Utwórz Plan</button>
@@ -1074,7 +1149,7 @@ async function renderPlansView() {
     <div class="flex justify-between items-center mb-4 pt-1">
       <button onclick="deletePlan(${activePlan.id})" class="text-xs text-gray-400">Usuń</button>
       <h1 class="text-lg font-bold">Aktywny Plan</h1>
-      <button onclick="openPlanWizard()" class="liquid-pill text-white text-xs font-bold px-3.5 py-1.5 rounded-full">+ Nowy</button>
+      <button onclick="openPlanWizard()" class="liquid-pill text-white font-bold text-xs px-3.5 py-1.5 rounded-full">+ Nowy</button>
     </div>
 
     <div class="flex justify-between items-center mb-3">
@@ -1133,7 +1208,7 @@ async function deletePlan(planId) {
 }
 
 // ============================================================================
-// WIDOK 2B: RUTYNY
+// WIDOK 2B: RUTYNY (Z PODGLĄDEM GIF + OPIS BEZ ZAMYKANIA KREATORA)
 // ============================================================================
 async function renderRoutinesView() {
   const routines = await db.routines.toArray();
@@ -1143,7 +1218,7 @@ async function renderRoutinesView() {
   const emptyHtml = `
     <div class="text-center py-14 px-4 bg-bgCard rounded-3xl">
       <h3 class="text-base font-bold mb-1">Nie masz jeszcze żadnej rutyny</h3>
-      <p class="text-xs text-gray-300 mb-4">Stwórz rutynę, ustaw czas przerwy dla rozgrzewki (R) oraz serii roboczej (1,2,3) i dobierz ćwiczenia z bazy 1,324 GIF-ów.</p>
+      <p class="text-xs text-gray-300 mb-4">Stwórz rutynę i dobierz ćwiczenia z bazy GIF-ów.</p>
       <button onclick="openRoutineCreatorModal()" class="liquid-orange-btn text-white text-xs font-bold px-5 py-3 rounded-2xl">+ Stwórz pierwszą rutynę</button>
     </div>`;
 
@@ -1313,11 +1388,13 @@ async function renderRoutineDraftModal() {
       <div class="bg-bgCard rounded-3xl p-3.5 mb-3">
         <div class="flex items-center justify-between gap-2 mb-2">
           <div class="flex items-center gap-2.5 min-w-0">
-            ${renderAnimatedExerciseThumb(exObj, 'w-12 h-12')}
+            <div onclick="${exObj.id ? `openExerciseDetailFromDraft(${exObj.id})` : ''}" class="cursor-pointer shrink-0" title="Podejrzyj duży GIF i opis">
+              ${renderAnimatedExerciseThumb(exObj, 'w-12 h-12')}
+            </div>
             <div class="min-w-0">
-              <div class="text-xs font-bold text-white truncate">${exIdx + 1}. ${exObj.name}</div>
+              <div onclick="${exObj.id ? `openExerciseDetailFromDraft(${exObj.id})` : ''}" class="text-xs font-bold text-white truncate cursor-pointer hover:underline">${exIdx + 1}. ${exObj.name} <span class="text-[10px] text-striveTeal">(👁️ podgląd)</span></div>
               <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                <span class="text-[10px] text-gray-300">Zakres ćwiczenia:</span>
+                <span class="text-[10px] text-gray-300">Zakres:</span>
                 <input type="text" value="${defaultExRange}" placeholder="8-10"
                   onchange="applyRangeToAllWorkingSets(${exIdx}, this.value)"
                   class="w-16 bg-bgInput rounded-lg px-1.5 py-0.5 text-center text-xs font-bold text-striveOrange">
@@ -1333,8 +1410,8 @@ async function renderRoutineDraftModal() {
 
         <div class="grid grid-cols-12 text-[10px] uppercase text-gray-400 font-bold pb-1 border-b border-white/10">
           <div class="col-span-2 text-center">Seria</div>
-          <div class="col-span-4 text-center">Zakres (np. 12-15)</div>
-          <div class="col-span-4 text-center">Przerwa i progres</div>
+          <div class="col-span-4 text-center">Zakres</div>
+          <div class="col-span-4 text-center">Przerwa</div>
           <div class="col-span-2 text-right">Usuń</div>
         </div>
 
@@ -1364,7 +1441,7 @@ async function renderRoutineDraftModal() {
       </div>
 
       <div>
-        <label class="text-sm font-bold block mb-1.5">Przypisz dzień tygodnia (zrobisz go też w inny dzień)</label>
+        <label class="text-sm font-bold block mb-1.5">Przypisz dzień tygodnia</label>
         <div class="grid grid-cols-4 gap-1.5">
           ${[...DAYS_SHORT, 'Dowolny'].map(day => `
             <button onclick="state.routineDraft.assignedDay = '${day === 'Dowolny' ? '' : day}'; renderRoutineDraftModal()"
@@ -1379,13 +1456,13 @@ async function renderRoutineDraftModal() {
         <label class="text-xs font-bold uppercase text-striveTeal block mb-2">⏱ Czasy przerw w tej rutynie (sekundy)</label>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="text-[11px] text-striveOrange font-semibold block mb-1">Przerwa po Rozgrzewce (R)</label>
+            <label class="text-[11px] text-striveOrange font-semibold block mb-1">Rozgrzewka (R)</label>
             <input type="number" step="15" value="${d.warmupRestSec || 60}"
               onchange="state.routineDraft.warmupRestSec = parseInt(this.value)||60; renderRoutineDraftModal()"
               class="w-full bg-bgInput rounded-2xl p-2 text-center text-sm font-bold text-white">
           </div>
           <div>
-            <label class="text-[11px] text-striveTeal font-semibold block mb-1">Przerwa po Serii Roboczej (1,2,3)</label>
+            <label class="text-[11px] text-striveTeal font-semibold block mb-1">Robocza (1,2,3)</label>
             <input type="number" step="15" value="${d.workingRestSec || 120}"
               onchange="state.routineDraft.workingRestSec = parseInt(this.value)||120; renderRoutineDraftModal()"
               class="w-full bg-bgInput rounded-2xl p-2 text-center text-sm font-bold text-white">
@@ -1393,27 +1470,12 @@ async function renderRoutineDraftModal() {
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="text-sm font-bold block mb-1">Tagi</label>
-          <input type="text" placeholder="+ Nowy Tag (np. FBW 3x)" value="${d.tag}"
-            oninput="state.routineDraft.tag = this.value"
-            class="w-full bg-bgInput rounded-2xl p-2.5 text-xs">
-        </div>
-        <div>
-          <label class="text-sm font-bold block mb-1">Automatyzacja</label>
-          <select onchange="state.routineDraft.progression = this.value" class="w-full bg-bgInput rounded-2xl p-2.5 text-xs font-semibold text-striveOrange">
-            ${['Podwójna progresja', 'Liniowa (+2.5kg)', 'Cel powtórzeń', 'Brak (ręczna)'].map(p => `<option ${d.progression === p ? 'selected' : ''}>${p}</option>`).join('')}
-          </select>
-        </div>
-      </div>
-
       <div>
         <div class="flex justify-between items-center mb-1">
           <label class="text-sm font-bold">Ćwiczenia (${d.exercises.length})</label>
-          <span class="text-[10px] text-gray-400">Kliknij numer serii: 1,2,3 ⇄ R ⇄ D</span>
+          <span class="text-[10px] text-gray-400">Dotknij ikony 👁️ by podejrzeć GIF</span>
         </div>
-        ${exRowsHtml || '<p class="text-xs text-gray-400 py-4 text-center border border-dashed border-white/10 rounded-2xl mb-3">Brak dodanych ćwiczeń w tej rutynie.</p>'}
+        ${exRowsHtml || '<p class="text-xs text-gray-400 py-4 text-center border border-dashed border-white/10 rounded-2xl mb-3">Brak dodanych ćwiczeń.</p>'}
 
         <div class="grid grid-cols-2 gap-2.5 mt-3">
           <button onclick="addPlaceholderToDraft()" class="liquid-pill text-white font-bold text-xs py-3.5 rounded-2xl">Dodaj placeholder</button>
@@ -1421,6 +1483,36 @@ async function renderRoutineDraftModal() {
         </div>
       </div>
     </div>
+  `);
+}
+
+async function openExerciseDetailFromDraft(exId) {
+  const ex = await db.exercises.get(exId);
+  if (!ex) return;
+  const secStr = (ex.secondaryMuscles && ex.secondaryMuscles.length) ? ex.secondaryMuscles.join(', ') : 'Brak';
+
+  openModal(`
+    <div class="flex justify-between items-center mb-4">
+      <button onclick="openRoutineCreatorModal()" class="text-sm liquid-pill text-white font-bold px-3 py-1.5 rounded-xl">← Powrót do rutyny</button>
+      <h2 class="font-bold text-sm truncate px-1">${ex.name}</h2>
+      <div class="w-10"></div>
+    </div>
+
+    <div class="bg-white rounded-3xl p-4 flex flex-col items-center justify-center mb-4 relative overflow-hidden">
+      <span class="text-[10px] font-bold uppercase text-gray-500 mb-1">Podgląd animacji GIF</span>
+      ${renderAnimatedExerciseThumb(ex, 'w-56 h-56')}
+      <span class="text-xs font-semibold text-gray-700 mt-2">Sprzęt: ${ex.category} · Główna: ${ex.bodyPart}</span>
+      <span class="text-[11px] text-gray-500 mt-0.5">Mięśnie poboczne: ${secStr}</span>
+    </div>
+
+    <div class="bg-bgCard rounded-3xl p-4 mb-4">
+      <h3 class="text-xs font-bold uppercase text-striveOrange mb-1">Ściągawka z techniki (PL)</h3>
+      <p class="text-xs text-gray-200 leading-relaxed">${ex.tip || 'Kontroluj fazę opuszczania i pilnuj zakresu ruchu.'}</p>
+    </div>
+
+    <button onclick="openRoutineCreatorModal()" class="w-full liquid-orange-btn text-white font-bold py-3.5 rounded-2xl text-sm">
+      ✓ Zamknij podgląd i wróć do rutyny
+    </button>
   `);
 }
 
@@ -1472,7 +1564,7 @@ function removeDraftExercise(idx) {
 }
 
 function addPlaceholderToDraft() {
-  const name = prompt('Nazwa placeholdera (np. Dowolne ćwiczenie na klatkę):', 'Dowolne ćwiczenie na partię');
+  const name = prompt('Nazwa placeholdera:', 'Dowolne ćwiczenie');
   if (!name) return;
   state.routineDraft.exercises.push({
     isPlaceholder: true,
@@ -1501,8 +1593,8 @@ async function renderExercisePickerModal() {
 
   const filtered = allEx.filter(e => {
     const matchCat = state.exerciseFilterCat === 'ALL' || e.category === state.exerciseFilterCat;
-    const matchPart = state.exerciseFilterPart === 'ALL' || e.bodyPart === state.exerciseFilterPart;
-    const matchSearch = !q || e.name.toLowerCase().includes(q) || (e.bodyPart && e.bodyPart.toLowerCase().includes(q)) || (e.category && e.category.toLowerCase().includes(q));
+    const matchPart = state.exerciseFilterPart === 'ALL' || e.bodyPart === state.exerciseFilterPart || (Array.isArray(e.secondaryMuscles) && e.secondaryMuscles.includes(state.exerciseFilterPart));
+    const matchSearch = !q || e.name.toLowerCase().includes(q) || (e.bodyPart && e.bodyPart.toLowerCase().includes(q));
     return matchCat && matchPart && matchSearch;
   });
 
@@ -1510,18 +1602,20 @@ async function renderExercisePickerModal() {
 
   const rowsHtml = visible.map(ex => {
     const picked = state.pickerSelectedIds.includes(ex.id);
+    const secInfo = (ex.secondaryMuscles && ex.secondaryMuscles.length) ? ` (+${ex.secondaryMuscles.slice(0,2).join(', ')})` : '';
     return `
-      <div onclick="togglePickerExercise(${ex.id})"
-        class="bg-bgCard border ${picked ? 'border-striveOrange bg-striveOrange/10' : 'border-white/15'} rounded-3xl p-2.5 flex items-center gap-3 cursor-pointer transition">
-        ${renderAnimatedExerciseThumb(ex, 'w-14 h-14')}
-        <div class="flex-1 min-w-0">
+      <div class="bg-bgCard border ${picked ? 'border-striveOrange bg-striveOrange/10' : 'border-white/15'} rounded-3xl p-2.5 flex items-center gap-3 transition">
+        <div onclick="openExerciseDetailFromPicker(${ex.id})" class="cursor-pointer shrink-0" title="Podejrzyj GIF i opis">
+          ${renderAnimatedExerciseThumb(ex, 'w-14 h-14')}
+        </div>
+        <div onclick="togglePickerExercise(${ex.id})" class="flex-1 min-w-0 cursor-pointer">
           <div class="flex justify-between items-start gap-2">
             <h3 class="font-semibold text-sm text-white truncate">${ex.name}</h3>
-            <span class="text-xs ${picked ? 'text-striveOrange font-bold' : 'text-gray-400'}">${picked ? 'Wybrano ✓' : `(${ex.sessions || 0})`}</span>
+            <span class="text-xs ${picked ? 'text-striveOrange font-bold' : 'text-gray-400'}">${picked ? 'Wybrano ✓' : 'Wybierz'}</span>
           </div>
           <div class="flex justify-between items-center text-xs text-gray-400 mt-2">
-            <span>${ex.category}</span>
-            <span>${ex.bodyPart}</span>
+            <span class="truncate">${ex.category} · ${ex.bodyPart}${secInfo}</span>
+            <span class="text-[10px] text-striveTeal underline shrink-0 ml-1">👁️ Podgląd</span>
           </div>
         </div>
       </div>`;
@@ -1529,7 +1623,7 @@ async function renderExercisePickerModal() {
 
   openModal(`
     <div class="flex justify-between items-center mb-3">
-      <h2 class="text-lg font-bold">Wybierz Ćwiczenia (${filtered.length} z ${allEx.length})</h2>
+      <h2 class="text-lg font-bold">Wybierz Ćwiczenia (${filtered.length})</h2>
     </div>
 
     <div class="flex justify-between items-center mb-3">
@@ -1562,15 +1656,15 @@ async function renderExercisePickerModal() {
       ${rowsHtml}
       ${filtered.length > state.exerciseDisplayLimit ? `
         <button onclick="state.exerciseDisplayLimit += 100; renderExercisePickerModal()" class="w-full liquid-pill text-white text-xs font-bold py-3 rounded-2xl mt-2">
-          Pokaż więcej ćwiczeń (${visible.length} z ${filtered.length})
+          Pokaż więcej (${visible.length} z ${filtered.length})
         </button>
       ` : ''}
     </div>
 
     <div class="space-y-2 pt-2 border-t border-white/10">
-      <button onclick="renderRoutineDraftModal()" class="w-full bg-white/10 text-white font-bold py-3 rounded-2xl text-sm">Anuluj</button>
+      <button onclick="renderRoutineDraftModal()" class="w-full bg-white/10 text-white font-bold py-3 rounded-2xl text-sm">Powrót do rutyny</button>
       <button onclick="confirmPickerExercises()" class="w-full ${state.pickerSelectedIds.length ? 'liquid-orange-btn text-white' : 'bg-white/5 text-gray-500'} font-bold py-3 rounded-2xl text-sm">
-        Wybierz ćwiczenia (${state.pickerSelectedIds.length})
+        Zatwierdź wybrane (${state.pickerSelectedIds.length})
       </button>
     </div>
   `);
@@ -1601,8 +1695,8 @@ function confirmPickerExercises() {
 
 async function saveRoutineDraft() {
   const d = state.routineDraft;
-  if (!d.name.trim()) return alert('Podaj nazwę rutyny (np. PON FBW)');
-  if (!d.exercises.length) return alert('Dodaj przynajmniej jedno ćwiczenie do rutyny');
+  if (!d.name.trim()) return alert('Podaj nazwę rutyny');
+  if (!d.exercises.length) return alert('Dodaj przynajmniej jedno ćwiczenie');
 
   const payload = {
     name: d.name.trim(),
@@ -1618,18 +1712,46 @@ async function saveRoutineDraft() {
     }))
   };
 
-  if (d.id) {
-    await db.routines.update(d.id, payload);
-  } else {
-    await db.routines.add(payload);
-  }
+  if (d.id) await db.routines.update(d.id, payload);
+  else await db.routines.add(payload);
+
   state.routineDraft = null;
   closeModal();
   renderCurrentView();
 }
 
+async function openExerciseDetailFromPicker(exId) {
+  const ex = await db.exercises.get(exId);
+  if (!ex) return;
+  const secStr = (ex.secondaryMuscles && ex.secondaryMuscles.length) ? ex.secondaryMuscles.join(', ') : 'Brak';
+
+  openModal(`
+    <div class="flex justify-between items-center mb-4">
+      <button onclick="openExercisePickerForDraft()" class="text-sm liquid-pill text-white font-bold px-3 py-1.5 rounded-xl">← Powrót do listy</button>
+      <h2 class="font-bold text-sm truncate px-1">${ex.name}</h2>
+      <div class="w-10"></div>
+    </div>
+
+    <div class="bg-white rounded-3xl p-4 flex flex-col items-center justify-center mb-4 relative overflow-hidden">
+      <span class="text-[10px] font-bold uppercase text-gray-500 mb-1">Podgląd animacji GIF</span>
+      ${renderAnimatedExerciseThumb(ex, 'w-56 h-56')}
+      <span class="text-xs font-semibold text-gray-700 mt-2">Sprzęt: ${ex.category} · Główna: ${ex.bodyPart}</span>
+      <span class="text-[11px] text-gray-500 mt-0.5">Mięśnie poboczne: ${secStr}</span>
+    </div>
+
+    <div class="bg-bgCard rounded-3xl p-4 mb-4">
+      <h3 class="text-xs font-bold uppercase text-striveOrange mb-1">Ściągawka z techniki (PL)</h3>
+      <p class="text-xs text-gray-200 leading-relaxed">${ex.tip || 'Kontroluj fazę opuszczania i pilnuj zakresu ruchu.'}</p>
+    </div>
+
+    <button onclick="openExercisePickerForDraft()" class="w-full liquid-orange-btn text-white font-bold py-3.5 rounded-2xl text-sm">
+      ✓ Zamknij podgląd i wróć do wyboru
+    </button>
+  `);
+}
+
 // ============================================================================
-// WIDOK 2C: ĆWICZENIA (1,324 ĆWICZENIA Z REPOZYTORIUM GITHUB)
+// WIDOK 2C: ĆWICZENIA
 // ============================================================================
 async function renderExercisesView() {
   const allEx = await db.exercises.toArray();
@@ -1639,28 +1761,30 @@ async function renderExercisesView() {
 
   const filtered = allEx.filter(e => {
     const matchCat = state.exerciseFilterCat === 'ALL' || e.category === state.exerciseFilterCat;
-    const matchPart = state.exerciseFilterPart === 'ALL' || e.bodyPart === state.exerciseFilterPart;
-    const matchSearch = !q || e.name.toLowerCase().includes(q) || (e.bodyPart && e.bodyPart.toLowerCase().includes(q)) || (e.category && e.category.toLowerCase().includes(q));
+    const matchPart = state.exerciseFilterPart === 'ALL' || e.bodyPart === state.exerciseFilterPart || (Array.isArray(e.secondaryMuscles) && e.secondaryMuscles.includes(state.exerciseFilterPart));
+    const matchSearch = !q || e.name.toLowerCase().includes(q) || (e.bodyPart && e.bodyPart.toLowerCase().includes(q));
     return matchCat && matchPart && matchSearch;
   });
 
   const visible = filtered.slice(0, state.exerciseDisplayLimit);
 
-  const listHtml = visible.map(ex => `
-    <div onclick="openExerciseDetailModal(${ex.id})" class="bg-bgCard rounded-3xl p-2.5 flex items-center gap-3 cursor-pointer active:scale-[0.99] transition">
-      ${renderAnimatedExerciseThumb(ex, 'w-14 h-14')}
-      <div class="flex-1 min-w-0">
-        <div class="flex justify-between items-start gap-2">
-          <h3 class="font-semibold text-sm text-white truncate">${ex.name}</h3>
-          <span class="text-xs text-gray-400 shrink-0">(${ex.sessions || 0})</span>
+  const listHtml = visible.map(ex => {
+    const secText = (ex.secondaryMuscles && ex.secondaryMuscles.length) ? ` · Poboczne: ${ex.secondaryMuscles.slice(0, 2).join(', ')}` : '';
+    return `
+      <div onclick="openExerciseDetailModal(${ex.id})" class="bg-bgCard rounded-3xl p-2.5 flex items-center gap-3 cursor-pointer active:scale-[0.99] transition">
+        ${renderAnimatedExerciseThumb(ex, 'w-14 h-14')}
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-start gap-2">
+            <h3 class="font-semibold text-sm text-white truncate">${ex.name}</h3>
+            <span class="text-xs text-gray-400 shrink-0">(${ex.sessions || 0})</span>
+          </div>
+          <div class="flex justify-between items-center text-[11px] text-gray-400 mt-1.5">
+            <span class="truncate">${ex.category} ${ex.nextTargetWeight ? `· <strong class="text-striveOrange">Cel: ${ex.nextTargetWeight}kg</strong>` : ''}${secText}</span>
+            <span class="text-striveTeal font-semibold shrink-0 ml-1">${ex.bodyPart}</span>
+          </div>
         </div>
-        <div class="flex justify-between items-center text-xs text-gray-400 mt-2">
-          <span>${ex.category} ${ex.nextTargetWeight ? `· <strong class="text-striveOrange">Cel: ${ex.nextTargetWeight}kg</strong>` : ''}</span>
-          <span>${ex.bodyPart}</span>
-        </div>
-      </div>
-    </div>
-  `).join('');
+      </div>`;
+  }).join('');
 
   return `
     <div class="flex justify-between items-center mb-3 pt-1">
@@ -1670,7 +1794,7 @@ async function renderExercisesView() {
     </div>
 
     <div class="flex gap-2 mb-2.5">
-      <input type="text" placeholder="🔍 Szukaj ćwiczenia (${filtered.length} z ${allEx.length})..." value="${state.exerciseSearch}"
+      <input type="text" placeholder="🔍 Szukaj w ${allEx.length} ćwiczeniach..." value="${state.exerciseSearch}"
         oninput="state.exerciseSearch = this.value; state.exerciseDisplayLimit = 80; renderCurrentView()"
         class="flex-1 bg-bgInput rounded-2xl px-3.5 py-2.5 text-sm text-white">
     </div>
@@ -1690,7 +1814,7 @@ async function renderExercisesView() {
       ${listHtml}
       ${filtered.length > state.exerciseDisplayLimit ? `
         <button onclick="state.exerciseDisplayLimit += 100; renderCurrentView()" class="w-full liquid-pill text-white text-xs font-bold py-3.5 rounded-3xl mt-3">
-          Pokaż więcej ćwiczeń (${visible.length} z ${filtered.length})
+          Pokaż więcej (${visible.length} z ${filtered.length})
         </button>
       ` : ''}
     </div>
@@ -1712,6 +1836,10 @@ async function openExerciseDetailModal(exId) {
     }
   });
 
+  const secBadges = (ex.secondaryMuscles && ex.secondaryMuscles.length)
+    ? ex.secondaryMuscles.join(', ')
+    : 'Brak zarejestrowanych mięśni pobocznych';
+
   openModal(`
     <div class="flex justify-between items-center mb-4">
       <button onclick="closeModal()" class="text-2xl text-gray-300">✕</button>
@@ -1720,14 +1848,15 @@ async function openExerciseDetailModal(exId) {
     </div>
 
     <div class="bg-white rounded-3xl p-4 flex flex-col items-center justify-center mb-4 relative overflow-hidden">
-      <span class="text-[10px] font-bold uppercase text-gray-500 mb-1">Animacja ruchu GIF (#${ex.slug || ''})</span>
+      <span class="text-[10px] font-bold uppercase text-gray-500 mb-1">Animacja ruchu GIF</span>
       ${renderAnimatedExerciseThumb(ex, 'w-56 h-56')}
-      <span class="text-xs font-semibold text-gray-700 mt-2">Sprzęt: ${ex.category} · Partia: ${ex.bodyPart}</span>
+      <span class="text-xs font-semibold text-gray-700 mt-2">Sprzęt: ${ex.category} · Główna partia: ${ex.bodyPart}</span>
+      <span class="text-[11px] text-gray-500 mt-0.5">Mięśnie poboczne: ${secBadges}</span>
     </div>
 
     <div class="bg-bgCard rounded-3xl p-4 mb-4">
       <h3 class="text-xs font-bold uppercase text-striveOrange mb-1">Ściągawka z techniki (PL)</h3>
-      <p class="text-sm text-gray-200 leading-relaxed">${ex.tip || 'Kontroluj fazę opuszczania (2-3s) i pilnuj pełnego zakresu ruchu.'}</p>
+      <p class="text-sm text-gray-200 leading-relaxed">${ex.tip || 'Kontroluj fazę opuszczania i pilnuj zakresu ruchu.'}</p>
     </div>
 
     <div class="bg-bgCard rounded-3xl p-4">
@@ -1759,27 +1888,27 @@ function openCustomExerciseModal(returnToPicker = false) {
     <div class="bg-bgCard rounded-3xl p-4 space-y-3">
       <div>
         <label class="text-xs text-gray-400 block mb-1">Nazwa ćwiczenia</label>
-        <input id="new-ex-name" type="text" placeholder="np. Odwodzenie ramion na maszynie" class="w-full bg-bgInput rounded-2xl p-2.5 text-sm">
+        <input id="new-ex-name" type="text" placeholder="np. Wyciskanie hantli" class="w-full bg-bgInput rounded-2xl p-2.5 text-sm">
       </div>
       <div>
-        <label class="text-xs text-gray-400 block mb-1">Bezpośredni link do GIF-a (opcjonalnie)</label>
-        <input id="new-ex-customgif" type="text" placeholder="https://... (lub zostaw puste)" class="w-full bg-bgInput rounded-2xl p-2.5 text-xs">
+        <label class="text-xs text-gray-400 block mb-1">Link do GIF-a (opcjonalnie)</label>
+        <input id="new-ex-customgif" type="text" placeholder="https://..." class="w-full bg-bgInput rounded-2xl p-2.5 text-xs">
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
-          <label class="text-xs text-gray-400 block mb-1">Kategoria (Sprzęt)</label>
+          <label class="text-xs text-gray-400 block mb-1">Kategoria</label>
           <select id="new-ex-cat" class="w-full bg-bgInput rounded-2xl p-2.5 text-sm">
             <option>Maszyna</option><option>Wyciąg</option><option>Hantle</option><option>Sztanga</option><option>Suwnica Smitha</option><option>Masa ciała</option>
           </select>
         </div>
         <div>
-          <label class="text-xs text-gray-400 block mb-1">Partia mięśniowa</label>
+          <label class="text-xs text-gray-400 block mb-1">Partia główna</label>
           <select id="new-ex-part" class="w-full bg-bgInput rounded-2xl p-2.5 text-sm">
-            <option>Klatka</option><option>Najszerszy grzbietu</option><option>Czworoboczny grzbietu</option><option>Barki</option><option>Bicepsy</option><option>Tricepsy</option><option>Czworogłowe ud</option><option>Dwugłowe ud</option><option>Pośladki</option><option>Łydki</option><option>Brzuch</option>
+            <option>Klatka</option><option>Najszerszy grzbietu</option><option>Plecy (Góra)</option><option>Prostowniki grzbietu</option><option>Czworoboczny grzbietu</option><option>Barki</option><option>Bicepsy</option><option>Tricepsy</option><option>Przedramiona</option><option>Czworogłowe ud</option><option>Dwugłowe ud</option><option>Pośladki</option><option>Przywodziciele ud</option><option>Odwodziciele</option><option>Łydki</option><option>Piszczelowy</option><option>Brzuch</option><option>Skośne brzucha</option><option>Kark</option>
           </select>
         </div>
       </div>
-      <button onclick="saveCustomExercise(${returnToPicker})" class="w-full liquid-orange-btn text-white font-bold py-3 rounded-2xl">Zapisz ćwiczenie w bazie</button>
+      <button onclick="saveCustomExercise(${returnToPicker})" class="w-full liquid-orange-btn text-white font-bold py-3 rounded-2xl">Zapisz ćwiczenie</button>
     </div>
   `);
 }
@@ -1787,13 +1916,14 @@ function openCustomExerciseModal(returnToPicker = false) {
 async function saveCustomExercise(returnToPicker) {
   const name = document.getElementById('new-ex-name').value.trim();
   const customGifUrl = document.getElementById('new-ex-customgif').value.trim();
-  if (!name) return alert('Podaj nazwę ćwiczenia');
+  if (!name) return alert('Podaj nazwę');
   await db.exercises.add({
     name,
     slug: 'custom_' + Date.now(),
     customGifUrl,
     category: document.getElementById('new-ex-cat').value,
     bodyPart: document.getElementById('new-ex-part').value,
+    secondaryMuscles: [],
     sessions: 0
   });
   if (returnToPicker) renderExercisePickerModal();
@@ -1801,7 +1931,7 @@ async function saveCustomExercise(returnToPicker) {
 }
 
 // ============================================================================
-// AKTYWNY TRENING (Z AUTO-ZAPISEM W LOCIE I SYGNAŁEM KOŃCA PRZERWY)
+// TRENING (STABILNY UKŁAD + AUTO-ZAPIS W LOCIE)
 // ============================================================================
 async function openQuickStartModal() {
   if (state.activeWorkout) {
@@ -1833,7 +1963,7 @@ async function openQuickStartModal() {
       <h2 class="text-lg font-bold">Wybierz trening na dziś</h2>
       <div class="w-6"></div>
     </div>
-    <p class="text-xs text-gray-300 text-center mb-4">Dziś jest <strong class="text-striveOrange">${todayShort} (${formatDayMonth(today)})</strong>. Wyniki ćwiczeń są globalne dla całego planu.</p>
+    <p class="text-xs text-gray-300 text-center mb-4">Dziś jest <strong class="text-striveOrange">${todayShort} (${formatDayMonth(today)})</strong>.</p>
     ${routines.length ? `<div class="divide-y divide-white/10">${listHtml}</div>` : `
       <div class="text-center py-8">
         <p class="text-sm text-gray-400 mb-4">Nie utworzyłeś jeszcze żadnej rutyny treningowej.</p>
@@ -1971,9 +2101,8 @@ async function startWorkout(routineId) {
       exId: exObj.id,
       name: exObj.name,
       bodyPart: exObj.bodyPart,
+      secondaryMuscles: exObj.secondaryMuscles || [],
       slug: exObj.slug,
-      localGifUrl: exObj.localGifUrl,
-      rawGifUrl: exObj.rawGifUrl,
       customGifUrl: exObj.customGifUrl,
       imageUrl: exObj.imageUrl,
       isPlaceholder: Boolean(item.isPlaceholder),
@@ -2009,7 +2138,7 @@ function openActiveWorkoutModal() {
         <div class="grid grid-cols-12 items-center gap-1.5 py-2 border-b border-white/5 ${s.done ? 'bg-striveGreen/15 rounded-2xl px-1' : ''}">
           <div class="col-span-2 flex justify-center">
             <button onclick="cycleActiveWorkoutSetType(${exIdx}, ${sIdx})"
-              class="w-8 h-8 rounded-xl font-extrabold text-xs flex items-center justify-center transition ${badge.classes}">
+              class="w-8 h-8 rounded-xl font-extrabold text-xs flex items-center justify-center transition active:scale-90 ${badge.classes}">
               ${badge.label}
             </button>
           </div>
@@ -2071,11 +2200,11 @@ function openActiveWorkoutModal() {
     <div class="flex justify-between items-center mb-4 sticky top-0 liquid-dock rounded-2xl px-3 py-2.5 z-10">
       <div class="flex items-center gap-1.5">
         <button onclick="closeModal()" class="text-xs bg-white/10 px-2.5 py-1.5 rounded-xl">↓ Ukryj</button>
-        <button onclick="discardActiveWorkout()" class="text-xs bg-red-950/60 text-red-300 border border-red-500/30 px-2 py-1.5 rounded-xl">🗑</button>
+        <button onclick="discardActiveWorkout()" class="text-xs bg-red-950/60 text-red-300 border border-red-500/30 px-2 py-1.5 rounded-xl" title="Porzuć trening">🗑</button>
       </div>
-      <div class="text-center">
-        <h2 class="font-bold text-sm truncate max-w-[140px]">${w.routineName}</h2>
-        <span id="modal-timer-status" class="text-[10px] text-striveOrange font-mono">💾 Auto-zapis aktywny</span>
+      <div class="text-center h-[34px] flex flex-col justify-center">
+        <h2 class="font-bold text-xs truncate max-w-[130px] leading-tight">${w.routineName}</h2>
+        <span class="text-[9px] text-striveTeal font-mono leading-tight">💾 Auto-zapis aktywny</span>
       </div>
       <button onclick="prepareWorkoutSummaryModal()" class="liquid-orange-btn text-white text-xs font-bold px-3.5 py-1.5 rounded-xl">Zakończ</button>
     </div>
@@ -2084,7 +2213,7 @@ function openActiveWorkoutModal() {
 }
 
 function discardActiveWorkout() {
-  if (!confirm('Czy na pewno chcesz anulować i porzucić ten trening bez zapisywania?')) return;
+  if (!confirm('Czy na pewno chcesz porzucić ten trening?')) return;
   state.activeWorkout = null;
   state.restTimerEnd = null;
   persistActiveWorkoutState();
@@ -2141,9 +2270,7 @@ function addExtraSet(exIdx, setType = 'N') {
 
 async function swapExerciseInFlight(exIdx, bodyPart) {
   const all = await db.exercises.toArray();
-  const alternatives = (bodyPart && bodyPart !== 'ALL' && bodyPart !== 'Wybierz na siłowni')
-    ? all.filter(a => a.bodyPart === bodyPart).slice(0, 40)
-    : all.slice(0, 40);
+  const alternatives = all.slice(0, 40);
   const names = alternatives.map((a, i) => `${i + 1}. ${a.name} (${a.category})`).join('\n');
   const choice = prompt(`Wybierz numer ćwiczenia:\n\n${names}`);
   const idx = parseInt(choice) - 1;
@@ -2152,11 +2279,9 @@ async function swapExerciseInFlight(exIdx, bodyPart) {
     state.activeWorkout.exercises[exIdx].exId = picked.id;
     state.activeWorkout.exercises[exIdx].name = picked.name;
     state.activeWorkout.exercises[exIdx].bodyPart = picked.bodyPart;
+    state.activeWorkout.exercises[exIdx].secondaryMuscles = picked.secondaryMuscles || [];
     state.activeWorkout.exercises[exIdx].slug = picked.slug;
-    state.activeWorkout.exercises[exIdx].localGifUrl = picked.localGifUrl;
-    state.activeWorkout.exercises[exIdx].rawGifUrl = picked.rawGifUrl;
     state.activeWorkout.exercises[exIdx].customGifUrl = picked.customGifUrl;
-    state.activeWorkout.exercises[exIdx].imageUrl = picked.imageUrl;
     state.activeWorkout.exercises[exIdx].isPlaceholder = false;
     persistActiveWorkoutState();
     openActiveWorkoutModal();
@@ -2198,7 +2323,6 @@ function startGlobalWorkoutClock() {
 function updateRestTimerUI() {
   const btn = document.getElementById('bar-timer-btn');
   const status = document.getElementById('bar-timer-status');
-  const modalStatus = document.getElementById('modal-timer-status');
   if (!state.restTimerEnd) return;
 
   const rem = Math.ceil((state.restTimerEnd - Date.now()) / 1000);
@@ -2207,19 +2331,17 @@ function updateRestTimerUI() {
     const s = String(rem % 60).padStart(2, '0');
     if (btn) btn.textContent = `⏱ ${m}:${s}`;
     if (status) status.textContent = `${state.restTimerLabel}: pozostało ${rem} s`;
-    if (modalStatus) modalStatus.textContent = `⏱ ${state.restTimerLabel}: ${m}:${s}`;
   } else {
     state.restTimerEnd = null;
     persistActiveWorkoutState();
     if (btn) btn.textContent = `⏱ Gotowe!`;
     if (status) status.textContent = `🔔 KONIEC PRZERWY! Czas pod sztangę!`;
-    if (modalStatus) modalStatus.textContent = `🔔 KONIEC PRZERWY!`;
     triggerRestFinishedAlert();
   }
 }
 
 // ============================================================================
-// PODSUMOWANIE TRENINGU + LUDZIK SVG + PROPOZYCJA CIĘŻARU
+// PODSUMOWANIE TRENINGU + MAPA CIEPLNA + PROPOZYCJA CIĘŻARU
 // ============================================================================
 function prepareWorkoutSummaryModal() {
   const w = state.activeWorkout;
@@ -2246,6 +2368,7 @@ function prepareWorkoutSummaryModal() {
         exId: ex.exId,
         name: ex.name,
         bodyPart: ex.bodyPart || 'Klatka',
+        secondaryMuscles: ex.secondaryMuscles || [],
         sets: usedSets.map(s => ({
           type: s.type || 'N',
           weight: Number(s.weight) || 0,
@@ -2300,7 +2423,7 @@ function renderWorkoutSummaryModal() {
   const sum = state.pendingSummary;
   if (!sum) return;
 
-  const muscleMapSectionHtml = renderAnatomicalMuscleMap(sum.exercises);
+  const muscleMapSectionHtml = renderAnatomicalMuscleMap(sum.exercises, '🧬 Cieplna Mapa Mięśni z tej sesji');
 
   const doneExHtml = sum.exercises.map(ex => {
     const setsBadges = ex.sets.map(s => {
@@ -2341,7 +2464,7 @@ function renderWorkoutSummaryModal() {
     </div>
   `).join('') : `
     <div class="bg-bgMain/40 border border-white/10 rounded-2xl p-3 text-xs text-gray-300 text-center">
-      Brak ćwiczeń, które przekroczyły dziś górny limit powtórzeń we wszystkich seriach roboczych. Na kolejnym treningu walczysz o kolejne powtórzenia!
+      Brak ćwiczeń, które przekroczyły dziś górny limit powtórzeń we wszystkich seriach roboczych.
     </div>`;
 
   openModal(`
@@ -2366,7 +2489,6 @@ function renderWorkoutSummaryModal() {
       </div>
     </div>
 
-    <!-- Punkt 3: Anatomiczny Ludzik SVG z podświetlonymi partiami mięśniowymi -->
     ${muscleMapSectionHtml}
 
     <div class="liquid-pill rounded-3xl p-3.5 mb-4">
@@ -2378,7 +2500,7 @@ function renderWorkoutSummaryModal() {
 
     <div class="bg-bgCard rounded-3xl p-3.5 mb-6">
       <h3 class="text-xs font-bold uppercase text-striveTeal mb-2">Wykonane ćwiczenia (${sum.exercises.length})</h3>
-      ${doneExHtml || '<p class="text-xs text-gray-400">Brak zaliczonych serii.</p>'}
+      ${doneExHtml || '<p class="text-xs text-gray-400">Brak serii.</p>'}
     </div>
 
     <button onclick="confirmAndSaveWorkoutSummary()" class="w-full liquid-orange-btn text-white font-bold py-4 rounded-3xl text-base shadow-xl active:scale-95 transition">
@@ -2443,14 +2565,14 @@ async function confirmAndSaveWorkoutSummary() {
   state.pendingSummary = null;
   state.restTimerEnd = null;
   state.selectedTodayRoutineId = null;
-  persistActiveWorkoutState(); // Czyści auto-zapis po pomyślnym zapisaniu treningu do bazy
+  persistActiveWorkoutState();
   document.getElementById('active-workout-bar').classList.add('hidden');
   closeModal();
   navigate('home');
 }
 
 // ============================================================================
-// WIDOK 3: PROFIL (POMIARY ZE ZDJĘCIAMI Z APARATU LUB GALERII, RAPORT, REKORDY)
+// PROFIL I HISTORIA Z MAPĄ MIĘŚNI
 // ============================================================================
 async function renderProfileView() {
   const photosCount = await db.photos.count();
@@ -2589,9 +2711,6 @@ function copyCoachReportText() {
   });
 }
 
-// ============================================================================
-// POMIARY + DODAWANIE ZDJĘĆ Z APARATU LUB BEZPOŚREDNIO Z GALERII TELEFONU
-// ============================================================================
 async function openMeasurementsModal() {
   state.tempMeasurementPhotos = [];
   await renderMeasurementsModalContent();
@@ -2894,7 +3013,8 @@ async function openPastWorkoutDetailModal(workoutId) {
 
   const enrichedExercises = (w.exercises || []).map(ex => ({
     ...ex,
-    bodyPart: ex.bodyPart || (exMap[ex.exId] ? exMap[ex.exId].bodyPart : 'Klatka')
+    bodyPart: ex.bodyPart || (exMap[ex.exId] ? exMap[ex.exId].bodyPart : 'Klatka'),
+    secondaryMuscles: (ex.secondaryMuscles && ex.secondaryMuscles.length) ? ex.secondaryMuscles : (exMap[ex.exId] ? exMap[ex.exId].secondaryMuscles : [])
   }));
 
   const setsHtml = enrichedExercises.map(ex => {
@@ -2911,7 +3031,7 @@ async function openPastWorkoutDetailModal(workoutId) {
       </div>
       <div class="w-6"></div>
     </div>
-    ${renderAnatomicalMuscleMap(enrichedExercises)}
+    ${renderAnatomicalMuscleMap(enrichedExercises, '🧬 Mapa Mięśni z tego treningu')}
     <div class="bg-bgCard rounded-3xl p-4">${setsHtml}</div>
   `);
 }
