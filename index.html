@@ -331,7 +331,7 @@ async function initBodyHighlighterAssets() {
     if (Array.isArray(frontMod.bodyFront) && Array.isArray(backMod.bodyBack)) {
       state.rnBodyAssets = {
         front: frontMod.bodyFront,
-        back: backMod.bodyBack,
+        back: frontMod.bodyBack ? frontMod.bodyBack : backMod.bodyBack,
         borderFront,
         borderBack
       };
@@ -480,8 +480,11 @@ function mapPolishPartToSlugs(partName = '') {
 }
 
 // Funkcja pomocnicza renderująca dokładne tablice bodyFront / bodyBack z react-native-body-highlighter (index.tsx)
-function renderExactRnBodySvg(bodyToRender, borderPaths, getSlugStyle) {
+function renderExactRnBodySvg(bodyToRender, borderPaths, getSlugStyle, side = 'front') {
   const defaultFill = '#3f3f3f';
+  // W SvgMaleWrapper przód leży na X: 0..724, natomiast tył leży na X: 724..1448!
+  const viewBox = side === 'back' ? '724 0 724 1448' : '0 0 724 1448';
+
   const borderOutlines = (borderPaths || []).map(d =>
     `<path d="${d}" fill="#dfdfdf" opacity="0.85" />`
   ).join('');
@@ -508,7 +511,7 @@ function renderExactRnBodySvg(bodyToRender, borderPaths, getSlugStyle) {
   }).join('');
 
   return `
-    <svg viewBox="0 0 724 1448" class="w-36 h-64 overflow-visible">
+    <svg viewBox="${viewBox}" class="w-36 h-64 mx-auto block">
       ${borderOutlines}
       ${partsMarkup}
     </svg>
@@ -554,10 +557,10 @@ function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Ciepl
   let frontSvgHtml = '';
   let backSvgHtml = '';
 
-  // Jeśli pobrano oryginalne wektory 1:1 z paczki react-native-body-highlighter@3.2.0, używamy ich bezpośrednio!
+  // Jeśli pobrano oryginalne wektory 1:1 z paczki react-native-body-highlighter@3.2.0, używamy ich bezpośrednio z właściwym viewBoxem!
   if (state.rnBodyAssets && Array.isArray(state.rnBodyAssets.front) && Array.isArray(state.rnBodyAssets.back)) {
-    frontSvgHtml = renderExactRnBodySvg(state.rnBodyAssets.front, state.rnBodyAssets.borderFront, getSlugStyle);
-    backSvgHtml = renderExactRnBodySvg(state.rnBodyAssets.back, state.rnBodyAssets.borderBack, getSlugStyle);
+    frontSvgHtml = renderExactRnBodySvg(state.rnBodyAssets.front, state.rnBodyAssets.borderFront, getSlugStyle, 'front');
+    backSvgHtml = renderExactRnBodySvg(state.rnBodyAssets.back, state.rnBodyAssets.borderBack, getSlugStyle, 'back');
   } else {
     // Zaawansowany, wielosegmentowy model wbudowany (offline fallback w stylu react-native-body-highlighter)
     const sNeck = getSlugStyle('neck');
@@ -580,39 +583,28 @@ function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Ciepl
     const sTibialis = getSlugStyle('tibialis');
 
     frontSvgHtml = `
-      <svg viewBox="0 0 220 430" class="w-36 h-64">
-        <!-- Zewnętrzny obrys sylwetki (#dfdfdf jak w SvgMaleWrapper) -->
+      <svg viewBox="0 0 220 430" class="w-36 h-64 mx-auto block">
         <path d="M93,14 C93,4 127,4 127,14 L129,36 C129,46 123,52 119,55 L122,63 L148,71 C165,75 172,89 169,108 L171,142 L182,190 L187,208 L173,214 L167,194 L156,154 L152,112 L147,120 L146,164 C154,195 153,230 146,265 L144,285 C151,310 150,338 142,368 L148,392 L120,392 L119,368 L117,285 L114,252 L110,192 L106,252 L103,285 L101,368 L100,392 L72,392 L78,368 C70,338 69,310 76,285 L74,265 C67,230 66,195 74,164 L73,120 L68,112 L64,154 L53,194 L47,214 L33,208 L38,190 L49,142 L51,108 C48,89 55,75 72,71 L98,63 L101,55 C97,52 91,46 91,36 Z"
           fill="none" stroke="#dfdfdf" stroke-width="2.2" opacity="0.65" stroke-linejoin="round"/>
         <g stroke="#141821" stroke-width="1.35" stroke-linejoin="round">
-          <!-- hair & head -->
           <path d="M94,18 C94,7 126,7 126,18 C123,14 97,14 94,18 Z" fill="#1f2430"/>
           <path d="M94,18 C94,11 126,11 126,18 L127,36 C127,47 119,55 110,55 C101,55 93,47 93,36 Z" fill="#2d323e"/>
-          <!-- neck -->
           <path d="M101,53 L109,56 L109,68 L97,65 Z" fill="${sNeck.fill}" class="${sNeck.cls}"/>
           <path d="M119,53 L111,56 L111,68 L123,65 Z" fill="${sNeck.fill}" class="${sNeck.cls}"/>
-          <!-- trapezius -->
           <path d="M97,60 L74,69 L92,73 L100,65 Z" fill="${sTraps.fill}" class="${sTraps.cls}"/>
           <path d="M123,60 L146,69 L128,73 L120,65 Z" fill="${sTraps.fill}" class="${sTraps.cls}"/>
-          <!-- deltoids (przedni i boczny akton) -->
           <path d="M73,69 C57,73 50,86 53,104 L69,101 C71,89 75,79 81,72 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
           <path d="M147,69 C163,73 170,86 167,104 L151,101 C149,89 145,79 139,72 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
-          <!-- chest (pectoralis major + clavicular head) -->
           <path d="M81,71 L109,73 L109,114 C91,117 77,111 71,99 C73,87 76,78 81,71 Z" fill="${sChest.fill}" class="${sChest.cls}"/>
           <path d="M139,71 L111,73 L111,114 C129,117 143,111 149,99 C147,87 144,78 139,71 Z" fill="${sChest.fill}" class="${sChest.cls}"/>
-          <!-- biceps & brachialis -->
           <path d="M53,105 L68,103 C70,119 68,134 64,145 L49,142 C47,129 49,115 53,105 Z" fill="${sBiceps.fill}" class="${sBiceps.cls}"/>
           <path d="M167,105 L152,103 C150,119 152,134 156,145 L171,142 C173,129 171,115 167,105 Z" fill="${sBiceps.fill}" class="${sBiceps.cls}"/>
-          <!-- forearm (brachioradialis + flexors) -->
           <path d="M48,144 L64,147 C61,166 56,183 51,196 L39,191 C40,175 44,158 48,144 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
           <path d="M172,144 L156,147 C159,166 164,183 169,196 L181,191 C180,175 176,158 172,144 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
-          <!-- hands -->
           <path d="M38,193 L50,198 L45,215 L33,209 Z" fill="#2d323e"/>
           <path d="M182,193 L170,198 L175,215 L187,209 Z" fill="#2d323e"/>
-          <!-- obliques & serratus anterior (skośne + zębaty) -->
           <path d="M73,102 L88,114 L87,174 L74,162 C70,142 70,121 73,102 Z" fill="${sObliques.fill}" class="${sObliques.cls}"/>
           <path d="M147,102 L132,114 L133,174 L146,162 C150,142 150,121 147,102 Z" fill="${sObliques.fill}" class="${sObliques.cls}"/>
-          <!-- abs (8-segment rectus abdominis) -->
           <rect x="90" y="116" width="18" height="14" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
           <rect x="112" y="116" width="18" height="14" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
           <rect x="90" y="132" width="18" height="14" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
@@ -621,78 +613,56 @@ function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Ciepl
           <rect x="112" y="148" width="18" height="14" rx="3.5" fill="${sAbs.fill}" class="${sAbs.cls}"/>
           <path d="M91,164 L108,164 L108,184 L94,179 Z" fill="${sAbs.fill}" class="${sAbs.cls}"/>
           <path d="M129,164 L112,164 L112,184 L126,179 Z" fill="${sAbs.fill}" class="${sAbs.cls}"/>
-          <!-- adductors (przywodziciele ud) -->
           <path d="M94,183 L108,186 L104,248 L95,240 Z" fill="${sAdductors.fill}" class="${sAdductors.cls}"/>
           <path d="M126,183 L112,186 L116,248 L125,240 Z" fill="${sAdductors.fill}" class="${sAdductors.cls}"/>
-          <!-- quadriceps: vastus lateralis & rectus femoris (zewnętrzna i środkowa głowa) -->
           <path d="M74,165 L93,181 L86,262 L73,258 C65,226 66,194 74,165 Z" fill="${sQuads.fill}" class="${sQuads.cls}"/>
           <path d="M146,165 L127,181 L134,262 L147,258 C155,226 154,194 146,165 Z" fill="${sQuads.fill}" class="${sQuads.cls}"/>
-          <!-- quadriceps: vastus medialis ("łezka" nad kolanem) -->
           <path d="M93,218 C101,226 103,245 99,262 L87,262 Z" fill="${sQuads.fill}" class="${sQuads.cls}"/>
           <path d="M127,218 C119,226 117,245 121,262 L133,262 Z" fill="${sQuads.fill}" class="${sQuads.cls}"/>
-          <!-- knees -->
           <rect x="74" y="264" width="25" height="19" rx="6" fill="#2d323e"/>
           <rect x="121" y="264" width="25" height="19" rx="6" fill="#2d323e"/>
-          <!-- calves (gastrocnemius medialis - wewnętrzna głowa łydki z przodu) -->
           <path d="M89,286 L101,286 L98,364 L89,364 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
           <path d="M131,286 L119,286 L122,364 L131,364 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
-          <!-- tibialis anterior (piszczelowy przedni) -->
           <path d="M74,286 L88,286 L88,364 L78,364 C70,336 70,309 74,286 Z" fill="${sTibialis.fill}" class="${sTibialis.cls}"/>
           <path d="M146,286 L132,286 L132,364 L142,364 C150,336 150,309 146,286 Z" fill="${sTibialis.fill}" class="${sTibialis.cls}"/>
-          <!-- ankles & feet -->
           <path d="M76,366 L98,366 L101,392 L71,392 Z" fill="#2d323e"/>
           <path d="M144,366 L122,366 L119,392 L149,392 Z" fill="#2d323e"/>
         </g>
       </svg>`;
 
     backSvgHtml = `
-      <svg viewBox="0 0 220 430" class="w-36 h-64">
-        <!-- Zewnętrzny obrys sylwetki (#dfdfdf jak w SvgMaleWrapper) -->
+      <svg viewBox="0 0 220 430" class="w-36 h-64 mx-auto block">
         <path d="M93,14 C93,4 127,4 127,14 L129,36 C129,46 123,52 119,55 L122,63 L148,71 C165,75 172,89 169,108 L171,142 L182,190 L187,208 L173,214 L167,194 L156,154 L152,112 L147,120 L146,164 C154,195 153,230 146,265 L144,285 C151,310 150,338 142,368 L148,392 L120,392 L119,368 L117,285 L114,252 L110,192 L106,252 L103,285 L101,368 L100,392 L72,392 L78,368 C70,338 69,310 76,285 L74,265 C67,230 66,195 74,164 L73,120 L68,112 L64,154 L53,194 L47,214 L33,208 L38,190 L49,142 L51,108 C48,89 55,75 72,71 L98,63 L101,55 C97,52 91,46 91,36 Z"
           fill="none" stroke="#dfdfdf" stroke-width="2.2" opacity="0.65" stroke-linejoin="round"/>
         <g stroke="#141821" stroke-width="1.35" stroke-linejoin="round">
-          <!-- head & hair -->
           <path d="M94,18 C94,9 126,9 126,18 L127,36 C127,47 119,55 110,55 C101,55 93,47 93,36 Z" fill="#2d323e"/>
-          <!-- neck -->
           <path d="M99,51 L121,51 L123,61 L97,61 Z" fill="${sNeck.fill}" class="${sNeck.cls}"/>
-          <!-- trapezius (kaptury - góra, środek, dół) -->
           <polygon points="110,56 75,69 109,119 109,56" fill="${sTraps.fill}" class="${sTraps.cls}"/>
           <polygon points="110,56 145,69 111,119 111,56" fill="${sTraps.fill}" class="${sTraps.cls}"/>
-          <!-- deltoids (tylny i boczny akton) -->
           <path d="M74,69 C57,72 51,85 53,102 L72,99 C73,89 77,78 82,72 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
           <path d="M146,69 C163,72 169,85 167,102 L148,99 C147,89 143,78 138,72 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
-          <!-- upper-back (najszerszy grzbietu + obły większy) -->
           <path d="M72,99 L108,119 L103,162 L78,150 C71,133 70,115 72,99 Z" fill="${sUpperBack.fill}" class="${sUpperBack.cls}"/>
           <path d="M148,99 L112,119 L117,162 L142,150 C149,133 150,115 148,99 Z" fill="${sUpperBack.fill}" class="${sUpperBack.cls}"/>
-          <!-- lower-back (prostowniki grzbietu / erector spinae) -->
           <path d="M81,151 L108,162 L108,186 L81,179 Z" fill="${sLowerBack.fill}" class="${sLowerBack.cls}"/>
           <path d="M139,151 L112,162 L112,186 L139,179 Z" fill="${sLowerBack.fill}" class="${sLowerBack.cls}"/>
-          <!-- triceps (głowa długa i boczna) -->
           <path d="M53,104 L69,102 C71,119 69,135 65,146 L49,143 C47,129 49,115 53,104 Z" fill="${sTriceps.fill}" class="${sTriceps.cls}"/>
           <path d="M167,104 L151,102 C149,119 151,135 155,146 L171,143 C173,129 171,115 167,104 Z" fill="${sTriceps.fill}" class="${sTriceps.cls}"/>
-          <!-- forearm (extensors) -->
           <path d="M48,145 L64,148 C61,167 56,184 51,196 L39,191 C40,175 44,159 48,145 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
           <path d="M172,145 L156,148 C159,167 164,184 169,196 L181,191 C180,175 176,159 172,145 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
-          <!-- hands -->
           <path d="M38,193 L50,198 L45,215 L33,209 Z" fill="#2d323e"/>
           <path d="M182,193 L170,198 L175,215 L187,209 Z" fill="#2d323e"/>
-          <!-- abductors (pośladkowy średni / odwodziciele) -->
           <path d="M75,177 L87,181 L83,206 L70,198 C70,190 72,182 75,177 Z" fill="${sAbductors.fill}" class="${sAbductors.cls}"/>
           <path d="M145,177 L133,181 L137,206 L150,198 C150,190 148,182 145,177 Z" fill="${sAbductors.fill}" class="${sAbductors.cls}"/>
-          <!-- gluteal (pośladkowy wielki) -->
           <path d="M87,181 L109,186 L109,224 C89,227 73,218 71,199 L83,205 Z" fill="${sGlutes.fill}" class="${sGlutes.cls}"/>
           <path d="M133,181 L111,186 L111,224 C131,227 147,218 149,199 L137,205 Z" fill="${sGlutes.fill}" class="${sGlutes.cls}"/>
-          <!-- hamstring (biceps femoris + semitendinosus) -->
           <path d="M72,222 L90,225 L88,278 L75,275 C69,257 69,239 72,222 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
           <path d="M91,225 L106,226 L102,278 L89,278 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
           <path d="M148,222 L130,225 L132,278 L145,275 C151,257 151,239 148,222 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
           <path d="M129,225 L114,226 L118,278 L131,278 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
-          <!-- calves (brzuchaty łydki - głowa boczna i przyśrodkowa + płaszczkowaty) -->
           <path d="M73,282 L87,282 L86,364 L77,364 C70,336 70,308 73,282 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
           <path d="M88,282 L101,282 L97,364 L87,364 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
           <path d="M147,282 L133,282 L134,364 L143,364 C150,336 150,308 147,282 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
           <path d="M132,282 L119,282 L123,364 L133,364 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
-          <!-- feet -->
           <path d="M76,366 L98,366 L101,392 L71,392 Z" fill="#2d323e"/>
           <path d="M144,366 L122,366 L119,392 L149,392 Z" fill="#2d323e"/>
         </g>
@@ -710,7 +680,7 @@ function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Ciepl
   }).join('');
 
   return `
-    <div class="bg-bgCard rounded-3xl p-4 mb-3.5">
+    <div class="bg-bgCard rounded-3xl p-4 mb-3.5 overflow-hidden">
       <div class="flex justify-between items-center mb-2 flex-wrap gap-1">
         <h3 class="text-xs font-bold uppercase text-striveTeal">${customTitle}</h3>
         <div class="flex items-center gap-2 text-[10px] text-gray-300">
@@ -722,11 +692,11 @@ function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Ciepl
       </div>
 
       <div class="grid grid-cols-2 gap-2 items-center justify-items-center py-1">
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-center justify-center w-full overflow-hidden">
           <span class="text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Przód (Front)</span>
           ${frontSvgHtml}
         </div>
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-center justify-center w-full overflow-hidden">
           <span class="text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Tył (Back)</span>
           ${backSvgHtml}
         </div>
@@ -1829,7 +1799,6 @@ function togglePickerSupersetMode() {
   }
 }
 
-// Bezpośrednia aktualizacja DOM bez przeładowywania listy = ZERO skakania na początek listy!
 function togglePickerExercise(exId) {
   const idx = state.pickerSelectedIds.indexOf(exId);
   let isPicked = false;
