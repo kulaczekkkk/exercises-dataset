@@ -171,14 +171,14 @@
   <!-- PASEK SYNCHRONIZACJI BAZY -->
   <div id="sync-banner" class="hidden max-w-md mx-auto px-3.5 mb-2">
     <div class="bg-bgCard rounded-2xl px-3.5 py-2 flex items-center justify-between text-xs border border-striveTeal/40">
-      <span id="sync-banner-text" class="text-striveTeal font-semibold animate-pulse">⚡ Synchronizuję 1,324 ćwiczenia oraz mięśnie poboczne z GitHuba...</span>
+      <span id="sync-banner-text" class="text-striveTeal font-semibold animate-pulse">⚡ Synchronizuję ćwiczenia z bazy...</span>
     </div>
   </div>
 
   <!-- GŁÓWNY KONTENER WIDOKÓW -->
   <main id="app-content" class="w-full max-w-md mx-auto px-3.5 pt-1 pb-24"></main>
 
-  <!-- PŁYWAJĄCA KAPSUŁA TRENINGU (Stabilna wysokość h-[64px]) -->
+  <!-- PŁYWAJĄCA KAPSUŁA TRENINGU (PO ZMINIMALIZOWANIU) -->
   <div id="active-workout-bar" class="hidden fixed left-0 right-0 max-w-md mx-auto px-3.5 z-40" style="bottom: calc(86px + env(safe-area-inset-bottom));">
     <div id="active-workout-bar-inner" class="liquid-dock rounded-3xl p-3 flex items-center justify-between border border-striveTeal/40 h-[64px] transition-all">
       <div onclick="openActiveWorkoutModal()" class="flex-1 cursor-pointer pl-1 min-w-0">
@@ -263,6 +263,7 @@ let state = {
   activeWorkout: null,
   pendingSummary: null,
   restTimerEnd: null,
+  restTimerTotal: null,
   restTimerLabel: 'Przerwa',
   timerInterval: null,
   wizardPlan: null,
@@ -357,6 +358,7 @@ function persistActiveWorkoutState() {
     const payload = {
       activeWorkout: state.activeWorkout,
       restTimerEnd: state.restTimerEnd,
+      restTimerTotal: state.restTimerTotal,
       restTimerLabel: state.restTimerLabel,
       savedAt: Date.now()
     };
@@ -374,6 +376,7 @@ function restoreActiveWorkoutState() {
     if (parsed && parsed.activeWorkout && Array.isArray(parsed.activeWorkout.exercises)) {
       state.activeWorkout = parsed.activeWorkout;
       state.restTimerLabel = parsed.restTimerLabel || 'Przerwa';
+      state.restTimerTotal = parsed.restTimerTotal || null;
       if (parsed.restTimerEnd && parsed.restTimerEnd > Date.now()) {
         state.restTimerEnd = parsed.restTimerEnd;
       } else {
@@ -454,6 +457,108 @@ function dismissRestAlarm() {
 }
 
 // ============================================================================
+// LOGIKA TIMERA PRZERWY I ZEGAREK TRENINGU
+// ============================================================================
+function startRestTimer(seconds, label = 'Przerwa') {
+  unlockIosAudioAndNotifications();
+  dismissRestAlarm();
+  state.restTimerTotal = seconds;
+  state.restTimerEnd = Date.now() + seconds * 1000;
+  state.restTimerLabel = label;
+  persistActiveWorkoutState();
+  updateRestTimerUI();
+}
+
+function cancelRestTimer() {
+  state.restTimerEnd = null;
+  state.restTimerTotal = null;
+  persistActiveWorkoutState();
+  updateRestTimerUI();
+  dismissRestAlarm();
+}
+
+function adjustRestTimer(deltaSec) {
+  if (!state.restTimerEnd) {
+    const fallback = (state.activeWorkout && state.activeWorkout.workingRestSec) ? state.activeWorkout.workingRestSec : 90;
+    startRestTimer(Math.max(15, fallback + deltaSec), 'Przerwa');
+    return;
+  }
+  state.restTimerEnd += deltaSec * 1000;
+  if (state.restTimerTotal) state.restTimerTotal += deltaSec;
+  persistActiveWorkoutState();
+  updateRestTimerUI();
+}
+
+function startGlobalWorkoutClock() {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(() => {
+    if (state.activeWorkout) {
+      const elapsedSec = Math.floor((Date.now() - state.activeWorkout.startTime) / 1000);
+      const mm = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+      const ss = String(elapsedSec % 60).padStart(2, '0');
+
+      const barEl = document.getElementById('bar-elapsed-time');
+      if (barEl) barEl.textContent = `${mm}:${ss}`;
+
+      const modalEl = document.getElementById('modal-elapsed-time');
+      if (modalEl) modalEl.textContent = `${mm}:${ss}`;
+    }
+    updateRestTimerUI();
+  }, 500);
+}
+
+function updateRestTimerUI() {
+  const barBtn = document.getElementById('bar-timer-btn');
+  const barStatus = document.getElementById('bar-timer-status');
+  
+  const modalBox = document.getElementById('modal-rest-timer-box');
+  const modalVal = document.getElementById('modal-rest-timer-val');
+  const modalLabel = document.getElementById('modal-rest-timer-label');
+  const modalProgress = document.getElementById('modal-rest-timer-progress');
+
+  if (!state.restTimerEnd) {
+    if (modalBox) modalBox.classList.add('hidden');
+    if (barBtn) barBtn.textContent = '⏱ 90s';
+    if (barStatus && state.activeWorkout) {
+      barStatus.textContent = 'Dotknij, by wrócić do serii';
+    }
+    return;
+  }
+
+  const rem = Math.ceil((state.restTimerEnd - Date.now()) / 1000);
+  if (rem > 0) {
+    const m = Math.floor(rem / 60);
+    const s = String(rem % 60).padStart(2, '0');
+    const timeFormatted = `${m}:${s}`;
+
+    if (barBtn) barBtn.textContent = `⏱ ${timeFormatted}`;
+    if (barStatus) barStatus.textContent = `${state.restTimerLabel}: pozostało ${rem} s`;
+
+    if (modalBox) modalBox.classList.remove('hidden');
+    if (modalVal) modalVal.textContent = timeFormatted;
+    if (modalLabel) modalLabel.textContent = `${state.restTimerLabel} (${rem}s)`;
+    if (modalProgress && state.restTimerTotal) {
+      const pct = Math.max(0, Math.min(100, (rem / state.restTimerTotal) * 100));
+      modalProgress.style.width = `${pct}%`;
+    }
+  } else {
+    state.restTimerEnd = null;
+    state.restTimerTotal = null;
+    persistActiveWorkoutState();
+
+    if (barBtn) barBtn.textContent = `⏱ Gotowe!`;
+    if (barStatus) barStatus.textContent = `🔔 KONIEC PRZERWY! Czas pod sztangę!`;
+
+    if (modalBox) modalBox.classList.remove('hidden');
+    if (modalVal) modalVal.textContent = `0:00`;
+    if (modalLabel) modalLabel.textContent = `🔔 KONIEC PRZERWY! CZAS NA SERIĘ!`;
+    if (modalProgress) modalProgress.style.width = '0%';
+
+    triggerRestFinishedAlert();
+  }
+}
+
+// ============================================================================
 // MAPOWANIE SLUGÓW WG REACT-NATIVE-BODY-HIGHLIGHTER (24 PARTIE ANATOMICZNE)
 // ============================================================================
 function mapPolishPartToSlugs(partName = '') {
@@ -479,10 +584,8 @@ function mapPolishPartToSlugs(partName = '') {
   return ['chest'];
 }
 
-// Funkcja pomocnicza renderująca dokładne tablice bodyFront / bodyBack z react-native-body-highlighter (index.tsx)
 function renderExactRnBodySvg(bodyToRender, borderPaths, getSlugStyle, side = 'front') {
   const defaultFill = '#3f3f3f';
-  // W SvgMaleWrapper przód leży na X: 0..724, natomiast tył leży na X: 724..1448!
   const viewBox = side === 'back' ? '724 0 724 1448' : '0 0 724 1448';
 
   const borderOutlines = (borderPaths || []).map(d =>
@@ -518,7 +621,6 @@ function renderExactRnBodySvg(bodyToRender, borderPaths, getSlugStyle, side = 'f
   `;
 }
 
-// Renderowanie człowieka wg architektury react-native-body-highlighter (Przód + Tył)
 function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Cieplna Mapa Mięśni (Główne + Poboczne)') {
   const partSets = {};
   const slugIntensityPoints = {};
@@ -545,24 +647,21 @@ function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Ciepl
     }
   });
 
-  // Kolory i priorytety zgodne z react-native-body-highlighter (defaultFill = #3f3f3f)
   const getSlugStyle = (slug) => {
     const pts = slugIntensityPoints[slug] || 0;
-    if (pts >= 5) return { fill: '#ff3b30', cls: 'muscle-glow-max' };     // Intensywność 3: Czerwień
-    if (pts >= 2.5) return { fill: '#ff7a18', cls: 'muscle-glow-heavy' }; // Intensywność 2: Pomarańcz
-    if (pts > 0) return { fill: '#fbbf24', cls: 'muscle-glow-sec' };      // Intensywność 1 (Poboczne): Bursztyn
-    return { fill: '#3f3f3f', cls: '' };                                  // DefaultFill: #3f3f3f
+    if (pts >= 5) return { fill: '#ff3b30', cls: 'muscle-glow-max' };
+    if (pts >= 2.5) return { fill: '#ff7a18', cls: 'muscle-glow-heavy' };
+    if (pts > 0) return { fill: '#fbbf24', cls: 'muscle-glow-sec' };
+    return { fill: '#3f3f3f', cls: '' };
   };
 
   let frontSvgHtml = '';
   let backSvgHtml = '';
 
-  // Jeśli pobrano oryginalne wektory 1:1 z paczki react-native-body-highlighter@3.2.0, używamy ich bezpośrednio z właściwym viewBoxem!
   if (state.rnBodyAssets && Array.isArray(state.rnBodyAssets.front) && Array.isArray(state.rnBodyAssets.back)) {
     frontSvgHtml = renderExactRnBodySvg(state.rnBodyAssets.front, state.rnBodyAssets.borderFront, getSlugStyle, 'front');
     backSvgHtml = renderExactRnBodySvg(state.rnBodyAssets.back, state.rnBodyAssets.borderBack, getSlugStyle, 'back');
   } else {
-    // Zaawansowany, wielosegmentowy model wbudowany (offline fallback w stylu react-native-body-highlighter)
     const sNeck = getSlugStyle('neck');
     const sTraps = getSlugStyle('trapezius');
     const sDelts = getSlugStyle('deltoids');
@@ -708,7 +807,7 @@ function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Ciepl
 }
 
 // ============================================================================
-// POBIERANIE BAZY Z GITHUBA (WRAZ Z WSZYSTKIMI DODATKOWYMI PARTIAMI)
+// POBIERANIE BAZY Z GITHUBA
 // ============================================================================
 function translateEquipmentToPolish(equipment = '') {
   const eq = String(equipment).toLowerCase().trim();
@@ -731,61 +830,24 @@ function translateTargetToPolish(target = '', category = '') {
   const t = String(target).toLowerCase().trim();
   const c = String(category).toLowerCase().trim();
   const map = {
-    'abs': 'Brzuch',
-    'abdominals': 'Brzuch',
-    'core': 'Brzuch',
-    'waist': 'Brzuch',
-    'obliques': 'Skośne brzucha',
-    'hip flexors': 'Brzuch',
-    'pectorals': 'Klatka',
-    'pectoralis major': 'Klatka',
-    'chest': 'Klatka',
-    'serratus anterior': 'Klatka',
-    'biceps': 'Bicepsy',
-    'brachialis': 'Bicepsy',
-    'glutes': 'Pośladki',
-    'gluteus maximus': 'Pośladki',
-    'abductors': 'Odwodziciele',
-    'adductors': 'Przywodziciele ud',
-    'groin': 'Przywodziciele ud',
-    'delts': 'Barki',
-    'deltoids': 'Barki',
-    'shoulders': 'Barki',
-    'rear deltoids': 'Barki',
-    'anterior deltoid': 'Barki',
-    'rotator cuff': 'Barki',
-    'triceps': 'Tricepsy',
-    'upper back': 'Plecy (Góra)',
-    'rhomboids': 'Plecy (Góra)',
-    'lats': 'Najszerszy grzbietu',
-    'latissimus dorsi': 'Najszerszy grzbietu',
-    'back': 'Najszerszy grzbietu',
-    'lower back': 'Prostowniki grzbietu',
-    'spine': 'Prostowniki grzbietu',
-    'erector spinae': 'Prostowniki grzbietu',
-    'traps': 'Czworoboczny grzbietu',
-    'trapezius': 'Czworoboczny grzbietu',
-    'levator scapulae': 'Czworoboczny grzbietu',
-    'calves': 'Łydki',
-    'soleus': 'Łydki',
-    'gastrocnemius': 'Łydki',
-    'lower legs': 'Łydki',
-    'tibialis': 'Piszczelowy',
-    'ankles': 'Łydki',
-    'ankle stabilizers': 'Łydki',
-    'quads': 'Czworogłowe ud',
-    'quadriceps': 'Czworogłowe ud',
-    'upper legs': 'Czworogłowe ud',
-    'forearms': 'Przedramiona',
-    'lower arms': 'Przedramiona',
-    'wrist flexors': 'Przedramiona',
-    'wrist extensors': 'Przedramiona',
-    'grip': 'Przedramiona',
-    'hamstrings': 'Dwugłowe ud',
-    'cardiovascular system': 'Cardio',
-    'cardio': 'Cardio',
-    'neck': 'Kark',
-    'sternocleidomastoid': 'Kark'
+    'abs': 'Brzuch', 'abdominals': 'Brzuch', 'core': 'Brzuch', 'waist': 'Brzuch',
+    'obliques': 'Skośne brzucha', 'hip flexors': 'Brzuch', 'pectorals': 'Klatka',
+    'pectoralis major': 'Klatka', 'chest': 'Klatka', 'serratus anterior': 'Klatka',
+    'biceps': 'Bicepsy', 'brachialis': 'Bicepsy', 'glutes': 'Pośladki',
+    'gluteus maximus': 'Pośladki', 'abductors': 'Odwodziciele', 'adductors': 'Przywodziciele ud',
+    'groin': 'Przywodziciele ud', 'delts': 'Barki', 'deltoids': 'Barki',
+    'shoulders': 'Barki', 'rear deltoids': 'Barki', 'anterior deltoid': 'Barki',
+    'rotator cuff': 'Barki', 'triceps': 'Tricepsy', 'upper back': 'Plecy (Góra)',
+    'rhomboids': 'Plecy (Góra)', 'lats': 'Najszerszy grzbietu', 'latissimus dorsi': 'Najszerszy grzbietu',
+    'back': 'Najszerszy grzbietu', 'lower back': 'Prostowniki grzbietu', 'spine': 'Prostowniki grzbietu',
+    'erector spinae': 'Prostowniki grzbietu', 'traps': 'Czworoboczny grzbietu', 'trapezius': 'Czworoboczny grzbietu',
+    'levator scapulae': 'Czworoboczny grzbietu', 'calves': 'Łydki', 'soleus': 'Łydki',
+    'gastrocnemius': 'Łydki', 'lower legs': 'Łydki', 'tibialis': 'Piszczelowy',
+    'ankles': 'Łydki', 'ankle stabilizers': 'Łydki', 'quads': 'Czworogłowe ud',
+    'quadriceps': 'Czworogłowe ud', 'upper legs': 'Czworogłowe ud', 'forearms': 'Przedramiona',
+    'lower arms': 'Przedramiona', 'wrist flexors': 'Przedramiona', 'wrist extensors': 'Przedramiona',
+    'grip': 'Przedramiona', 'hamstrings': 'Dwugłowe ud', 'cardiovascular system': 'Cardio',
+    'cardio': 'Cardio', 'neck': 'Kark', 'sternocleidomastoid': 'Kark'
   };
   return map[t] || map[c] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : 'Inne');
 }
@@ -1028,7 +1090,7 @@ async function renderCurrentView() {
 }
 
 // ============================================================================
-// WIDOK 1: HOME (Z TYGODNIOWYM ZESTAWEM DNI I TYGODNIOWĄ MAPĄ MIĘŚNI)
+// WIDOK 1: HOME
 // ============================================================================
 async function renderHomeView() {
   const workouts = await db.workouts.toArray();
@@ -1151,7 +1213,6 @@ async function renderHomeView() {
       <span class="text-striveGreen font-bold">✓</span> zrobiony · <span class="text-striveTeal font-bold">•</span> dzień treningowy · <span class="text-gray-500">–</span> wolne
     </p>
 
-    <!-- TYGODNIOWA MAPA MIĘŚNI NA STRONIE GŁÓWNEJ -->
     ${weeklyMuscleHeatmapHtml}
 
     <div onclick="navigate('profile'); setTimeout(()=>openMeasurementsModal(),100)" class="bg-bgCard rounded-3xl p-4 mb-1 relative overflow-hidden cursor-pointer min-h-[104px] flex flex-col justify-between active:scale-[0.99] transition">
@@ -1309,7 +1370,7 @@ async function deletePlan(planId) {
 }
 
 // ============================================================================
-// WIDOK 2B: RUTYNY (BEZ COFANIA LISTY ĆWICZEŃ I Z ZACHOWANIEM SCROLLA)
+// WIDOK 2B: RUTYNY
 // ============================================================================
 async function renderRoutinesView() {
   const routines = await db.routines.toArray();
@@ -2085,7 +2146,7 @@ async function saveCustomExercise(returnToPicker) {
 }
 
 // ============================================================================
-// TRENING (STABILNY UKŁAD + AUTO-ZAPIS W LOCIE)
+// TRENING (WIDŻET TIMERA W MODALU ORAZ W DOCKU)
 // ============================================================================
 async function openQuickStartModal() {
   if (state.activeWorkout) {
@@ -2354,19 +2415,48 @@ function openActiveWorkoutModal(preserveScroll = false) {
   }).join('');
 
   openModal(`
-    <div class="flex justify-between items-center mb-4 sticky top-0 liquid-dock rounded-2xl px-3 py-2.5 z-10">
+    <!-- GŁÓWNY NAGŁÓWEK TRENINGU -->
+    <div class="flex justify-between items-center mb-3 sticky top-0 liquid-dock rounded-2xl px-3 py-2 z-20">
       <div class="flex items-center gap-1.5">
-        <button onclick="closeModal()" class="text-xs bg-white/10 px-2.5 py-1.5 rounded-xl">↓ Ukryj</button>
-        <button onclick="discardActiveWorkout()" class="text-xs bg-red-950/60 text-red-300 border border-red-500/30 px-2 py-1.5 rounded-xl" title="Porzuć trening">🗑</button>
+        <button onclick="closeModal()" class="text-xs bg-white/10 px-2.5 py-1.5 rounded-xl active:scale-90 transition">↓ Ukryj</button>
+        <button onclick="discardActiveWorkout()" class="text-xs bg-red-950/60 text-red-300 border border-red-500/30 px-2 py-1.5 rounded-xl active:scale-90 transition" title="Porzuć trening">🗑</button>
       </div>
       <div class="text-center h-[34px] flex flex-col justify-center">
-        <h2 class="font-bold text-xs truncate max-w-[130px] leading-tight">${w.routineName}</h2>
-        <span class="text-[9px] text-striveTeal font-mono leading-tight">💾 Auto-zapis aktywny</span>
+        <h2 class="font-bold text-xs truncate max-w-[130px] leading-tight text-white">${w.routineName}</h2>
+        <div class="flex items-center justify-center gap-1.5 mt-0.5">
+          <span id="modal-elapsed-time" class="text-[11px] text-striveTeal font-mono font-bold leading-tight">00:00</span>
+          <span class="text-[9px] text-gray-500">·</span>
+          <button onclick="startRestTimer(w.workingRestSec || 120, 'Przerwa')" class="text-[10px] text-striveOrange font-bold hover:underline">⏱ +Przerwa</button>
+        </div>
       </div>
-      <button onclick="prepareWorkoutSummaryModal()" class="liquid-orange-btn text-white text-xs font-bold px-3.5 py-1.5 rounded-xl">Zakończ</button>
+      <button onclick="prepareWorkoutSummaryModal()" class="liquid-orange-btn text-white text-xs font-bold px-3.5 py-1.5 rounded-xl active:scale-90 transition">Zakończ</button>
     </div>
+
+    <!-- PŁYWAJĄCY WIDŻET PRZERWY BEZPOŚREDNIO W MODALU -->
+    <div id="modal-rest-timer-box" class="${state.restTimerEnd ? '' : 'hidden'} liquid-pill rounded-2xl p-3 mb-3 border border-striveOrange/50 shadow-[0_10px_30px_rgba(255,122,24,0.25)] sticky top-[58px] z-10 backdrop-blur-3xl">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl liquid-orange-btn flex items-center justify-center text-base animate-pulse shrink-0">⏱</div>
+          <div class="min-w-0">
+            <div id="modal-rest-timer-label" class="text-[10px] uppercase font-bold text-striveOrange tracking-wider leading-tight truncate">${state.restTimerLabel || 'Przerwa'}</div>
+            <div id="modal-rest-timer-val" class="text-xl font-black font-mono text-white leading-tight">00:00</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-1 shrink-0">
+          <button onclick="adjustRestTimer(-15)" class="bg-white/10 active:scale-90 transition px-2 py-1.5 rounded-xl text-xs font-bold text-gray-200">-15s</button>
+          <button onclick="adjustRestTimer(15)" class="bg-white/10 active:scale-90 transition px-2 py-1.5 rounded-xl text-xs font-bold text-gray-200">+15s</button>
+          <button onclick="cancelRestTimer()" class="bg-red-500/20 text-red-300 border border-red-500/40 active:scale-90 transition px-2.5 py-1.5 rounded-xl text-xs font-bold">✕ Pomiń</button>
+        </div>
+      </div>
+      <div class="w-full bg-black/40 h-1.5 rounded-full mt-2.5 overflow-hidden border border-white/10">
+        <div id="modal-rest-timer-progress" class="bg-gradient-to-r from-striveTeal to-striveOrange h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
+      </div>
+    </div>
+
     ${exBlocks}
   `);
+
+  updateRestTimerUI();
 
   if (preserveScroll && overlayEl) {
     overlayEl.scrollTop = prevScroll;
@@ -2377,6 +2467,7 @@ function discardActiveWorkout() {
   if (!confirm('Czy na pewno chcesz porzucić ten trening?')) return;
   state.activeWorkout = null;
   state.restTimerEnd = null;
+  state.restTimerTotal = null;
   persistActiveWorkoutState();
   document.getElementById('active-workout-bar').classList.add('hidden');
   closeModal();
@@ -2446,58 +2537,6 @@ async function swapExerciseInFlight(exIdx, bodyPart) {
     state.activeWorkout.exercises[exIdx].isPlaceholder = false;
     persistActiveWorkoutState();
     openActiveWorkoutModal(true);
-  }
-}
-
-function startRestTimer(seconds, label = 'Przerwa') {
-  unlockIosAudioAndNotifications();
-  dismissRestAlarm();
-  state.restTimerEnd = Date.now() + seconds * 1000;
-  state.restTimerLabel = label;
-  persistActiveWorkoutState();
-  updateRestTimerUI();
-}
-
-function adjustRestTimer(deltaSec) {
-  if (!state.restTimerEnd) {
-    startRestTimer(90 + deltaSec, 'Przerwa');
-    return;
-  }
-  state.restTimerEnd += deltaSec * 1000;
-  persistActiveWorkoutState();
-  updateRestTimerUI();
-}
-
-function startGlobalWorkoutClock() {
-  if (state.timerInterval) clearInterval(state.timerInterval);
-  state.timerInterval = setInterval(() => {
-    if (!state.activeWorkout) return;
-    const elapsedSec = Math.floor((Date.now() - state.activeWorkout.startTime) / 1000);
-    const mm = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
-    const ss = String(elapsedSec % 60).padStart(2, '0');
-    const el = document.getElementById('bar-elapsed-time');
-    if (el) el.textContent = `${mm}:${ss}`;
-    updateRestTimerUI();
-  }, 500);
-}
-
-function updateRestTimerUI() {
-  const btn = document.getElementById('bar-timer-btn');
-  const status = document.getElementById('bar-timer-status');
-  if (!state.restTimerEnd) return;
-
-  const rem = Math.ceil((state.restTimerEnd - Date.now()) / 1000);
-  if (rem > 0) {
-    const m = Math.floor(rem / 60);
-    const s = String(rem % 60).padStart(2, '0');
-    if (btn) btn.textContent = `⏱ ${m}:${s}`;
-    if (status) status.textContent = `${state.restTimerLabel}: pozostało ${rem} s`;
-  } else {
-    state.restTimerEnd = null;
-    persistActiveWorkoutState();
-    if (btn) btn.textContent = `⏱ Gotowe!`;
-    if (status) status.textContent = `🔔 KONIEC PRZERWY! Czas pod sztangę!`;
-    triggerRestFinishedAlert();
   }
 }
 
@@ -2725,6 +2764,7 @@ async function confirmAndSaveWorkoutSummary() {
   state.activeWorkout = null;
   state.pendingSummary = null;
   state.restTimerEnd = null;
+  state.restTimerTotal = null;
   state.selectedTodayRoutineId = null;
   persistActiveWorkoutState();
   document.getElementById('active-workout-bar').classList.add('hidden');
@@ -3099,7 +3139,7 @@ async function openProgressPhotosModal() {
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2">
-        <label class="liquid-pill text-white text-center text-xs font-bold py-3 rounded-2xl cursor-pointer active:scale-95 transition">
+        <label class="liquid-pill text-white text-center text-xs font-bold py-3 rounded-2xl cursor-pointer active:scale-95 transition flex items-center justify-center gap-1.5">
           📷 Zrób aparatem
           <input type="file" accept="image/*" capture="environment" onchange="addDirectGalleryPhotos(event)" class="hidden">
         </label>
@@ -3139,7 +3179,7 @@ async function deleteSinglePhoto(photoId) {
 }
 
 // ============================================================================
-// WIDOK 4: KALENDARZ / HISTORIA (Z PODGLĄDEM MAPY MIĘŚNIOWEJ DLA KAŻDEJ SESJI)
+// WIDOK 4: KALENDARZ / HISTORIA
 // ============================================================================
 async function renderCalendarView() {
   const workouts = await db.workouts.toArray();
