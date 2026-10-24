@@ -627,8 +627,8 @@ function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Ciepl
   const slugIntensityPoints = {};
 
   exercisesList.forEach(ex => {
-    // Odrzucamy serie rozgrzewkowe ('R') - liczą się tylko robocze ('N') i drop sety ('D')
-    const validSets = (ex.sets || []).filter(s => s.type !== 'R');
+    // Odrzucamy serie rozgrzewkowe ('R') - liczą się wyłącznie robocze ('N') oraz drop sety ('D')
+    const validSets = (ex.sets || []).filter(s => String(s.type || 'N').toUpperCase() !== 'R');
     const setsCount = validSets.length;
 
     if (setsCount > 0) {
@@ -859,127 +859,6 @@ function renderAnatomicalMuscleMap(exercisesList = [], customTitle = '🧬 Ciepl
       </div>
 
       ${badgesHtml ? `<div class="flex flex-wrap gap-1.5 justify-center mt-2 pt-2.5 border-t border-white/10">${badgesHtml}</div>` : '<p class="text-center text-[11px] text-gray-400 mt-1">Brak zaliczonych serii roboczych w wybranym okresie – wykonaj trening, aby rozgrzać mapę mięśni!</p>'}
-    </div>
-  `;
-}
-
-    backSvgHtml = `
-      <svg viewBox="0 0 220 430" class="w-36 h-64 mx-auto block">
-        <path d="M93,14 C93,4 127,4 127,14 L129,36 C129,46 123,52 119,55 L122,63 L148,71 C165,75 172,89 169,108 L171,142 L182,190 L187,208 L173,214 L167,194 L156,154 L152,112 L147,120 L146,164 C154,195 153,230 146,265 L144,285 C151,310 150,338 142,368 L148,392 L120,392 L119,368 L117,285 L114,252 L110,192 L106,252 L103,285 L101,368 L100,392 L72,392 L78,368 C70,338 69,310 76,285 L74,265 C67,230 66,195 74,164 L73,120 L68,112 L64,154 L53,194 L47,214 L33,208 L38,190 L49,142 L51,108 C48,89 55,75 72,71 L98,63 L101,55 C97,52 91,46 91,36 Z"
-          fill="none" stroke="#dfdfdf" stroke-width="2.2" opacity="0.65" stroke-linejoin="round"/>
-        <g stroke="#141821" stroke-width="1.35" stroke-linejoin="round">
-          <path d="M94,18 C94,9 126,9 126,18 L127,36 C127,47 119,55 110,55 C101,55 93,47 93,36 Z" fill="#2d323e"/>
-          <path d="M99,51 L121,51 L123,61 L97,61 Z" fill="${sNeck.fill}" class="${sNeck.cls}"/>
-          <polygon points="110,56 75,69 109,119 109,56" fill="${sTraps.fill}" class="${sTraps.cls}"/>
-          <polygon points="110,56 145,69 111,119 111,56" fill="${sTraps.fill}" class="${sTraps.cls}"/>
-          <path d="M74,69 C57,72 51,85 53,102 L72,99 C73,89 77,78 82,72 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
-          <path d="M146,69 C163,72 169,85 167,102 L148,99 C147,89 143,78 138,72 Z" fill="${sDelts.fill}" class="${sDelts.cls}"/>
-          <path d="M72,99 L108,119 L103,162 L78,150 C71,133 70,115 72,99 Z" fill="${sUpperBack.fill}" class="${sUpperBack.cls}"/>
-          <path d="M148,99 L112,119 L117,162 L142,150 C149,133 150,115 148,99 Z" fill="${sUpperBack.fill}" class="${sUpperBack.cls}"/>
-          <path d="M81,151 L108,162 L108,186 L81,179 Z" fill="${sLowerBack.fill}" class="${sLowerBack.cls}"/>
-          <path d="M139,151 L112,162 L112,186 L139,179 Z" fill="${sLowerBack.fill}" class="${sLowerBack.cls}"/>
-          <path d="M53,104 L69,102 C71,119 69,135 65,146 L49,143 C47,129 49,115 53,104 Z" fill="${sTriceps.fill}" class="${sTriceps.cls}"/>
-          <path d="M167,104 L151,102 C149,119 151,135 155,146 L171,143 C173,129 171,115 167,104 Z" fill="${sTriceps.fill}" class="${sTriceps.cls}"/>
-          <path d="M48,145 L64,148 C61,167 56,184 51,196 L39,191 C40,175 44,159 48,145 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
-          <path d="M172,145 L156,148 C159,167 164,184 169,196 L181,191 C180,175 176,159 172,145 Z" fill="${sForearm.fill}" class="${sForearm.cls}"/>
-          <path d="M38,193 L50,198 L45,215 L33,209 Z" fill="#2d323e"/>
-          <path d="M182,193 L170,198 L175,215 L187,209 Z" fill="#2d323e"/>
-          <path d="M75,177 L87,181 L83,206 L70,198 C70,190 72,182 75,177 Z" fill="${sAbductors.fill}" class="${sAbductors.cls}"/>
-          <path d="M145,177 L133,181 L137,206 L150,198 C150,190 148,182 145,177 Z" fill="${sAbductors.fill}" class="${sAbductors.cls}"/>
-          <path d="M87,181 L109,186 L109,224 C89,227 73,218 71,199 L83,205 Z" fill="${sGlutes.fill}" class="${sGlutes.cls}"/>
-          <path d="M133,181 L111,186 L111,224 C131,227 147,218 149,199 L137,205 Z" fill="${sGlutes.fill}" class="${sGlutes.cls}"/>
-          <path d="M72,222 L90,225 L88,278 L75,275 C69,257 69,239 72,222 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
-          <path d="M91,225 L106,226 L102,278 L89,278 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
-          <path d="M148,222 L130,225 L132,278 L145,275 C151,257 151,239 148,222 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
-          <path d="M129,225 L114,226 L118,278 L131,278 Z" fill="${sHams.fill}" class="${sHams.cls}"/>
-          <path d="M73,282 L87,282 L86,364 L77,364 C70,336 70,308 73,282 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
-          <path d="M88,282 L101,282 L97,364 L87,364 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
-          <path d="M147,282 L133,282 L134,364 L143,364 C150,336 150,308 147,282 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
-          <path d="M132,282 L119,282 L123,364 L133,364 Z" fill="${sCalves.fill}" class="${sCalves.cls}"/>
-          <path d="M76,366 L98,366 L101,392 L71,392 Z" fill="#2d323e"/>
-          <path d="M144,366 L122,366 L119,392 L149,392 Z" fill="#2d323e"/>
-        </g>
-      </svg>`;
-  }
-
-  const sortedBadges = Object.entries(partSets).sort((a, b) => b[1] - a[1]);
-  const badgesHtml = sortedBadges.map(([part, cnt]) => {
-    let borderCls = 'border-white/15';
-    let dotCls = 'bg-[#3f3f3f]';
-    let textCls = 'text-gray-300';
-
-    if (isWeekly) {
-      if (cnt >= 12) {
-        borderCls = 'border-[#ff3b30]/60';
-        dotCls = 'bg-[#ff3b30]';
-        textCls = 'text-[#ff3b30]';
-      } else if (cnt >= 6) {
-        borderCls = 'border-striveOrange/50';
-        dotCls = 'bg-[#ff7a18]';
-        textCls = 'text-striveOrange';
-      } else if (cnt >= 2) {
-        borderCls = 'border-yellow-400/40';
-        dotCls = 'bg-[#fbbf24]';
-        textCls = 'text-yellow-300';
-      }
-    } else {
-      if (cnt >= 5) {
-        borderCls = 'border-[#ff3b30]/60';
-        dotCls = 'bg-[#ff3b30]';
-        textCls = 'text-[#ff3b30]';
-      } else if (cnt >= 2.5) {
-        borderCls = 'border-striveOrange/50';
-        dotCls = 'bg-[#ff7a18]';
-        textCls = 'text-striveOrange';
-      } else if (cnt > 0) {
-        borderCls = 'border-yellow-400/40';
-        dotCls = 'bg-[#fbbf24]';
-        textCls = 'text-yellow-300';
-      }
-    }
-
-    return `
-      <span class="inline-flex items-center gap-1.5 bg-white/5 border ${borderCls} rounded-full px-2.5 py-1 text-[11px] font-bold text-white">
-        <span class="w-2 h-2 rounded-full ${dotCls}"></span>
-        <span>${part}: <strong class="${textCls}">${Number.isInteger(cnt) ? cnt : cnt.toFixed(1)} s.</strong></span>
-      </span>`;
-  }).join('');
-
-  const legendHtml = isWeekly ? `
-    <div class="flex items-center gap-2 text-[10px] text-gray-300 flex-wrap">
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#3f3f3f] inline-block"></span>&lt;2</span>
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#fbbf24] inline-block"></span>Min 2-5</span>
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ff7a18] inline-block"></span>Śr. 6-11</span>
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ff3b30] inline-block"></span>Max 12-20+</span>
-    </div>
-  ` : `
-    <div class="flex items-center gap-2 text-[10px] text-gray-300">
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#3f3f3f] inline-block"></span>0</span>
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#fbbf24] inline-block"></span>Poboczne</span>
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ff7a18] inline-block"></span>Główne</span>
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ff3b30] inline-block"></span>Max</span>
-    </div>
-  `;
-
-  return `
-    <div class="bg-bgCard rounded-3xl p-4 mb-3.5 overflow-hidden">
-      <div class="flex justify-between items-center mb-2 flex-wrap gap-1">
-        <h3 class="text-xs font-bold uppercase text-striveTeal">${customTitle}</h3>
-        ${legendHtml}
-      </div>
-
-      <div class="grid grid-cols-2 gap-2 items-center justify-items-center py-1">
-        <div class="flex flex-col items-center justify-center w-full overflow-hidden">
-          <span class="text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Przód (Front)</span>
-          ${frontSvgHtml}
-        </div>
-        <div class="flex flex-col items-center justify-center w-full overflow-hidden">
-          <span class="text-[10px] font-bold uppercase text-gray-400 mb-1 tracking-wider">Tył (Back)</span>
-          ${backSvgHtml}
-        </div>
-      </div>
-
-      ${badgesHtml ? `<div class="flex flex-wrap gap-1.5 justify-center mt-2 pt-2.5 border-t border-white/10">${badgesHtml}</div>` : '<p class="text-center text-[11px] text-gray-400 mt-1">Brak zaliczonych serii w wybranym okresie – wykonaj trening, aby rozgrzać mapę mięśni!</p>'}
     </div>
   `;
 }
@@ -1346,7 +1225,7 @@ async function renderHomeView() {
     });
   });
 
-  // Tygodniowa Mapa Mięśni z progami: Min 2-5, Średnio 6-11, Max 12-20+ (isWeekly = true)
+  // Tygodniowa Mapa Mięśni z progami: Min 2-3, Średnio 4-7, Max 8-12+ (isWeekly = true)
   const weeklyMuscleHeatmapHtml = renderAnatomicalMuscleMap(
     weeklyExercisesAggregated,
     `🔥 Tygodniowa Mapa Mięśni (${formatDayMonth(startOfWeek)} – ${formatDayMonth(today)})`,
