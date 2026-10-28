@@ -90,6 +90,13 @@
       box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45);
     }
 
+    /* Podświetlenie pola, które edytuje wbudowana klawiatura */
+    .kbd-input { cursor: pointer; caret-color: transparent; }
+    .kbd-active {
+      border-color: #5cc8e6 !important;
+      box-shadow: 0 0 0 2px rgba(92, 200, 230, 0.55), inset 0 2px 5px rgba(0, 0, 0, 0.45) !important;
+    }
+
     .liquid-dock {
       background: linear-gradient(180deg, rgba(28, 36, 48, 0.68) 0%, rgba(12, 16, 23, 0.82) 100%);
       backdrop-filter: blur(40px) saturate(210%);
@@ -127,6 +134,54 @@
       padding-bottom: calc(90px + env(safe-area-inset-bottom));
     }
 
+    /* Tło modala: pełne, bez rozmycia i przyciemnienia */
+    .modal-solid { background: #030407; }
+
+    /* Stały pasek treningu (nagłówek + timer) – bez blur, zawsze na wierzchu */
+    .topbar-solid {
+      background: #030407;
+      padding-left: 12px;
+      padding-right: 12px;
+      padding-bottom: 8px;
+    }
+    .topbar-card {
+      background: #10151d;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    }
+    .timer-card {
+      background: linear-gradient(135deg, #17262f 0%, #2a190b 100%);
+      border: 1px solid rgba(255, 122, 24, 0.6);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Wbudowana klawiatura numeryczna */
+    .kbd-solid {
+      background: #05070b;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .kbd-key {
+      height: 52px;
+      border-radius: 16px;
+      background: #1b222d;
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      touch-action: manipulation;
+      transition: transform 0.08s ease, background 0.08s ease;
+    }
+    .kbd-key:active { transform: scale(0.94); background: #2a3442; }
+    .kbd-key-fn { background: #232c39; }
+    .kbd-key-next {
+      background: linear-gradient(135deg, #ff9233 0%, #e85d04 100%);
+      font-size: 17px;
+      font-weight: 700;
+    }
+
     @keyframes screenFlashPulse {
       0%, 100% { opacity: 0; }
       20%, 60% { opacity: 1; }
@@ -149,7 +204,7 @@
 <body class="flex flex-col justify-between">
 
   <!-- PEŁNOEKRANOWY FLASH I ALARM KOŃCA PRZERWY -->
-  <div id="rest-flash-overlay" onclick="dismissRestAlarm()" class="hidden fixed inset-0 z-[100] pointer-events-auto flex flex-col items-center justify-start pt-16 px-4 bg-gradient-to-b from-orange-600/60 via-red-600/35 to-transparent backdrop-blur-sm">
+  <div id="rest-flash-overlay" onclick="dismissRestAlarm()" class="hidden fixed inset-0 z-[100] pointer-events-auto flex flex-col items-center justify-start pt-16 px-4 bg-gradient-to-b from-orange-600/60 via-red-600/35 to-transparent">
     <div class="liquid-orange-btn border-2 border-white rounded-3xl p-5 shadow-[0_0_50px_rgba(255,122,24,0.95)] text-center max-w-sm w-full animate-bounce">
       <div class="text-3xl mb-1">🔔⚡</div>
       <div class="text-lg font-extrabold text-white tracking-tight uppercase">Koniec Przerwy!</div>
@@ -231,9 +286,41 @@
     </nav>
   </div>
 
-  <!-- MODAL -->
-  <div id="modal-overlay" class="hidden fixed inset-0 bg-bgMain/90 backdrop-blur-2xl z-50 overflow-y-auto safe-modal-padding">
-    <div id="modal-body" class="max-w-md mx-auto px-4"></div>
+  <!-- MODAL (pełne tło, bez rozmycia) -->
+  <div id="modal-overlay" class="hidden fixed inset-0 modal-solid z-50 overflow-y-auto overflow-x-hidden safe-modal-padding">
+    <div id="modal-body" class="max-w-md mx-auto px-4 w-full min-w-0"></div>
+  </div>
+
+  <!-- STAŁY PASEK TRENINGU: nagłówek + timer przerwy (poza przewijaną treścią, zawsze na wierzchu) -->
+  <div id="workout-topbar" class="hidden fixed left-0 right-0 top-0 z-[55] topbar-solid" style="padding-top: max(10px, env(safe-area-inset-top));"></div>
+
+  <!-- WBUDOWANA KLAWIATURA NUMERYCZNA -->
+  <div id="app-keypad" class="hidden fixed left-0 right-0 bottom-0 z-[60] kbd-solid" style="padding-bottom: max(10px, env(safe-area-inset-bottom));">
+    <div class="max-w-md mx-auto px-3 pt-2.5 pb-1 grid grid-cols-4 gap-2">
+      <button class="kbd-key" onclick="kbdKey('1')">1</button>
+      <button class="kbd-key" onclick="kbdKey('2')">2</button>
+      <button class="kbd-key" onclick="kbdKey('3')">3</button>
+      <button class="kbd-key kbd-key-fn" onclick="closeKeypad()" aria-label="Ukryj klawiaturę">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
+      <button class="kbd-key" onclick="kbdKey('4')">4</button>
+      <button class="kbd-key" onclick="kbdKey('5')">5</button>
+      <button class="kbd-key" onclick="kbdKey('6')">6</button>
+      <button class="kbd-key kbd-key-fn" onclick="kbdStep(-1)" aria-label="Mniej">−</button>
+
+      <button class="kbd-key" onclick="kbdKey('7')">7</button>
+      <button class="kbd-key" onclick="kbdKey('8')">8</button>
+      <button class="kbd-key" onclick="kbdKey('9')">9</button>
+      <button class="kbd-key kbd-key-fn" onclick="kbdStep(1)" aria-label="Więcej">+</button>
+
+      <button class="kbd-key" onclick="kbdKey('.')">.</button>
+      <button class="kbd-key" onclick="kbdKey('0')">0</button>
+      <button class="kbd-key" onclick="kbdKey('back')" aria-label="Usuń">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/><line x1="12" y1="9" x2="18" y2="15"/><line x1="18" y1="9" x2="12" y2="15"/></svg>
+      </button>
+      <button class="kbd-key kbd-key-next" onclick="kbdNext()">Dalej</button>
+    </div>
   </div>
 
 <script>
@@ -279,7 +366,8 @@ let state = {
   exerciseDisplayLimit: 80,
   sharedAudioCtx: null,
   flashTimeout: null,
-  rnBodyAssets: null
+  rnBodyAssets: null,
+  kbd: null
 };
 
 // ============================================================================
@@ -489,20 +577,23 @@ function adjustRestTimer(deltaSec) {
   updateRestTimerUI();
 }
 
+function updateElapsedUI() {
+  if (!state.activeWorkout) return;
+  const elapsedSec = Math.floor((Date.now() - state.activeWorkout.startTime) / 1000);
+  const mm = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+  const ss = String(elapsedSec % 60).padStart(2, '0');
+
+  const barEl = document.getElementById('bar-elapsed-time');
+  if (barEl) barEl.textContent = `${mm}:${ss}`;
+
+  const modalEl = document.getElementById('modal-elapsed-time');
+  if (modalEl) modalEl.textContent = `${mm}:${ss}`;
+}
+
 function startGlobalWorkoutClock() {
   if (state.timerInterval) clearInterval(state.timerInterval);
   state.timerInterval = setInterval(() => {
-    if (state.activeWorkout) {
-      const elapsedSec = Math.floor((Date.now() - state.activeWorkout.startTime) / 1000);
-      const mm = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
-      const ss = String(elapsedSec % 60).padStart(2, '0');
-
-      const barEl = document.getElementById('bar-elapsed-time');
-      if (barEl) barEl.textContent = `${mm}:${ss}`;
-
-      const modalEl = document.getElementById('modal-elapsed-time');
-      if (modalEl) modalEl.textContent = `${mm}:${ss}`;
-    }
+    updateElapsedUI();
     updateRestTimerUI();
   }, 500);
 }
@@ -536,7 +627,7 @@ function updateRestTimerUI() {
 
     if (modalBox) modalBox.classList.remove('hidden');
     if (modalVal) modalVal.textContent = timeFormatted;
-    if (modalLabel) modalLabel.textContent = `${state.restTimerLabel} (${rem}s)`;
+    if (modalLabel) modalLabel.textContent = state.restTimerLabel;
     if (modalProgress && state.restTimerTotal) {
       const pct = Math.max(0, Math.min(100, (rem / state.restTimerTotal) * 100));
       modalProgress.style.width = `${pct}%`;
@@ -551,10 +642,192 @@ function updateRestTimerUI() {
 
     if (modalBox) modalBox.classList.remove('hidden');
     if (modalVal) modalVal.textContent = `0:00`;
-    if (modalLabel) modalLabel.textContent = `🔔 KONIEC PRZERWY! CZAS NA SERIĘ!`;
+    if (modalLabel) modalLabel.textContent = `🔔 KONIEC PRZERWY!`;
     if (modalProgress) modalProgress.style.width = '0%';
 
     triggerRestFinishedAlert();
+  }
+}
+
+// ============================================================================
+// STAŁY PASEK TRENINGU (nagłówek + timer) – dopasowanie odstępu modala
+// ============================================================================
+function syncOverlayTopPadding() {
+  const tb = document.getElementById('workout-topbar');
+  const ov = document.getElementById('modal-overlay');
+  if (!tb || !ov) return;
+  if (tb.classList.contains('hidden')) {
+    ov.style.paddingTop = '';
+  } else {
+    ov.style.paddingTop = (tb.offsetHeight + 8) + 'px';
+  }
+}
+
+function showWorkoutTopbar(html) {
+  const tb = document.getElementById('workout-topbar');
+  if (!tb) return;
+  tb.innerHTML = html;
+  tb.classList.remove('hidden');
+  syncOverlayTopPadding();
+}
+
+function hideWorkoutTopbar() {
+  const tb = document.getElementById('workout-topbar');
+  if (tb) tb.classList.add('hidden');
+  syncOverlayTopPadding();
+}
+
+// ============================================================================
+// WBUDOWANA KLAWIATURA NUMERYCZNA
+// ============================================================================
+function kbdInputId(exIdx, sIdx, field) {
+  return `kb-${exIdx}-${sIdx}-${field}`;
+}
+
+function highlightKbdInput() {
+  document.querySelectorAll('.kbd-active').forEach(e => e.classList.remove('kbd-active'));
+  const k = state.kbd;
+  if (!k) return;
+  const el = document.getElementById(kbdInputId(k.exIdx, k.sIdx, k.field));
+  if (el) el.classList.add('kbd-active');
+}
+
+function ensureKbdInputVisible() {
+  const k = state.kbd;
+  if (!k) return;
+  const el = document.getElementById(kbdInputId(k.exIdx, k.sIdx, k.field));
+  const ov = document.getElementById('modal-overlay');
+  const tb = document.getElementById('workout-topbar');
+  const kp = document.getElementById('app-keypad');
+  if (!el || !ov || !kp) return;
+  const r = el.getBoundingClientRect();
+  const topLimit = ((tb && !tb.classList.contains('hidden')) ? tb.getBoundingClientRect().bottom : 0) + 12;
+  const bottomLimit = kp.getBoundingClientRect().top - 12;
+  if (r.top < topLimit) ov.scrollTop -= (topLimit - r.top);
+  else if (r.bottom > bottomLimit) ov.scrollTop += (r.bottom - bottomLimit);
+}
+
+function openKeypad(exIdx, sIdx, field) {
+  if (!state.activeWorkout) return;
+  const s = state.activeWorkout.exercises[exIdx].sets[sIdx];
+  const cur = s[field];
+  state.kbd = {
+    exIdx, sIdx, field,
+    buf: (cur === '' || cur === null || cur === undefined) ? '' : String(cur),
+    fresh: true
+  };
+  const kp = document.getElementById('app-keypad');
+  const ov = document.getElementById('modal-overlay');
+  kp.classList.remove('hidden');
+  if (ov) ov.style.paddingBottom = (kp.offsetHeight + 24) + 'px';
+  highlightKbdInput();
+  ensureKbdInputVisible();
+}
+
+function closeKeypad() {
+  state.kbd = null;
+  const kp = document.getElementById('app-keypad');
+  if (kp) kp.classList.add('hidden');
+  const ov = document.getElementById('modal-overlay');
+  if (ov) ov.style.paddingBottom = '';
+  document.querySelectorAll('.kbd-active').forEach(e => e.classList.remove('kbd-active'));
+}
+
+function applyKbdBuffer() {
+  const k = state.kbd;
+  if (!k || !state.activeWorkout) return;
+  const s = state.activeWorkout.exercises[k.exIdx].sets[k.sIdx];
+  s[k.field] = k.buf === '' ? '' : (parseFloat(k.buf) || 0);
+  const el = document.getElementById(kbdInputId(k.exIdx, k.sIdx, k.field));
+  if (el) el.value = k.buf;
+
+  if (k.field === 'weight') {
+    s.autoWeight = false; // ręcznie wpisany ciężar – nie jest już nadpisywany automatem
+    propagateWeightFrom(k.exIdx, k.sIdx);
+  }
+  persistActiveWorkoutState();
+}
+
+function kbdKey(key) {
+  const k = state.kbd;
+  if (!k) return;
+
+  if (key === 'back') {
+    if (k.fresh) { k.buf = ''; k.fresh = false; }
+    else k.buf = k.buf.slice(0, -1);
+    applyKbdBuffer();
+    return;
+  }
+
+  if (k.fresh) { k.buf = ''; k.fresh = false; }
+
+  if (key === '.') {
+    if (k.field === 'reps') return;
+    if (k.buf.includes('.')) return;
+    k.buf = k.buf === '' ? '0.' : k.buf + '.';
+  } else {
+    if (k.buf.length >= 6) return;
+    if (k.buf === '0') k.buf = key; else k.buf += key;
+  }
+  applyKbdBuffer();
+}
+
+function kbdStep(dir) {
+  const k = state.kbd;
+  if (!k || !state.activeWorkout) return;
+  const s = state.activeWorkout.exercises[k.exIdx].sets[k.sIdx];
+  const delta = k.field === 'weight' ? 2.5 : 1;
+  const cur = parseFloat(s[k.field]) || 0;
+  const next = Math.max(0, Math.round((cur + dir * delta) * 100) / 100);
+  k.buf = String(next);
+  k.fresh = false;
+  applyKbdBuffer();
+}
+
+function kbdNext() {
+  const k = state.kbd;
+  const w = state.activeWorkout;
+  if (!k || !w) return;
+  if (k.field === 'weight') {
+    openKeypad(k.exIdx, k.sIdx, 'reps');
+    return;
+  }
+  let nextS = k.sIdx + 1;
+  let nextE = k.exIdx;
+  if (nextS >= w.exercises[k.exIdx].sets.length) { nextE++; nextS = 0; }
+  if (nextE >= w.exercises.length) { closeKeypad(); return; }
+  openKeypad(nextE, nextS, 'weight');
+}
+
+// Automatyczne przepisywanie ciężaru: tylko w dół, tylko serie robocze (N), bez R i D
+function propagateWeightFrom(exIdx, sIdx) {
+  const w = state.activeWorkout;
+  if (!w) return;
+  const sets = w.exercises[exIdx].sets;
+  const src = sets[sIdx];
+  if ((src.type || 'N') !== 'N') return;
+
+  const srcEmpty = src.weight === '' || src.weight === null || src.weight === undefined;
+
+  for (let i = sIdx + 1; i < sets.length; i++) {
+    const t = sets[i];
+    if ((t.type || 'N') !== 'N') continue;
+    if (t.done) continue;
+    const tEmpty = t.weight === '' || t.weight === null || t.weight === undefined;
+
+    if (srcEmpty) {
+      // wyczyszczono źródło – czyścimy tylko to, co wypełnił automat
+      if (t.autoWeight) { t.weight = ''; }
+      else continue;
+    } else if (tEmpty || t.autoWeight) {
+      t.weight = src.weight;
+      t.autoWeight = true;
+    } else {
+      continue; // ręcznie zmieniony ciężar – nie ruszamy
+    }
+
+    const el = document.getElementById(kbdInputId(exIdx, i, 'weight'));
+    if (el) el.value = (t.weight === '' ? '' : String(t.weight));
   }
 }
 
@@ -2419,19 +2692,19 @@ function openActiveWorkoutModal(preserveScroll = false) {
               ${badge.label}
             </button>
           </div>
-          <div class="col-span-4">
-            <div class="text-xs font-bold text-white font-mono">${s.prevText}</div>
+          <div class="col-span-4 min-w-0">
+            <div class="text-xs font-bold text-white font-mono truncate">${s.prevText}</div>
             <div class="text-[10px] ${badge.isWorking ? 'text-striveOrange font-semibold' : 'text-gray-400'}">${s.hintText}</div>
           </div>
           <div class="col-span-2">
-            <input type="number" step="0.5" placeholder="kg" value="${s.weight}"
-              oninput="updateSetField(${exIdx}, ${sIdx}, 'weight', this.value)"
-              class="w-full bg-bgInput rounded-xl py-1.5 text-center text-sm font-bold text-white">
+            <input id="${kbdInputId(exIdx, sIdx, 'weight')}" type="text" inputmode="none" readonly placeholder="kg" value="${s.weight}"
+              onclick="openKeypad(${exIdx}, ${sIdx}, 'weight')"
+              class="kbd-input w-full bg-bgInput rounded-xl py-1.5 text-center text-sm font-bold text-white">
           </div>
           <div class="col-span-2">
-            <input type="number" placeholder="powt" value="${s.reps}"
-              oninput="updateSetField(${exIdx}, ${sIdx}, 'reps', this.value)"
-              class="w-full bg-bgInput rounded-xl py-1.5 text-center text-sm font-bold text-white">
+            <input id="${kbdInputId(exIdx, sIdx, 'reps')}" type="text" inputmode="none" readonly placeholder="powt" value="${s.reps}"
+              onclick="openKeypad(${exIdx}, ${sIdx}, 'reps')"
+              class="kbd-input w-full bg-bgInput rounded-xl py-1.5 text-center text-sm font-bold text-white">
           </div>
           <div class="col-span-2 flex justify-end gap-1">
             <button onclick="toggleSetDone(${exIdx}, ${sIdx})"
@@ -2473,53 +2746,57 @@ function openActiveWorkoutModal(preserveScroll = false) {
     `;
   }).join('');
 
-  openModal(`
-    <!-- GŁÓWNY NAGŁÓWEK TRENINGU -->
-    <div class="flex justify-between items-center mb-3 sticky top-0 liquid-dock rounded-2xl px-3 py-2 z-20">
-      <div class="flex items-center gap-1.5">
-        <button onclick="closeModal()" class="text-xs bg-white/10 px-2.5 py-1.5 rounded-xl active:scale-90 transition">↓ Ukryj</button>
-        <button onclick="discardActiveWorkout()" class="text-xs bg-red-950/60 text-red-300 border border-red-500/30 px-2 py-1.5 rounded-xl active:scale-90 transition" title="Porzuć trening">🗑</button>
-      </div>
-      <div class="text-center h-[34px] flex flex-col justify-center">
-        <h2 class="font-bold text-xs truncate max-w-[130px] leading-tight text-white">${w.routineName}</h2>
-        <div class="flex items-center justify-center gap-1.5 mt-0.5">
-          <span id="modal-elapsed-time" class="text-[11px] text-striveTeal font-mono font-bold leading-tight">00:00</span>
-          <span class="text-[9px] text-gray-500">·</span>
-          <button onclick="startRestTimer(w.workingRestSec || 120, 'Przerwa')" class="text-[10px] text-striveOrange font-bold hover:underline">⏱ +Przerwa</button>
+  // Stały pasek na górze (poza przewijaną treścią): nagłówek + timer przerwy – nic go nie zasłania
+  const topbarHtml = `
+    <div class="max-w-md mx-auto w-full min-w-0">
+      <div class="topbar-card flex items-center justify-between gap-2 rounded-2xl px-3 py-2">
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button onclick="closeModal()" class="text-xs bg-white/10 px-2.5 py-1.5 rounded-xl active:scale-90 transition">↓ Ukryj</button>
+          <button onclick="discardActiveWorkout()" class="text-xs bg-red-950/60 text-red-300 border border-red-500/30 px-2 py-1.5 rounded-xl active:scale-90 transition" title="Porzuć trening">🗑</button>
         </div>
-      </div>
-      <button onclick="prepareWorkoutSummaryModal()" class="liquid-orange-btn text-white text-xs font-bold px-3.5 py-1.5 rounded-xl active:scale-90 transition">Zakończ</button>
-    </div>
-
-    <!-- PŁYWAJĄCY WIDŻET PRZERWY BEZPOŚREDNIO W MODALU -->
-    <div id="modal-rest-timer-box" class="${state.restTimerEnd ? '' : 'hidden'} liquid-pill rounded-2xl p-3 mb-3 border border-striveOrange/50 shadow-[0_10px_30px_rgba(255,122,24,0.25)] sticky top-[58px] z-10 backdrop-blur-3xl">
-      <div class="flex items-center justify-between gap-2">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl liquid-orange-btn flex items-center justify-center text-base animate-pulse shrink-0">⏱</div>
-          <div class="min-w-0">
-            <div id="modal-rest-timer-label" class="text-[10px] uppercase font-bold text-striveOrange tracking-wider leading-tight truncate">${state.restTimerLabel || 'Przerwa'}</div>
-            <div id="modal-rest-timer-val" class="text-xl font-black font-mono text-white leading-tight">00:00</div>
+        <div class="text-center min-w-0 flex-1 leading-tight">
+          <h2 class="font-bold text-xs truncate text-white">${w.routineName}</h2>
+          <div class="flex items-center justify-center gap-1.5 mt-0.5">
+            <span id="modal-elapsed-time" class="text-[11px] text-striveTeal font-mono font-bold">00:00</span>
+            <span class="text-[9px] text-gray-500">·</span>
+            <button onclick="startRestTimer((state.activeWorkout && state.activeWorkout.workingRestSec) || 120, 'Przerwa')" class="text-[10px] text-striveOrange font-bold">⏱ +Przerwa</button>
           </div>
         </div>
-        <div class="flex items-center gap-1 shrink-0">
-          <button onclick="adjustRestTimer(-15)" class="bg-white/10 active:scale-90 transition px-2 py-1.5 rounded-xl text-xs font-bold text-gray-200">-15s</button>
-          <button onclick="adjustRestTimer(15)" class="bg-white/10 active:scale-90 transition px-2 py-1.5 rounded-xl text-xs font-bold text-gray-200">+15s</button>
-          <button onclick="cancelRestTimer()" class="bg-red-500/20 text-red-300 border border-red-500/40 active:scale-90 transition px-2.5 py-1.5 rounded-xl text-xs font-bold">✕ Pomiń</button>
+        <button onclick="prepareWorkoutSummaryModal()" class="liquid-orange-btn text-white text-xs font-bold px-3.5 py-1.5 rounded-xl active:scale-90 transition shrink-0">Zakończ</button>
+      </div>
+
+      <div id="modal-rest-timer-box" class="${state.restTimerEnd ? '' : 'hidden'} timer-card rounded-2xl px-3 py-2 mt-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="min-w-0 flex-1">
+            <div id="modal-rest-timer-label" class="text-[10px] uppercase font-bold text-striveOrange tracking-wider leading-tight truncate">${state.restTimerLabel || 'Przerwa'}</div>
+            <div id="modal-rest-timer-val" class="text-2xl font-black font-mono text-white leading-none mt-1">0:00</div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <button onclick="adjustRestTimer(-15)" class="bg-white/10 active:scale-90 transition px-2 py-1.5 rounded-xl text-xs font-bold text-gray-200">-15s</button>
+            <button onclick="adjustRestTimer(15)" class="bg-white/10 active:scale-90 transition px-2 py-1.5 rounded-xl text-xs font-bold text-gray-200">+15s</button>
+            <button onclick="cancelRestTimer()" class="bg-red-500/20 text-red-300 border border-red-500/40 active:scale-90 transition px-2 py-1.5 rounded-xl text-xs font-bold">✕ Pomiń</button>
+          </div>
+        </div>
+        <div class="w-full bg-black/40 h-1.5 rounded-full mt-2 overflow-hidden border border-white/10">
+          <div id="modal-rest-timer-progress" class="bg-gradient-to-r from-striveTeal to-striveOrange h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
         </div>
       </div>
-      <div class="w-full bg-black/40 h-1.5 rounded-full mt-2.5 overflow-hidden border border-white/10">
-        <div id="modal-rest-timer-progress" class="bg-gradient-to-r from-striveTeal to-striveOrange h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
-      </div>
     </div>
+  `;
 
-    ${exBlocks}
-  `);
+  showWorkoutTopbar(topbarHtml);
+  openModal(exBlocks, true);
 
+  updateElapsedUI();
   updateRestTimerUI();
+  syncOverlayTopPadding();
 
   if (preserveScroll && overlayEl) {
     overlayEl.scrollTop = prevScroll;
   }
+
+  // jeśli klawiatura była otwarta – przywróć podświetlenie aktywnego pola
+  if (state.kbd) highlightKbdInput();
 }
 
 function discardActiveWorkout() {
@@ -2537,17 +2814,12 @@ function cycleActiveWorkoutSetType(exIdx, sIdx) {
   const w = state.activeWorkout;
   const s = w.exercises[exIdx].sets[sIdx];
   s.type = nextSetType(s.type);
+  s.autoWeight = false;
   if (s.type === 'R') s.hintText = `Rozgrzewka (${w.warmupRestSec}s)`;
   else if (s.type === 'D') s.hintText = `Drop set (${w.warmupRestSec}s)`;
   else s.hintText = `Cel (${s.repsRangeText || '8-10'})`;
   persistActiveWorkoutState();
   openActiveWorkoutModal(true);
-}
-
-function updateSetField(exIdx, sIdx, field, val) {
-  if (!state.activeWorkout) return;
-  state.activeWorkout.exercises[exIdx].sets[sIdx][field] = val === '' ? '' : (parseFloat(val) || 0);
-  persistActiveWorkoutState();
 }
 
 function toggleSetDone(exIdx, sIdx) {
@@ -2568,12 +2840,32 @@ function toggleSetDone(exIdx, sIdx) {
 function addExtraSet(exIdx, setType = 'N') {
   const w = state.activeWorkout;
   const ex = w.exercises[exIdx];
-  const last = ex.sets[ex.sets.length - 1] || { weight: '', reps: '', repsRangeText: '8-10', prevText: '—', hintText: '-' };
+  const reversed = [...ex.sets].reverse();
+  const lastWorking = reversed.find(s => (s.type || 'N') === 'N') || null;
+  const lastSame = reversed.find(s => (s.type || 'N') === setType) || null;
+  const rangeText = (lastWorking && lastWorking.repsRangeText) || '8-10';
+
+  // Ciężar kopiujemy wyłącznie między seriami roboczymi – R i D nigdy nie mieszają się z roboczymi
+  let weight = '';
+  let reps = 8;
+  let autoWeight = false;
+  if (setType === 'N') {
+    weight = lastWorking ? lastWorking.weight : '';
+    reps = lastWorking ? lastWorking.reps : 8;
+    autoWeight = weight !== '' && weight !== null && weight !== undefined;
+  } else {
+    reps = lastSame ? lastSame.reps : (setType === 'D' && lastWorking ? lastWorking.reps : 8);
+  }
+
   ex.sets.push({
-    ...last,
     type: setType,
+    repsRangeText: rangeText,
+    weight,
+    reps,
     done: false,
-    hintText: setType === 'R' ? `Rozgrzewka (${w.warmupRestSec}s)` : (setType === 'D' ? `Drop set (${w.warmupRestSec}s)` : `Cel (${last.repsRangeText || '8-10'})`)
+    autoWeight,
+    prevText: '—',
+    hintText: setType === 'R' ? `Rozgrzewka (${w.warmupRestSec}s)` : (setType === 'D' ? `Drop set (${w.warmupRestSec}s)` : `Cel (${rangeText})`)
   });
   persistActiveWorkoutState();
   openActiveWorkoutModal(true);
@@ -3492,16 +3784,32 @@ function importFullBackup(event) {
   reader.readAsText(file);
 }
 
-function openModal(html) {
+// ============================================================================
+// MODAL
+// keepWorkoutUi = true tylko dla głównego widoku treningu (zostaje pasek z timerem i klawiatura)
+// ============================================================================
+function openModal(html, keepWorkoutUi = false) {
+  if (!keepWorkoutUi) {
+    closeKeypad();
+    hideWorkoutTopbar();
+  }
   document.getElementById('modal-body').innerHTML = html;
   document.getElementById('modal-overlay').classList.remove('hidden');
 }
 
 function closeModal() {
+  closeKeypad();
+  hideWorkoutTopbar();
   document.getElementById('modal-overlay').classList.add('hidden');
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
+  // Dopasowanie odstępu treści modala do wysokości stałego paska (nagłówek + timer)
+  const topbarEl = document.getElementById('workout-topbar');
+  if (topbarEl && 'ResizeObserver' in window) {
+    new ResizeObserver(() => syncOverlayTopPadding()).observe(topbarEl);
+  }
+
   checkIosStandaloneMode();
   initBodyHighlighterAssets();
   navigate('home');
