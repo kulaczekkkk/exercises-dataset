@@ -182,13 +182,10 @@
       font-weight: 700;
     }
 
-    @keyframes screenFlashPulse {
-      0%, 100% { opacity: 0; }
-      20%, 60% { opacity: 1; }
-      40%, 80% { opacity: 0.25; }
-    }
+    @keyframes restFadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+    @keyframes restSoftPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.72; } }
     .rest-flash-active {
-      animation: screenFlashPulse 2.4s ease-in-out forwards;
+      animation: restFadeIn 0.7s ease-out both, restSoftPulse 2.2s ease-in-out 0.7s infinite;
     }
 
     .muscle-glow-max { filter: drop-shadow(0 0 7px rgba(255, 59, 48, 0.85)); }
@@ -205,10 +202,11 @@
 
   <!-- PEŁNOEKRANOWY FLASH I ALARM KOŃCA PRZERWY -->
   <div id="rest-flash-overlay" onclick="dismissRestAlarm()" class="hidden fixed inset-0 z-[100] pointer-events-auto flex flex-col items-center justify-start pt-16 px-4 bg-gradient-to-b from-orange-600/60 via-red-600/35 to-transparent">
-    <div class="liquid-orange-btn border-2 border-white rounded-3xl p-5 shadow-[0_0_50px_rgba(255,122,24,0.95)] text-center max-w-sm w-full animate-bounce">
+    <div class="liquid-orange-btn border-2 border-white rounded-3xl p-5 shadow-[0_0_50px_rgba(255,122,24,0.95)] text-center max-w-sm w-full">
       <div class="text-3xl mb-1">🔔⚡</div>
       <div class="text-lg font-extrabold text-white tracking-tight uppercase">Koniec Przerwy!</div>
-      <div class="text-xs text-white/90 font-semibold mt-0.5">Czas wracać pod sztangę · Dotknij, aby zamknąć</div>
+      <div class="text-xs text-white/90 font-semibold mt-0.5">Dotknij, aby zamknąć</div>
+      <div id="rest-flash-estimate" class="text-sm text-white font-bold mt-1.5"></div>
     </div>
   </div>
 
@@ -493,14 +491,57 @@ function unlockIosAudioAndNotifications() {
 window.addEventListener('touchstart', unlockIosAudioAndNotifications, { passive: true });
 window.addEventListener('click', unlockIosAudioAndNotifications, { passive: true });
 
+// Szacowanie pozostałego czasu: 40 s na serię + przerwy z ustawień tego treningu (R i D = przerwa rozgrzewkowa, N = robocza)
+const SET_EST_SEC = 40;
+
+function getRemainingEstimate() {
+  const w = state.activeWorkout;
+  if (!w) return { sets: 0, sec: 0 };
+  let sets = 0;
+  let sec = 0;
+  w.exercises.forEach(ex => ex.sets.forEach(s => {
+    if (s.done) return;
+    sets++;
+    const isWorking = (s.type || 'N') === 'N';
+    const restSec = isWorking
+      ? (w.workingRestSec || 120)
+      : (w.warmupRestSec || 60);
+    sec += SET_EST_SEC + restSec;
+  }));
+  return { sets, sec };
+}
+
+function pluralSeries(n) {
+  if (n === 1) return 'seria';
+  const d = n % 10;
+  const dd = n % 100;
+  if (d >= 2 && d <= 4 && (dd < 12 || dd > 14)) return 'serie';
+  return 'serii';
+}
+
+function formatEstimateTime(sec) {
+  const totalMin = Math.round(sec / 60);
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  return h ? `${h} h ${m} min` : `${m} min`;
+}
+
+function getRemainingEstimateText() {
+  const e = getRemainingEstimate();
+  if (!e.sets) return 'Wszystkie serie zrobione!';
+  return `${e.sets} ${pluralSeries(e.sets)} do końca · ok. ${formatEstimateTime(e.sec)}`;
+}
+
 function triggerRestFinishedAlert() {
   const overlay = document.getElementById('rest-flash-overlay');
   const barInner = document.getElementById('active-workout-bar-inner');
   if (overlay) {
     overlay.classList.remove('hidden');
     overlay.classList.add('rest-flash-active');
+    const estEl = document.getElementById('rest-flash-estimate');
+    if (estEl) estEl.textContent = getRemainingEstimateText();
     if (state.flashTimeout) clearTimeout(state.flashTimeout);
-    state.flashTimeout = setTimeout(() => { dismissRestAlarm(); }, 5500);
+    state.flashTimeout = setTimeout(() => { dismissRestAlarm(); }, 8000);
   }
   if (barInner) {
     barInner.classList.add('ring-4', 'ring-striveOrange', 'bg-striveOrange/30');
@@ -531,7 +572,7 @@ function triggerRestFinishedAlert() {
   try {
     if (navigator.vibrate) navigator.vibrate([300, 120, 300, 120, 400]);
     if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('🔔 Koniec przerwy!', { body: 'Czas wracać pod sztangę!' });
+      new Notification('🔔 Koniec przerwy!', { body: getRemainingEstimateText() });
     }
   } catch (e) {}
 }
@@ -792,10 +833,34 @@ function kbdNext() {
     openKeypad(k.exIdx, k.sIdx, 'reps');
     return;
   }
-  let nextS = k.sIdx + 1;
-  let nextE = k.exIdx;
-  if (nextS >= w.exercises[k.exIdx].sets.length) { nextE++; nextS = 0; }
-  if (nextE >= w.exercises.length) { closeKeypad(); return; }
+  confirmSetFromKeypad(k.exIdx, k.sIdx);
+}
+
+// „Dalej” na polu powtórzeń = seria zrobiona: oznaczenie, start przerwy, przejście do następnej serii
+function confirmSetFromKeypad(exIdx, sIdx) {
+  const w = state.activeWorkout;
+  if (!w) return;
+  const ex = w.exercises[exIdx];
+  const s = ex.sets[sIdx];
+
+  if (!s.done) {
+    s.done = true;
+    const isWarmup = s.type === 'R' || s.type === 'D';
+    const sec = isWarmup ? (w.warmupRestSec || 60) : (w.workingRestSec || 120);
+    startRestTimer(sec, isWarmup ? 'Przerwa (Rozgrzewka)' : 'Przerwa (Seria robocza)');
+  }
+
+  let nextS = sIdx + 1;
+  let nextE = exIdx;
+  if (nextS >= ex.sets.length) { nextE++; nextS = 0; }
+
+  persistActiveWorkoutState();
+  openActiveWorkoutModal(true);
+
+  if (nextE >= w.exercises.length) {
+    closeKeypad();
+    return;
+  }
   openKeypad(nextE, nextS, 'weight');
 }
 
