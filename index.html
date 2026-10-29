@@ -1539,8 +1539,33 @@ async function initCatalogOnly(forceReload = false) {
       };
     });
 
+    // Zachowujemy dotychczasowe id (rutyny i treningi odwołują się po id) oraz własne ćwiczenia
+    const idBySlug = {};
+    existingList.forEach(old => { if (old.slug) idBySlug[old.slug] = old.id; });
+    const catalogWithIds = catalog.map(item =>
+      idBySlug[item.slug] !== undefined ? { id: idBySlug[item.slug], ...item } : item
+    );
+    const customs = existingList.filter(old => String(old.slug || '').startsWith('custom_'));
+
     await db.exercises.clear();
-    await db.exercises.bulkAdd(catalog);
+    await db.exercises.bulkAdd(catalogWithIds);
+    if (customs.length) await db.exercises.bulkAdd(customs);
+
+    // Nazwy w historii treningów – podmiana na aktualne (polskie) nazwy ćwiczeń
+    const nameById = {};
+    (await db.exercises.toArray()).forEach(e => { nameById[e.id] = e.name; });
+    await db.transaction('rw', db.workouts, async () => {
+      const ws = await db.workouts.toArray();
+      for (const w of ws) {
+        let changed = false;
+        (w.exercises || []).forEach(ex => {
+          const nm = nameById[ex.exId];
+          if (nm && ex.name !== nm) { ex.name = nm; changed = true; }
+        });
+        if (changed) await db.workouts.put(w);
+      }
+    });
+
     await db.settings.put({ key: 'catalogVersion', value: CATALOG_VERSION });
 
     if (bannerTxt) bannerTxt.textContent = `✓ Załadowano ${catalog.length} ćwiczeń oraz mięśnie poboczne!`;
@@ -2337,7 +2362,7 @@ async function renderRoutineDraftModal(preserveModalScroll = false) {
               ${renderAnimatedExerciseThumb(exObj, 'w-12 h-12')}
             </div>
             <div class="min-w-0">
-              <div onclick="${exObj.id ? `openExerciseDetailFromDraft(${exObj.id})` : ''}" class="text-xs font-bold text-white truncate cursor-pointer hover:underline">${exIdx + 1}. ${exObj.name} <span class="text-[10px] text-striveTeal">(👁️ podgląd)</span></div>
+              <div onclick="${exObj.id ? `openExerciseDetailFromDraft(${exObj.id})` : ''}" class="text-xs font-bold text-white break-words cursor-pointer hover:underline">${exIdx + 1}. ${exObj.name} <span class="text-[10px] text-striveTeal">(👁️ podgląd)</span></div>
               <div class="flex items-center gap-1.5 mt-1 flex-wrap">
                 <span class="text-[10px] text-gray-300">Zakres:</span>
                 <input type="text" value="${defaultExRange}" placeholder="8-10"
@@ -2443,7 +2468,7 @@ async function openExerciseDetailFromDraft(exId) {
   openModal(`
     <div class="flex justify-between items-center mb-4">
       <button onclick="renderRoutineDraftModal(true)" class="text-sm liquid-pill text-white font-bold px-3 py-1.5 rounded-xl">← Powrót do rutyny</button>
-      <h2 class="font-bold text-sm truncate px-1">${ex.name}</h2>
+      <h2 class="font-bold text-sm leading-tight break-words px-1">${ex.name}</h2>
       <div class="w-10"></div>
     </div>
 
@@ -2567,7 +2592,7 @@ async function renderExercisePickerModal(preserveScroll = true) {
         </div>
         <div onclick="togglePickerExercise(${ex.id})" class="flex-1 min-w-0 cursor-pointer">
           <div class="flex justify-between items-start gap-2">
-            <h3 class="font-semibold text-sm text-white truncate">${ex.name}</h3>
+            <h3 class="font-semibold text-sm text-white leading-tight break-words">${ex.name}</h3>
             <span id="picker-status-${ex.id}" class="text-xs ${picked ? 'text-striveOrange font-bold' : 'text-gray-400'}">${picked ? 'Wybrano ✓' : 'Wybierz'}</span>
           </div>
           <div class="flex justify-between items-center text-xs text-gray-400 mt-2">
@@ -2723,7 +2748,7 @@ async function openExerciseDetailFromPicker(exId) {
   openModal(`
     <div class="flex justify-between items-center mb-4">
       <button onclick="renderExercisePickerModal(true)" class="text-sm liquid-pill text-white font-bold px-3 py-1.5 rounded-xl">← Powrót do listy</button>
-      <h2 class="font-bold text-sm truncate px-1">${ex.name}</h2>
+      <h2 class="font-bold text-sm leading-tight break-words px-1">${ex.name}</h2>
       <div class="w-10"></div>
     </div>
 
@@ -2770,7 +2795,7 @@ async function renderExercisesView() {
         ${renderAnimatedExerciseThumb(ex, 'w-14 h-14')}
         <div class="flex-1 min-w-0">
           <div class="flex justify-between items-start gap-2">
-            <h3 class="font-semibold text-sm text-white truncate">${ex.name}</h3>
+            <h3 class="font-semibold text-sm text-white leading-tight break-words">${ex.name}</h3>
             <span class="text-xs text-gray-400 shrink-0">(${ex.sessions || 0})</span>
           </div>
           <div class="flex justify-between items-center text-[11px] text-gray-400 mt-1.5">
@@ -2838,7 +2863,7 @@ async function openExerciseDetailModal(exId) {
   openModal(`
     <div class="flex justify-between items-center mb-4">
       <button onclick="closeModal()" class="text-2xl text-gray-300">✕</button>
-      <h2 class="font-bold text-base truncate px-2">${ex.name}</h2>
+      <h2 class="font-bold text-base leading-tight break-words px-2">${ex.name}</h2>
       <button onclick="renameSingleExercise(${ex.id})" class="text-xs liquid-pill text-white font-bold px-2.5 py-1 rounded-full shrink-0">✎ Nazwa</button>
     </div>
 
@@ -3169,7 +3194,7 @@ function openActiveWorkoutModal(preserveScroll = false) {
           <div onclick="${ex.exId ? `openExerciseDetailModal(${ex.exId})` : `swapExerciseInFlight(${exIdx}, 'ALL')`}" class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
             ${renderAnimatedExerciseThumb(ex, 'w-12 h-12')}
             <div class="min-w-0">
-              <h3 class="font-bold text-sm text-striveTeal truncate">${ex.superset ? '🔗 ' : ''}${ex.name}</h3>
+              <h3 class="font-bold text-sm text-striveTeal leading-tight break-words">${ex.superset ? '🔗 ' : ''}${ex.name}</h3>
               <span class="text-[11px] text-gray-400">${ex.bodyPart} · ⏱ R: ${w.warmupRestSec}s / Robocza: ${w.workingRestSec}s</span>
             </div>
           </div>
