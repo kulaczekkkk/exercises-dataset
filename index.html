@@ -571,9 +571,7 @@ function triggerRestFinishedAlert() {
 
   try {
     if (navigator.vibrate) navigator.vibrate([300, 120, 300, 120, 400]);
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('🔔 Koniec przerwy!', { body: getRemainingEstimateText() });
-    }
+
   } catch (e) {}
 }
 
@@ -618,9 +616,20 @@ function adjustRestTimer(deltaSec) {
   updateRestTimerUI();
 }
 
+// Koniec treningu = moment zrobienia ostatniej serii (gdy wszystkie serie są zrobione).
+// Przerwa po ostatniej serii już nie wlicza się do czasu treningu.
+function getWorkoutEndTs() {
+  const w = state.activeWorkout;
+  if (!w) return Date.now();
+  const allSets = w.exercises.flatMap(ex => ex.sets);
+  if (!allSets.length || !allSets.every(s => s.done)) return Date.now();
+  const lastDone = Math.max(...allSets.map(s => s.doneAt || 0));
+  return lastDone || Date.now();
+}
+
 function updateElapsedUI() {
   if (!state.activeWorkout) return;
-  const elapsedSec = Math.floor((Date.now() - state.activeWorkout.startTime) / 1000);
+  const elapsedSec = Math.floor((getWorkoutEndTs() - state.activeWorkout.startTime) / 1000);
   const mm = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
   const ss = String(elapsedSec % 60).padStart(2, '0');
 
@@ -637,6 +646,19 @@ function startGlobalWorkoutClock() {
     updateElapsedUI();
     updateRestTimerUI();
   }, 500);
+}
+
+function notifyNextSetSoon() {
+  // Nic nie wysyłamy, jeśli nie ma już kolejnych serii
+  if (getRemainingEstimate().sets === 0) return;
+  try {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('⏱ Za 15 s następna seria', {
+        body: getRemainingEstimateText(),
+        tag: 'gymwk-next-set'
+      });
+    }
+  } catch (e) {}
 }
 
 function updateRestTimerUI() {
@@ -659,6 +681,10 @@ function updateRestTimerUI() {
 
   const rem = Math.ceil((state.restTimerEnd - Date.now()) / 1000);
   if (rem > 0) {
+    if (rem <= 15 && state.restPreAlertFor !== state.restTimerEnd) {
+      state.restPreAlertFor = state.restTimerEnd;
+      notifyNextSetSoon();
+    }
     const m = Math.floor(rem / 60);
     const s = String(rem % 60).padStart(2, '0');
     const timeFormatted = `${m}:${s}`;
@@ -845,6 +871,7 @@ function confirmSetFromKeypad(exIdx, sIdx) {
 
   if (!s.done) {
     s.done = true;
+    s.doneAt = Date.now();
     const isWarmup = s.type === 'R' || s.type === 'D';
     const sec = isWarmup ? (w.warmupRestSec || 60) : (w.workingRestSec || 120);
     startRestTimer(sec, isWarmup ? 'Przerwa (Rozgrzewka)' : 'Przerwa (Seria robocza)');
@@ -2892,6 +2919,7 @@ function toggleSetDone(exIdx, sIdx) {
   const w = state.activeWorkout;
   const s = w.exercises[exIdx].sets[sIdx];
   s.done = !s.done;
+  s.doneAt = s.done ? Date.now() : null;
   if (s.done) {
     const isWarmup = s.type === 'R' || s.type === 'D';
     const sec = isWarmup ? (w.warmupRestSec || 60) : (w.workingRestSec || 120);
@@ -3017,7 +3045,7 @@ function prepareWorkoutSummaryModal() {
     }
   });
 
-  const durationMin = Math.max(1, Math.round((Date.now() - w.startTime) / 60000));
+  const durationMin = Math.max(1, Math.round((getWorkoutEndTs() - w.startTime) / 60000));
 
   state.pendingSummary = {
     date: toLocalIso(new Date()),
