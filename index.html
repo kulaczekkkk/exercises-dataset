@@ -330,6 +330,9 @@ const REPO_RAW = 'https://raw.githubusercontent.com/kulaczekkkk/exercises-datase
 const RN_BODY_CDN = 'https://cdn.jsdelivr.net/npm/react-native-body-highlighter@3.2.0/dist';
 const ACTIVE_WORKOUT_STORAGE_KEY = 'gymWK_active_workout_autosave_v6';
 const RN_BODY_CACHE_KEY = 'gymWK_rn_body_highlighter_v320';
+// Polskie nazwy ćwiczeń: id -> nazwa (wygenerowane z exercises.json)
+const EX_NAME_PL = {"0001":"Brzuszki 3/4","0002":"Skłon boczny 45°","0003":"Rower powietrzny","1512":"Rozciąganie w klęku na czworaka","0006":"Dotykanie pięt naprzemiennie","0007":"Ściąganie drążka naprzemiennie bokiem na wyciągu","1368":"Krążenia w kostkach","3293":"Podciąganie łucznicze","3294":"Pompki łucznicze","2355":"Unoszenie kolan na podporach ramion","2333":"Unoszenie nóg na podporach ramion","3214":"Dotykanie palców z rozłożonymi ramionami","3204":"Brzuszki nad głowę pełna ramionami","0009":"Dipy na klatkę w maszynie klęcząc","0011":"Unoszenie kolan w zwisie z asystą","0010":"Unoszenie kolan w zwisie z odrzutem z asystą","1708":"Rozciąganie łydek leżąc z asystą","1709":"Rozciąganie pośladków leżąc z asystą","1710":"Rozciąganie pośladków i mięśnia gruszkowatego leżąc z asystą","0012":"Unoszenie nóg z odrzutem bokiem leżąc z asystą","0013":"Unoszenie nóg z odrzutem leżąc z asystą","0014":"Skręty rosyjskie ruch z piłką lekarską","0015":"Podciąganie wąskim chwytem z asystą","0016":"Rozciąganie dwugłowych leżąc przodem z asystą","1713":"Rozciąganie czworogłowych leżąc leżąc przodem z asystą","1714":"Rozciąganie prostego uda leżąc przodem z asystą","0017":"Podciąganie w maszynie","1716":"Rozciąganie klatki na piłce gimnastycznej siedząc z asystą","1712":"Rozciąganie przywodzicieli leżąc bokiem z asystą","1758":"Brzuszki z asystą","1431":"Podciąganie podchwytem stojąc w maszynie","1432":"Podciąganie stojąc w maszynie","0018":"Prostowanie ramion stojąc z asystą z ręcznikiem","0019":"Dipy na triceps w maszynie klęcząc","2364":"Dipy na klatkę szerokim chwytem w maszynie klęcząc","3220":"Skoki rozkroczne","3672":"Krok w przód i w tył","1314":"Wyprost grzbietu na piłce gimnastycznej","3297":"Dźwignia plecowa","1405":"Rozciąganie klatki z tyłu","1473":"Wyskok do tyłu","0020":"Deska balansowa","0968":"Uginanie ramion naprzemiennie z gumą","0969":"Unoszenie nóg w literę V naprzemiennie z gumą","0970":"Podciąganie z gumą","0971":"Wyciąganie na rolerze z gumą","1254":"Wyciskanie na ławce z gumą","0980":"Wyprost bioder w opadzie tułowia z gumą","0972":"Spięcia rowerowe z gumą","0974":"Ściąganie drążka wąskim chwytem z gumą","0975":"Pompki wąskim chwytem z gumą","0976":"Uginanie koncentryczne z gumą","3117":"Ściąganie drążka wąskim chwytem stały w tył z gumą","3116":"Ściąganie drążka podchwytem stały w tył z gumą","0977":"Unoszenie bokiem przodem z gumą","0978":"Unoszenie przodem z gumą","1408":"Unoszenie bioder z gumą","0979":"Wyciskanie Pallofa poziomo z gumą","0981":"Brzuszki scyzoryk z gumą","0983":"Ściąganie drążka klęcząc jednorącz z gumą","0985":"Spięcia ze skrętem klęcząc z gumą","0984":"Rotacja wewnętrzna leżąc biodrowy z gumą","1002":"Unoszenie nóg prosto leżąc z gumą","0986":"Uginanie ramion nad głowę jednorącz z gumą","0987":"Przysiad rozkroczny jednonóż jednorącz z gumą","0988":"Wiosłowanie stojąc jednorącz nisko z gumą","0989":"Wyciskanie na klatkę ze skrętem jednorącz z gumą","0990":"Wiosłowanie ze skrętem jednorącz siedząc z gumą","0991":"Przeciąganie między nogami z gumą","0992":"Brzuszki z pchnięciem z gumą","0993":"Rozpiętki odwrotne z gumą","0994":"Uginanie nadgarstków odwrotne z gumą","0996":"Rotacja wewnętrzna siedząc biodrowy z gumą","1011":"Skręty tułowia siedząc z gumą","0997":"Wyciskanie nad głowę z gumą","1018":"Wzruszanie ramion z gumą","0998":"Prostowanie ramion bokiem z gumą","0999":"Wspięcia na palce jednonóż z gumą","1000":"Odwrotne wspięcia na palce jednonóż z gumą","1001":"Przysiad rozkroczny jednonóż z gumą","1004":"Przysiad z gumą","1003":"Wiosłowanie w przysiadzie z gumą","1005":"Spięcia brzucha stojąc z gumą","1022":"Wiosłowanie w tył stojąc z gumą","1007":"Spięcia ze skrętem stojąc z gumą","1008":"Wejście na podwyższenie z gumą","1009":"Martwy ciąg na prostych nogach z gumą","1023":"Martwy ciąg z prostymi plecami na prostych nogach z gumą","1010":"Martwy ciąg na prostych nogach z gumą","1012":"Wyciskanie nad głowę ze skrętem z gumą","1369":"Wspięcia na palce obunóż z gumą taśma pod obiema nogami (wariant 2)","1013":"Ściąganie drążka podchwytem z gumą","1014":"Unoszenie nóg w literę V z gumą","1015":"Wyciskanie Pallofa pionowy z gumą","1016":"Uginanie nadgarstków z gumą","1017":"Unoszenie w literę Y z gumą","0023":"Uginanie ramion naprzemiennie ze sztangą","0024":"Przysiad przedni na ławce ze sztangą","0025":"Wyciskanie na ławce ze sztangą","0026":"Przysiad na ławce ze sztangą","1316":"Ściąganie na wyprost z ugiętymi ramionami ze sztangą","0027":"Wiosłowanie w opadzie tułowia ze sztangą","2407":"Uginanie ramion ze sztangą z podporą ramienia","0028":"Podrzut i wyciskanie ze sztangą","0029":"Przysiad przedni chwytem podrzutowym ze sztangą","0030":"Wyciskanie na ławce wąskim chwytem ze sztangą","0031":"Uginanie ze sztangą","0032":"Martwy ciąg ze sztangą","0033":"Wyciskanie na ławce ujemnej ze sztangą","0034":"Ściąganie na wyprost z ugiętymi ramionami na skosie ujemnym ze sztangą","0035":"Wyciskanie czaszki na ujemnej ławce wąskim chwytem ze sztangą","1255":"Ściąganie na wyprost na skosie ujemnym ze sztangą","0036":"Wyciskanie szerokim chwytem na skosie ujemnym ze sztangą","0037":"Ściąganie na wyprost szerokim chwytem na skosie ujemnym ze sztangą","0038":"Uginanie typu drag ze sztangą","1370":"Wspięcia na palce na podłodze ze sztangą","0039":"Przysiad przodem klatki ze sztangą","0041":"Unoszenie przodem ze sztangą","0040":"Unoszenie przodem i ściąganie na wyprost ze sztangą","0042":"Przysiad przedni ze sztangą","0043":"Przysiad pełny ze sztangą","1461":"Przysiad pełny ze sztangą widok z tyłu","1462":"Przysiad pełny ze sztangą widok z boku","1545":"Przysiad Zerchera pełna ze sztangą","1409":"Mostek biodrowy ze sztangą","3562":"Mostek biodrowy obunóż na ławce ze sztangą","0044":"Skłon z prostymi nogami ze sztangą","0045":"Wyciskanie gilotynowe na ławce ze sztangą","0046":"Przysiad hack ze sztangą","1436":"Przysiad wysoko na drążku ze sztangą","0047":"Wyciskanie na ławce skośnej ze sztangą","1719":"Wyciskanie na ławce wąskim chwytem na skosie dodatnim ze sztangą","0048":"Wyciskanie podchwytem na skosie dodatnim ze sztangą","0049":"Wiosłowanie na skosie dodatnim ze sztangą","0050":"Unoszenie ramion na skosie dodatnim ze sztangą","0051":"Przysiad Jeffersona ze sztangą","0052":"Wyciskanie JM ze sztangą","0053":"Przysiad z wyskokiem ze sztangą","1410":"Wykroki boczne ze sztangą","1435":"Przysiad nisko na drążku ze sztangą","0054":"Wykroki ze sztangą","1720":"Prostowanie ramion leżąc głowy w tył ze sztangą","0055":"Wyciskanie wąskim chwytem leżąc ze sztangą","0056":"Prostowanie ramion wąskim chwytem leżąc ze sztangą","0057":"Prostowanie leżąc ze sztangą","0058":"Unoszenie sztangi leżąc na biodrach","0059":"Uginanie na modlitewniku leżąc ze sztangą","0061":"Prostowanie ramion leżąc ze sztangą","0060":"Wyciskanie czaszki leżąc ze sztangą","0063":"Przysiad wąskim w rozkroku ze sztangą","0064":"Wiosłowanie w opadzie tułowia jednorącz ze sztangą","0065":"Wyciskanie jednorącz na podłodze ze sztangą","0066":"Martwy ciąg jednorącz bokiem ze sztangą","0067":"Rwanie jednorącz ze sztangą","0068":"Przysiad jednonóż ze sztangą","0069":"Przysiad nad głową ze sztangą","1411":"Uginanie nadgarstków dłońmi w dół na ławce ze sztangą","1412":"Uginanie nadgarstków dłońmi do góry na ławce ze sztangą","3017":"Wiosłowanie Pendlaya ze sztangą","1751":"Wyciskanie z pinów ze sztangą","0070":"Uginanie na modlitewniku ze sztangą","0071":"Brzuszki z wyciskaniem ze sztangą","0072":"Uginanie na skosie dodatnim leżąc przodem ze sztangą","0073":"Ściąganie na wyprost ze sztangą","0022":"Ściąganie na wyprost przechodzące w wyciskanie ze sztangą","0074":"Martwy ciąg z bloków ze sztangą","0075":"Unoszenie w tył ze sztangą","0076":"Wiosłowanie w tył ze sztangą","0078":"Wykroki w tył ze sztangą","0077":"Wykroki w tył ze sztangą (wariant 2)","0079":"Uginanie nadgarstków podchwytem ze sztangą (wariant 2)","2187":"Wyciskanie na ławce wąskim chwytem podchwytem ze sztangą","0080":"Uginanie odwrotne ze sztangą","0118":"Wiosłowanie podchwytem w opadzie tułowia ze sztangą","1256":"Wyciskanie na ławce ujemnej podchwytem ze sztangą","1257":"Wyciskanie na ławce skośnej podchwytem ze sztangą","1317":"Wiosłowanie podchwytem na skosie dodatnim na ławce ze sztangą","1721":"Wyciskanie czaszki podchwytem ze sztangą","0081":"Uginanie na modlitewniku podchwytem ze sztangą","0082":"Uginanie nadgarstków odwrotne ze sztangą","0084":"Wyciąganie na rolerze ze sztangą","0083":"Wyciąganie na rolerze z ławki ze sztangą","0085":"Martwy ciąg rumuński ze sztangą","0086":"Wyciskanie żołnierskie za głowę siedząc ze sztangą","0087":"Wyciskanie Bradforda siedząc ze sztangą","0088":"Wspięcia na palce siedząc ze sztangą","1371":"Wspięcia na palce siedząc ze sztangą","1718":"Prostowanie ramion za kark wąskim chwytem siedząc ze sztangą","0089":"Uginanie koncentryczne wąskim chwytem siedząc ze sztangą","0090":"Skłon z prostymi nogami siedząc ze sztangą","0091":"Wyciskanie nad głowę siedząc ze sztangą","0092":"Prostowanie ramion nad głowę siedząc ze sztangą","0094":"Skręty tułowia siedząc ze sztangą","0095":"Wzruszanie ramion ze sztangą","0096":"Skłon boczny ze sztangą (wariant 2)","0098":"Przysiad rozkroczny bokiem ze sztangą","0097":"Przysiad rozkroczny bokiem ze sztangą (wariant 2)","1756":"Martwy ciąg jednonóż ze sztangą","0099":"Przysiad rozkroczny jednonóż ze sztangą","2799":"Unoszenie nóg naprzemiennie siedząc ze sztangą","2800":"Unoszenie nóg naprzemiennie siedząc ze sztangą","0100":"Skier ze sztangą","0101":"Przysiad szybki ze sztangą","2810":"Przysiad rozkroczny ze sztangą (wariant 2)","0102":"Przysiad ze sztangą na kolanach","2798":"Wyskok z przysiadu wykroki w tył ze stopnia ze sztangą","0103":"Wyciąganie brzucha stojąc ze sztangą","0104":"Uginanie nadgarstków stojąc w tył ze sztangą","0105":"Wyciskanie Bradforda stojąc ze sztangą","1372":"Wspięcia na palce stojąc ze sztangą","0106":"Uginanie wąskim chwytem stojąc ze sztangą","1456":"Wyciskanie żołnierskie wąskim chwytem stojąc ze sztangą","2414":"Uginanie koncentryczne stojąc ze sztangą","0107":"Unoszenie przodem stojąc nad głowy ze sztangą","0108":"Wspięcia na palce stojąc nóg ze sztangą","0109":"Prostowanie ramion stojąc nad głowę ze sztangą","0110":"Uginanie podchwytem stojąc ze sztangą","0111":"Wspięcia na palce stojąc ze sztangą (kołysanie)","0112":"Skręty tułowia stojąc ze sztangą","1629":"Uginanie ramion szerokim chwytem stojąc ze sztangą","1457":"Wyciskanie żołnierskie stojąc szerokim ze sztangą","0113":"Uginanie szerokim chwytem stojąc ze sztangą","0114":"Wejście na podwyższenie ze sztangą","0115":"Skłon z prostymi nogami na prostych nogach ze sztangą","0116":"Martwy ciąg na prostych nogach ze sztangą","0117":"Martwy ciąg sumo ze sztangą","3305":"Trusterów ze sztangą","0120":"Wiosłowanie w pionie ze sztangą","0119":"Wiosłowanie w pionie ze sztangą (wariant 2)","0121":"Wiosłowanie w pionie ze sztangą (wariant 3)","0122":"Wyciskanie na ławce szerokim ze sztangą","1258":"Wyciskanie na ławce podchwytem szerokim ze sztangą","0124":"Przysiad szerokim ze sztangą","0123":"Wiosłowanie w pionie szerokim chwytem ze sztangą","0126":"Uginanie nadgarstków ze sztangą","0125":"Uginanie nadgarstków ze sztangą (wariant 2)","0127":"Przysiad Zerchera ze sztangą","3212":"Podstawowe dotykanie palców","0128":"Fale liną na linie","3360":"Pełzanie niedźwiedzia","1259":"Rozciąganie klatki za głowę z asystą","0129":"Dipy na ławce z ugiętymi kolanami","1399":"Dipy na podłodze na ławce","0130":"Wyprost bioder na ławce","3019":"Podciąganie na ławce","3639":"Skręty tułowia z ugiętymi kolanami leżąc","1770":"Uginanie ramion koncentrycznie na jednej nodze","0139":"Podciąganie wąskim chwytem na biceps","0140":"Podciąganie na biceps","0137":"Podnoszenie ciała (body-up)","3543":"Przysiad z wyskokiem z opadaniem","3544":"Deska boczna na skosie dodatnim","1771":"Prostowanie ramion klęcząc","1769":"Uginanie ramion leżąc bokiem","3168":"Wiosłowanie w przysiadzie","3167":"Wiosłowanie w przysiadzie z ręcznikiem","1373":"Wspięcia na palce stojąc","3156":"Wiosłowanie wąskim chwytem stojąc jednorącz","3158":"Wiosłowanie wąskim chwytem stojąc","3162":"Wiosłowanie stojąc jednorącz","3161":"Wiosłowanie stojąc jednorącz z ręcznikiem","3166":"Wiosłowanie stojąc","3165":"Wiosłowanie stojąc z ręcznikiem","0138":"Bottoms up","1374":"Zejście ze skrzyni na jednej nodze","2466":"Mostek ze wspinaczką górską","1160":"Burpees","0870":"Uniesienia bioder","1494":"Pozycja motyla","0148":"Wyciskanie nad głowę naprzemiennie na wyciągu","0149":"Prostowanie ramion naprzemiennie na wyciągu","3235":"Odwrotne uginanie nóg na wyciągu","0150":"Ściąganie drążka bokiem na drążku na wyciągu","0151":"Wyciskanie na ławce na wyciągu","1630":"Uginanie wąskim chwytem na wyciągu","1631":"Uginanie koncentryczne na wyciągu","0152":"Prostowanie ramion koncentrycznie na wyciągu klęcząc","0153":"Ściąganie drążka bokiem krzyżowo na wyciągu","0154":"Rozpiętki odwrotne krzyżowo na wyciągu","0155":"Krzyżowanie wyciągów (wariant)","0868":"Uginanie na wyciągu","0157":"Martwy ciąg na wyciągu","0158":"Rozpiętki na skosie ujemnym na wyciągu","1260":"Wyciskanie na skosie ujemnym jednorącz na wyciągu","1261":"Wyciskanie na skosie ujemnym na wyciągu","0159":"Wiosłowanie szerokim chwytem na skosie ujemnym siedząc na wyciągu","1632":"Uginanie typu drag na wyciągu","0160":"Wiosłowanie szerokim chwytem siedząc na podłodze na wyciągu","0161":"Unoszenie do przodu na wyciągu","0162":"Unoszenie przodem na wyciągu","0164":"Unoszenie ramion przodem na wyciągu","0165":"Uginanie młotkowe na wyciągu z linką","1722":"Prostowanie ramion nad głowę z bloczkiem wysoko na wyciągu","0167":"Wiosłowanie wysoko na wyciągu klęcząc","0168":"Przywodzenie bioder na wyciągu","0169":"Wyciskanie na ławce skośnej na wyciągu","1318":"Wiosłowanie na skosie dodatnim na ławce na wyciągu","0171":"Rozpiętki na skosie dodatnim na wyciągu","0170":"Rozpiętki na skosie dodatnim na wyciągu na piłce gimnastycznej","0172":"Prostowanie ramion w dół na skosie dodatnim na wyciągu","0173":"Prostowanie ramion na skosie dodatnim na wyciągu","0174":"Rzut judo na wyciągu","0860":"Odwodzenie ramienia na wyciągu","0175":"Spięcia brzucha klęcząc na wyciągu","3697":"Wiosłowanie w tył klęcząc na wyciągu z linką","0176":"Prostowanie ramion klęcząc na wyciągu","2330":"Ściąganie drążka na pełnym zakresie na wyciągu","0177":"Ściąganie drążka bokiem na wyciągu z linką","2616":"Ściąganie drążka bokiem z drążkiem V na wyciągu","0178":"Unoszenie bokiem na wyciągu","0179":"Rozpiętki nisko na wyciągu","0180":"Wiosłowanie siedząc nisko na wyciągu","1634":"Uginanie ramion leżąc na wyciągu","0182":"Uginanie wąskim chwytem leżąc na wyciągu","0184":"Ściąganie na wyprost leżąc na wyciągu z linką","0185":"Rozpiętki leżąc na wyciągu","0186":"Prostowanie ramion leżąc na wyciągu (wariant 2)","0188":"Rozpiętki środkowe na wyciągu","0189":"Wiosłowanie w opadzie tułowia jednorącz na wyciągu","0190":"Uginanie jednorącz na wyciągu","1262":"Rozpiętki na klatkę na skosie ujemnym jednorącz na wyciągu","1263":"Rozpiętki na piłce gimnastycznej jednorącz na wyciągu","1264":"Rozpiętki na piłce gimnastycznej na skosie dodatnim jednorącz na wyciągu","1265":"Wyciskanie na skosie dodatnim jednorącz na wyciągu","1266":"Wyciskanie na piłce gimnastycznej na skosie dodatnim jednorącz na wyciągu","0191":"Rozpiętki w opadzie jednorącz na wyciągu","0192":"Unoszenie bokiem jednorącz na wyciągu","1633":"Uginanie na modlitewniku jednorącz na wyciągu","1267":"Wyciskanie na piłce gimnastycznej jednorącz na wyciągu","3563":"Ściąganie drążka jednorącz na wyciągu","1635":"Uginanie na modlitewniku jednorącz podchwytem na wyciągu","0193":"Wiosłowanie z prostymi plecami jednorącz wysoko na wyciągu klęcząc","1723":"Prostowanie ramion w dół jednorącz na wyciągu","1636":"Uginanie nad głowę na wyciągu","1637":"Uginanie na piłce gimnastycznej nad głowę na wyciągu","0194":"Prostowanie ramion nad głowę na wyciągu z linką","1319":"Wiosłowanie z rotacją dłoni na wyciągu","0195":"Uginanie na modlitewniku na wyciągu","1268":"Wyciskanie na piłce gimnastycznej na wyciągu","0196":"Przeciąganie między nogami na wyciągu z linką","0198":"Ściąganie drążka na wyciągu","0197":"Ściąganie drążka na wyciągu z drążkiem","1638":"Ściąganie drążka z uginaniem ramion na wyciągu","0201":"Prostowanie ramion w dół na wyciągu","0199":"Prostowanie ramion w dół z prostymi ramionami na wyciągu (wariant 2)","0200":"Prostowanie ramion w dół na wyciągu z linką","0202":"Wiosłowanie w tył na wyciągu z uchwytami","0203":"Wiosłowanie w tył na wyciągu z linką","0204":"Wiosłowanie w tył na wyciągu","0205":"Ściąganie drążka w tył na wyciągu","0873":"Odwrotne spięcia na wyciągu","0206":"Uginanie odwrotne na wyciągu","2406":"Prostowanie ramion w dół podchwytem na wyciągu z podporą ramienia","1413":"Uginanie jednorącz podchwytem na wyciągu","0209":"Uginanie na modlitewniku podchwytem na wyciągu","0210":"Uginanie nadgarstków odwrotne na wyciągu","0207":"Prostowanie ramion w dół podchwytem na wyciągu","0208":"Wiosłowanie z prostymi plecami podchwytem siedząc wysoko na wyciągu","1320":"Wiosłowanie siedząc z linką krzyżowo na wyciągu","1321":"Wiosłowanie z podwyższenia siedząc z linką na wyciągu","1322":"Wiosłowanie na ławce skośnej z linką na wyciągu","1639":"Uginanie na modlitewniku młotkowy z linką na wyciągu","1724":"Prostowanie ramion nad głowę z bloczkiem wysoko z linką na wyciągu","1725":"Prostowanie ramion na skosie dodatnim z linką na wyciągu","1726":"Prostowanie ramion na podłodze leżąc z linką na wyciągu","1640":"Uginanie na modlitewniku jednorącz młotkowy z linką na wyciągu","1323":"Wiosłowanie siedząc z linką na wyciągu","0211":"Skręty rosyjskie na wyciągu na piłce gimnastycznej","2144":"Wyciskanie na klatkę siedząc na wyciągu","0212":"Spięcia brzucha siedząc na wyciągu","1641":"Uginanie siedząc na wyciągu","0213":"Wiosłowanie siedząc wysoko na wyciągu z drążkiem V","0214":"Wiosłowanie naprzemiennie jednorącz siedząc na wyciągu","1642":"Uginanie koncentryczne jednorącz siedząc na wyciągu","1643":"Uginanie nad głowę siedząc na wyciągu","0215":"Unoszenie w tył siedząc na wyciągu","0861":"Wiosłowanie siedząc na wyciągu","0216":"Rotacja wewnętrzna barku siedząc na wyciągu","2399":"Skręty tułowia siedząc na wyciągu","0218":"Wiosłowanie szerokim chwytem siedząc na wyciągu","0219":"Wyciskanie nad głowę na wyciągu","0220":"Wzruszanie ramion na wyciągu","0222":"Skłon boczny na wyciągu","0221":"Skłon boczny na wyciągu na piłce bosu","0223":"Spięcia brzucha bokiem na wyciągu","1717":"Wiosłowanie w przysiadzie na wyciągu z linką","1644":"Uginanie w przysiadzie na wyciągu","0224":"Uginanie nadgarstków stojąc w tył na wyciągu","1375":"Wspięcia na palce stojąc na wyciągu","0225":"Rozpiętki odwrotne stojąc krzyżowo wysoko nad na wyciągu","0226":"Spięcia brzucha stojąc na wyciągu","0874":"Spięcia brzucha stojąc na wyciągu z linką","0227":"Rozpiętki stojąc na wyciągu","0228":"Wyprost bioder stojąc na wyciągu","0229":"Uginanie stojąc wewnętrzny na wyciągu","0230":"Podniesienie stojąc na wyciągu","0231":"Prostowanie ramion stojąc jednorącz na wyciągu","1376":"Wspięcia na palce stojąc jednonóż na wyciągu","0232":"Ściąganie drążka stojąc na wyciągu z linką","0233":"Wiosłowanie w tył stojąc na wyciągu z linką","1727":"Prostowanie ramion podchwytem stojąc nad głowę jednorącz na wyciągu","0234":"Wiosłowanie stojąc na wyciągu z drążkiem V","0235":"Rotacja zewnętrzna barku stojąc na wyciągu","0236":"Wiosłowanie stojąc ze skrętem na wyciągu z drążkiem V","1269":"Krzyżowanie wyciągów stojąc prosto w górę na wyciągu","0238":"Ściąganie drążka z prostymi ramionami na wyciągu","0237":"Ściąganie drążka z prostymi ramionami na wyciągu z linką","0239":"Wiosłowanie z prostymi plecami siedząc na wyciągu","0240":"Rozpiętki odwrotne leżąc na plecach na wyciągu","2464":"Wiosłowanie kajakowe Thibaudeau na wyciągu","0241":"Prostowanie ramion w dół na wyciągu z drążkiem V","2405":"Prostowanie ramion w dół na wyciągu z drążkiem V i podporą ramienia","0242":"Odwrotne spięcia zwinięte na wyciągu","0243":"Skręty tułowia na wyciągu","0862":"Skręty tułowia na wyciągu w górę i w dół","0244":"Ciągnięcie ze skrętem na wyciągu","1645":"Uginanie na ławce skośnej obunóż na wyciągu","1728":"Odwodzenie ramion w tył na wyciągu","0245":"Ściąganie drążka podchwytem na wyciągu","1270":"Krzyżowanie wyciągów górne klatki na wyciągu","1324":"Wiosłowanie górne na wyciągu","0246":"Wiosłowanie w pionie na wyciągu","1325":"Ściąganie drążka za kark szerokim chwytem w tył na wyciągu","0247":"Uginanie nadgarstków na wyciągu","1407":"Rozciąganie łydek o ścianę","1377":"Rozciąganie łydek o ścianę","1378":"Rozciąganie łydek z linką na linie","0248":"Wiosłowanie leżąc na wygiętej sztandze","2963":"Unoszenie prostych nóg na fotelu kapitana","1548":"Rozciąganie wydłużony na krześle nóg","1271":"Rozciąganie barku przodem klatki","0251":"Dipy na klatkę","1430":"Dipy na klatkę na klatce do dipów","2462":"Dipy na klatkę na prostym drążku","1272":"Rozciąganie klatki na piłce gimnastycznej","3216":"Pompki z dotknięciem klatki","1326":"Podciąganie podchwytem","0253":"Podciąganie podchwytem wąskim chwytem","0257":"Rozciąganie kolan krążeniami","1273":"Pompki z klaśnięciem","0258":"Pompki zegarowe","1327":"Podciąganie podchwytem wąskim chwytem","0259":"Pompki wąskim chwytem","2398":"Pompki wąskim chwytem na kolanach","0260":"Kokony","1468":"Skręt kraba z dotykaniem palców","0262":"Spięcia z krzyżowaniem","0267":"Spięcia brzucha z rękami nad głową","0271":"Spięcia brzucha na piłce gimnastycznej","0272":"Spięcia brzucha na piłce gimnastycznej z prostymi ramionami","0274":"Spięcia brzucha na podłodze","3016":"Brzuszki","3769":"Przysiad dygając","2331":"Rower na orbitreku","0276":"Martwy robak","0277":"Spięcia brzucha na skosie ujemnym","0279":"Pompki na skosie ujemnym","0282":"Brzuszki na skosie ujemnym","1274":"Pompki głębokie z hantlami","0283":"Pompki diamentowe","0284":"Wspięcia na palce osiołka","1275":"Pompki z opadaniem","0285":"Uginanie ramion naprzemiennie z hantlami","2403":"Uginanie ramion naprzemiennie z hantlami z podporą ramienia","1646":"Uginanie na modlitewniku naprzemiennie młotkowy z hantlami","1647":"Uginanie na modlitewniku naprzemiennie z hantlami","1648":"Uginanie młotkowe naprzemiennie siedząc z hantlami","0286":"Wyciskanie naprzemiennie bokiem z hantlami","1649":"Uginanie ramion na piłce gimnastycznej naprzemiennie podniesiony nóg z hantlami","1650":"Uginanie ramion na piłce gimnastycznej naprzemiennie siedząc z hantlami","2137":"Wyciskanie Arnolda z hantlami","0287":"Wyciskanie Arnolda z hantlami (wariant 2)","0288":"Ściąganie na wyprost dookoła z hantlami","0289":"Wyciskanie na ławce z hantlami","0290":"Wyciskanie siedząc na ławce z hantlami","0291":"Przysiad na ławce z hantlami","0293":"Wiosłowanie w opadzie tułowia z hantlami","1651":"Wykroki z uginaniem ramion (ruch kręgla) z hantlami","1652":"Uginanie ramion na piłce gimnastycznej podniesiony nóg z hantlami","1653":"Uginanie ramion w pozycji bociana z hantlami","0294":"Uginanie ramion z hantlami","2401":"Uginanie ramion z hantlami z podporą ramienia","1654":"Uginanie ramion podchwytem z hantlami","1655":"Uginanie ramion przysiad z hantlami","1656":"Uginanie ramion w siadzie V na piłce bosu z hantlami","1201":"Burpees z hantlami","0295":"Podrzut z hantlami","1731":"Wyciskanie wąskim chwytem z hantlami","0296":"Wyciskanie wąskim chwytem z hantlami","0297":"Uginanie koncentryczne z hantlami","3635":"Wykroki do przodu z przeciwną ręką z hantlami","0298":"Uginanie młotkowe skośny z hantlami","1657":"Uginanie młotkowe skośny z hantlami (wariant 2)","0299":"Wyciskanie kubańskie z hantlami","2136":"Wyciskanie kubańskie z hantlami (wariant 2)","0300":"Martwy ciąg z hantlami","0301":"Wyciskanie na ławce ujemnej z hantlami","0302":"Rozpiętki na skosie ujemnym z hantlami","0303":"Wyciskanie młotkowe na skosie ujemnym z hantlami","1276":"Rozpiętki na skosie ujemnym jednorącz z hantlami","1617":"Wyciskanie młotkowe na skosie ujemnym jednorącz z hantlami","0305":"Wzruszanie ramion na skosie ujemnym z hantlami","0304":"Wzruszanie ramion na skosie ujemnym z hantlami (wariant 2)","0306":"Prostowanie ramion na skosie ujemnym z hantlami","0307":"Rozpiętki na ujemnym skosie ze skrętem z hantlami","1437":"Uginanie palców z hantlami","0308":"Rozpiętki z hantlami","1277":"Rozpiętki na piłce gimnastycznej z hantlami","1732":"Prostowanie ramion do przodu wykroki z hantlami","0310":"Unoszenie przodem z hantlami","0309":"Unoszenie przodem z hantlami (wariant 2)","0311":"Unoszenie bokiem (full can) z hantlami","1760":"Przysiad goblet z hantlami","0313":"Uginanie młotkowe z hantlami","1659":"Uginanie młotkowe na piłce gimnastycznej z hantlami","0312":"Uginanie młotkowe z hantlami (wariant 2)","2402":"Uginanie młotkowy z hantlami z podporą ramienia","1664":"Uginanie wysoko z hantlami","3545":"Wyciskanie naprzemiennie na skosie dodatnim z hantlami","0314":"Wyciskanie na ławce skośnej z hantlami","0315":"Uginanie ramion na skosie dodatnim z hantlami","0316":"Rozpiętki na skosie dodatnim z hantlami","0318":"Uginanie na skosie dodatnim z hantlami","0317":"Uginanie na skosie dodatnim z hantlami (wariant 2)","0319":"Rozpiętki na skosie dodatnim z hantlami","1278":"Rozpiętki na piłce gimnastycznej na skosie dodatnim z hantlami","0320":"Uginanie młotkowe na skosie dodatnim z hantlami","0321":"Wyciskanie młotkowe na skosie dodatnim z hantlami","1618":"Wyciskanie młotkowe na piłce gimnastycznej na skosie dodatnim z hantlami","0322":"Uginanie ramion na skosie dodatnim wewnętrzny z hantlami","1279":"Rozpiętki na skosie dodatnim jednorącz z hantlami","1280":"Rozpiętki na piłce gimnastycznej na skosie dodatnim jednorącz z hantlami","1619":"Wyciskanie młotkowe na skosie dodatnim jednorącz z hantlami","1620":"Wyciskanie młotkowe na piłce gimnastycznej na skosie dodatnim jednorącz z hantlami","0323":"Unoszenie bokiem na skosie dodatnim jednorącz z hantlami","1281":"Wyciskanie na skosie dodatnim jednorącz z hantlami","1282":"Wyciskanie na piłce gimnastycznej na skosie dodatnim jednorącz z hantlami","0324":"Wyciskanie dłońmi do środka na skosie dodatnim z hantlami","1283":"Wyciskanie na piłce gimnastycznej na skosie dodatnim z hantlami","0325":"Unoszenie na skosie dodatnim z hantlami","0326":"Unoszenie w tył na skosie dodatnim z hantlami","0327":"Wiosłowanie na skosie dodatnim z hantlami","0328":"Unoszenie ramion na skosie dodatnim z hantlami","0329":"Wzruszanie ramion na skosie dodatnim z hantlami","3542":"Unoszenie w literę T na skosie dodatnim z hantlami","0330":"Prostowanie ramion na skosie dodatnim z hantlami","0331":"Rozpiętki na skosie dodatnim ze skrętem z hantlami","1733":"Prostowanie na skosie dodatnim obunóż z hantlami","3541":"Unoszenie w literę Y na skosie dodatnim z hantlami","0332":"Żelazny krzyż z hantlami","0333":"Odwodzenie ramienia z hantlami","1734":"Odwodzenie ramion na piłce gimnastycznej z hantlami","1660":"Uginanie ramion na piłce gimnastycznej klęcząc z hantlami","0334":"Unoszenie bokiem z hantlami","0335":"Unoszenie przodem bokiem z hantlami","0336":"Wykroki z hantlami","1658":"Uginanie ramion wykroki z hantlami","0337":"Prostowanie ramion leżąc nad twarzą z hantlami","1729":"Prostowanie naprzemiennie leżąc z hantlami","0338":"Wyciskanie leżąc łokciem z hantlami","0863":"Rotacja zewnętrzna barku leżąc z hantlami","0339":"Uginanie nóg leżąc z hantlami","0340":"Wyciskanie młotkowe leżąc z hantlami","2470":"Unoszenie w tył na podłodze leżąc z hantlami","0341":"Odwodzenie w tył jednorącz leżąc z hantlami","0343":"Wyciskanie jednorącz leżąc z hantlami","0342":"Wyciskanie jednorącz leżąc z hantlami (wariant 2)","0344":"Prostowanie ramion nachwytem jednorącz leżąc z hantlami","0345":"Unoszenie w tył jednorącz leżąc z hantlami","0346":"Prostowanie ramion podchwytem jednorącz leżąc z hantlami","0347":"Pronacja leżąc z hantlami","2705":"Pronacja na podłodze leżąc z hantlami","1284":"Ściąganie na wyprost na piłce gimnastycznej leżąc z hantlami","1328":"Wiosłowanie w tył leżąc z hantlami","0348":"Unoszenie w tył leżąc z hantlami","1735":"Prostowanie jednostronnie leżąc z hantlami","0349":"Supinacja leżąc z hantlami","2706":"Supinacja na podłodze leżąc z hantlami","1661":"Uginanie ramion leżąc na plecach z hantlami","0350":"Uginanie leżąc na plecach z hantlami","0351":"Prostowanie ramion leżąc z hantlami","1662":"Uginanie leżąc szerokim z hantlami","0352":"Wyciskanie na ławce neutralnym chwytem z hantlami","1285":"Rozpiętki jednorącz na ławce z hantlami","0292":"Wiosłowanie w opadzie tułowia jednorącz z hantlami","1286":"Rozpiętki na klatkę na piłce gimnastycznej jednorącz z hantlami","0353":"Uginanie koncentryczne jednorącz z hantlami na piłce gimnastycznej","1287":"Wyciskanie na klatkę na skosie ujemnym jednorącz z hantlami","1288":"Rozpiętki na piłce gimnastycznej jednorącz z hantlami","1736":"Wyciskanie francuskie na piłce gimnastycznej jednorącz z hantlami","1663":"Uginanie na modlitewniku jednorącz młotkowy z hantlami","1621":"Wyciskanie młotkowe na piłce gimnastycznej jednorącz z hantlami","1289":"Wyciskanie na klatkę na skosie dodatnim jednorącz z hantlami","0354":"Odwodzenie ramienia jednorącz z hantlami","0355":"Unoszenie bokiem jednorącz z hantlami","0356":"Unoszenie bokiem z podparciem jednorącz z hantlami","1290":"Wyciskanie na piłce gimnastycznej jednorącz z hantlami","1665":"Uginanie jednorącz leżąc przodem z hantlami","1666":"Uginanie młotkowe jednorącz leżąc przodem z hantlami","1291":"Ściąganie na wyprost na piłce gimnastycznej jednorącz z hantlami","0358":"Uginanie nadgarstków odwrotne jednorącz z hantlami","0359":"Rozpiętki odwrotne jednorącz z hantlami z podparciem","1622":"Wyciskanie podchwytem jednorącz z hantlami","1414":"Uginanie na modlitewniku jednorącz podchwytem z hantlami","1667":"Uginanie pająkiem jednorącz podchwytem z hantlami","1668":"Uginanie ramion na piłce gimnastycznej jednorącz siedząc z hantlami","1669":"Uginanie młotkowe jednorącz siedząc z hantlami","1415":"Uginanie nadgarstków jednorącz neutralny siedząc z hantlami","0361":"Wyciskanie nad głowę jednorącz z hantlami","0360":"Wyciskanie nad głowę jednorącz z hantlami (wariant 2)","3888":"Rwanie jednorącz z hantlami","1670":"Uginanie stojąc jednorącz z hantlami","1671":"Uginanie młotkowe stojąc jednorącz z hantlami","0362":"Prostowanie ramion jednorącz z hantlami na ławce","0363":"Wiosłowanie w pionie jednorącz z hantlami","0364":"Uginanie nadgarstków jednorącz z hantlami","1672":"Uginanie na modlitewniku jednorącz Zottmana z hantlami","1292":"Rozpiętki na piłce gimnastycznej jednonóż z hantlami","0365":"Uginanie nadgarstków neutralny na ławce z hantlami","0366":"Uginanie nadgarstków jednorącz neutralny na ławce z hantlami","1441":"Uginanie nadgarstków odwrotne jednorącz na ławce z hantlami","0367":"Uginanie nadgarstków jednorącz na ławce z hantlami","0368":"Uginanie nadgarstków podchwytem na ławce z hantlami","0369":"Uginanie nadgarstków na ławce z hantlami","1329":"Wiosłowanie w opadzie z rotacją dłoni z hantlami","1623":"Wyciskanie na ławce skośnej dłońmi do środka z hantlami","0370":"Uginanie młotkowe na modlitewniku z hantlami","0371":"Przysiad pliometryczny z hantlami","0372":"Uginanie na modlitewniku z hantlami","1673":"Uginanie na modlitewniku na piłce gimnastycznej nad z hantlami","1293":"Wyciskanie na piłce gimnastycznej z hantlami","0373":"Prostowanie ramion nachwytem z hantlami","0374":"Uginanie na skosie dodatnim leżąc przodem z hantlami","1674":"Uginanie młotkowe na skosie dodatnim leżąc przodem z hantlami","0375":"Ściąganie na wyprost z hantlami","1294":"Ściąganie na wyprost z wyprostem bioder na piłce gimnastycznej z hantlami","1295":"Ściąganie na wyprost na piłce gimnastycznej z hantlami","1700":"Wyciskanie z odbiciem z hantlami","0376":"Unoszenie z hantlami","2292":"Unoszenie w tył z hantlami","0377":"Wiosłowanie na tylne aktony z hantlami","0378":"Rozpiętki w tył z hantlami","0380":"Unoszenie w tył z hantlami","0379":"Unoszenie w tył z hantlami z podparciem głowy","0381":"Wykroki w tył z hantlami","0382":"Uginanie ramion podchwytem z hantlami","1624":"Wyciskanie na ławce podchwytem z hantlami","0383":"Rozpiętki odwrotne z hantlami","1330":"Wiosłowanie podchwytem na skosie dodatnim jednorącz na ławce z hantlami","1331":"Wiosłowanie podchwytem na skosie dodatnim obunóż na ławce z hantlami","2327":"Wiosłowanie podchwytem z hantlami","0384":"Uginanie na modlitewniku podchwytem z hantlami","1675":"Uginanie pająkiem podchwytem z hantlami","0385":"Uginanie nadgarstków odwrotne z hantlami","1459":"Martwy ciąg rumuński z hantlami","0386":"Rozpiętki odwrotne z rotacją z hantlami","2397":"Wyciskanie Scotta z hantlami","0387":"Unoszenie przodem naprzemiennie siedząc z hantlami","1676":"Uginanie młotkowe na piłce gimnastycznej naprzemiennie siedząc z hantlami","0388":"Wyciskanie naprzemiennie siedząc z hantlami","3546":"Wyciskanie naprzemienne siedząc z hantlami","0389":"Prostowanie siedząc na ławce z hantlami","2317":"Unoszenie bokiem z ugiętymi ramionami siedząc z hantlami","1730":"Odwodzenie ramienia w opadzie tułowia naprzemiennie siedząc z hantlami","1737":"Prostowanie ramion w opadzie tułowia siedząc z hantlami","1677":"Uginanie ramion siedząc z hantlami","0390":"Uginanie ramion siedząc z hantlami na piłce gimnastycznej","3547":"Uginanie ramion przechodzące w wyciskanie siedząc z hantlami","1379":"Wspięcia na palce siedząc z hantlami","0391":"Uginanie siedząc z hantlami","0392":"Unoszenie przodem siedząc z hantlami","1678":"Uginanie młotkowe siedząc z hantlami","0393":"Uginanie ramion siedząc wewnętrzny z hantlami","0394":"Odwodzenie ramienia siedząc z hantlami","0396":"Unoszenie bokiem siedząc z hantlami","0395":"Unoszenie bokiem siedząc z hantlami (wariant 2)","0397":"Uginanie nadgarstków neutralny siedząc z hantlami","1679":"Uginanie ramion na piłce gimnastycznej jednorącz siedząc podniesiony nóg z hantlami","0398":"Odwodzenie ramienia jednorącz siedząc z hantlami","0399":"Rotacja jednorącz siedząc z hantlami","0400":"Wspięcia na palce jednonóż siedząc z hantlami","1380":"Wspięcia na palce młotkowym chwytem jednonóż siedząc z hantlami","1381":"Wspięcia na palce jednonóż siedząc z hantlami (dłonie do góry)","0401":"Uginanie nadgarstków dłońmi do góry siedząc z hantlami","0402":"Uginanie na modlitewniku siedząc z hantlami","0403":"Uginanie koncentryczne podchwytem siedząc z hantlami","1738":"Prostowanie ramion podchwytem nad głowę jednorącz siedząc z hantlami","0405":"Wyciskanie nad głowę siedząc z hantlami","0404":"Wyciskanie siedząc neutralnym chwytem z hantlami","2188":"Prostowanie ramion siedząc z hantlami","0406":"Wzruszanie ramion z hantlami","0407":"Skłon boczny z hantlami","0408":"Unoszenie leżąc bokiem dłonią jednostronnie z hantlami","3664":"Deska boczna z rozpiętkami w tył z hantlami","3548":"Nośnik jednorącz nad głowę z hantlami","0409":"Wspięcia na palce jednonóż z hantlami","1757":"Martwy ciąg jednonóż z hantlami","2805":"Martwy ciąg jednonóż z podporą z hantlami","0410":"Przysiad rozkroczny jednonóż z hantlami","0411":"Przysiad jednonóż z hantlami","0413":"Przysiad z hantlami","3560":"Uginanie młotkowe i wyciskanie naprzemiennie stojąc z hantlami","0414":"Wyciskanie nad głowę naprzemiennie stojąc z hantlami","0415":"Unoszenie naprzemiennie stojąc z hantlami","1739":"Odwodzenie ramion w tył naprzemiennie stojąc z hantlami","2143":"Dookoła świata stojąc z hantlami","1740":"Prostowanie ramion w opadzie tułowia stojąc jednorącz z hantlami","1741":"Prostowanie ramion w opadzie tułowia stojąc obunóż z hantlami","0416":"Uginanie ramion stojąc z hantlami","0417":"Wspięcia na palce stojąc z hantlami","0418":"Uginanie koncentryczne stojąc z hantlami","0419":"Unoszenie przodem nad głowę stojąc z hantlami","2321":"Uginanie ramion stojąc wewnętrzny z hantlami (wariant 2)","0420":"Odwodzenie ramienia stojąc z hantlami","0421":"Uginanie koncentryczne stojąc jednorącz z hantlami","0422":"Uginanie jednorącz stojąc nad ławką skośną z hantlami","1680":"Uginanie stojąc na skosie dodatnim jednorącz na ławce nad z hantlami","0423":"Prostowanie stojąc jednorącz z hantlami","0424":"Wyciskanie dłońmi do środka stojąc jednorącz z hantlami","0425":"Uginanie odwrotne stojąc jednorącz z hantlami","0426":"Wyciskanie nad głowę stojąc z hantlami","0427":"Wyciskanie stojąc dłońmi do środka z hantlami","0428":"Uginanie na modlitewniku stojąc z hantlami","0429":"Uginanie odwrotne stojąc z hantlami","0430":"Prostowanie ramion stojąc z hantlami","2293":"Uginanie na modlitewniku stojąc Zottmana z hantlami","1684":"Wejście na podwyższenie jednonóż z uginaniem ramion z hantlami","0431":"Wejście na podwyższenie z hantlami","2796":"Wejście na podwyższenie wykroki z hantlami","2812":"Przysiad rozkroczny ze stopnia w górę z hantlami","0432":"Martwy ciąg na prostych nogach z hantlami","0433":"Ściąganie na wyprost z prostymi ramionami z hantlami","0434":"Martwy ciąg na prostych nogach z hantlami","2808":"Przeciąganie między nogami sumo z hantlami","2803":"Przysiad z podparciem z hantlami","0436":"Wyciskanie Tate'a z hantlami","1742":"Odwodzenie ramion w tył w pozycji bociana z hantlami","1743":"Wyciskanie na ławce ze skrętem z hantlami","0437":"Wiosłowanie w pionie z hantlami","1765":"Wiosłowanie w pionie z hantlami widok z tyłu","0864":"Rotacja zewnętrzna barku w pionie z hantlami","5201":"Uginanie ramion kelnera z hantlami","0438":"Wyciskanie W z hantlami","0439":"Uginanie Zottmana z hantlami","2294":"Uginanie na modlitewniku Zottmana z hantlami","2189":"Prostowanie ramion siedząc z hantlami","1167":"Dynamiczne rozciąganie klatki","3287":"Dipy łokciem","1772":"Unoszenie łokci – odwrotne pompki","0443":"Łokieć do kolana","3292":"Winda","1332":"Unoszenie ramion naprzemiennie na piłce gimnastycznej","1333":"Wyprost grzbietu na piłce gimnastycznej wydłużony ramionami","1334":"Wyprost grzbietu na piłce gimnastycznej za głowę dłońmi","1335":"Wyprost grzbietu na piłce gimnastycznej z oderwanymi kolanami","1336":"Wyprost grzbietu na piłce gimnastycznej z rotacją","1744":"Dipy na piłce gimnastycznej","1559":"Rozciąganie zginaczy bioder na piłce gimnastycznej","1338":"Uścisk na piłce gimnastycznej","1339":"Rozciąganie na piłce gimnastycznej do klatki","1341":"Rozciąganie dolnej części pleców na piłce (piramida)","1342":"Rozciąganie na piłce gimnastycznej leżąc bokiem do klatki","1382":"Wspięcia na palce na piłce gimnastycznej o ścianę z hantlami","3241":"Wspięcia na palce o ścianę na piłce gimnastycznej (piłeczka między kostkami)","3240":"Wspięcia na palce o ścianę na piłce gimnastycznej (piłeczka między kolanami)","1416":"Rotacja na piłce gimnastycznej jednonóż leżąc przodem dolne z ciałem","1417":"Uginanie nóg jednonóż na piłce gimnastycznej z kopnięciem po przekątnej","1296":"Pompki na piłce gimnastycznej składanka","1343":"Unoszenie nóg na piłce gimnastycznej leżąc przodem","1560":"Rozciąganie dwugłowych na piłce gimnastycznej siedząc","1745":"Rozciąganie tricepsa siedząc na piłce gimnastycznej","1746":"Prostowanie ramion na piłce gimnastycznej leżąc na plecach z hantlami","1747":"Wyciskanie francuskie na piłce gimnastycznej na drążku ze sztangą EZ","3010":"Ściąganie na wyprost leżąc z ugiętymi ramionami z łamaną sztangą EZ","1748":"Prostowanie ramion za głowę wąskim chwytem leżąc na drążku ze sztangą EZ","1344":"Wiosłowanie podchwytem w opadzie tułowia na drążku ze sztangą EZ","1682":"Uginanie koncentryczne wąskim chwytem siedząc na drążku ze sztangą EZ","1749":"Wyciskanie francuskie stojąc na drążku ze sztangą EZ","0445":"Wyciskanie antygrawitacyjne ze sztangą EZ","1627":"Uginanie na modlitewniku wąskim chwytem ze sztangą EZ","0446":"Uginanie wąskim chwytem ze sztangą EZ","0447":"Uginanie ze sztangą EZ","0448":"Wyciskanie twarzą na ujemnej ławce wąskim chwytem ze sztangą EZ","2186":"Prostowanie ramion na skosie ujemnym ze sztangą EZ","0449":"Prostowanie ramion na skosie dodatnim ze sztangą EZ","0450":"Wyciskanie JM ze sztangą EZ","0451":"Uginanie podchwytem ze sztangą EZ","0452":"Uginanie na modlitewniku podchwytem ze sztangą EZ","1458":"Uginanie siedząc ze sztangą EZ","0453":"Prostowanie ramion siedząc ze sztangą EZ","0454":"Uginanie pająkiem ze sztangą EZ","1628":"Uginanie pająkiem ze sztangą EZ","2404":"Uginanie ramion na drążku ze sztangą EZ z podporą ramienia","2432":"Wyciskanie na ławce wąskim chwytem na drążku ze sztangą EZ","2741":"Uginanie ramion szerokim chwytem stojąc ze sztangą EZ","2133":"Spacer farmera z hantlami","0455":"Uginanie palców ze sztangą","3303":"Flaga","0456":"Brzuszki z zginaniem nóg z ugiętymi kolanami","0457":"Brzuszki z zginaniem nóg z prostymi ramionami","0458":"Rozpiętki na podłodze ze sztangą","0459":"Nożyce (flutter kicks)","1472":"Wyskok do przodu","3470":"Wykroki do przodu","3194":"Przysiad Frankensteina","2429":"Spięcia brzucha żaba","3301":"Plansza żaba","3296":"Dźwignia przednia","3295":"Dźwignia przednia powtórzenia","0464":"Deska przodem ze skrętem","3315":"Pełny krzyż maltański","3299":"Pełna plansza","3327":"Pompki w planszy (pełne)","0466":"Podciąganie do mostka (Gironda)","3561":"Mostek biodrowy z marszem","3523":"Mostek biodrowy obunóż na ławce","3193":"Unoszenie na ławce do dwugłowych (GHR)","0467":"Podciąganie goryla","0469":"Spięcia przywodzicieli","1383":"Wspięcia na palce hack na saniach","1384":"Wspięcia na palce jednonóż hack na saniach","3221":"Półprzysiady","3202":"Półbrzuszki","1511":"Rozciąganie dwugłowych","2139":"Rower na rękach","3218":"Dotykanie palców okrężne z dłońmi splecionymi","3215":"Dotykanie palców okrężne z odwróconymi dłońmi splecionymi","3302":"Stanie na rękach","0471":"Pompki w stójce na rękach","1764":"Unoszenie bioder w zwisie nóg","0472":"Unoszenie nóg w zwisie","1761":"Unoszenie kolan w zwisie na skosy","0473":"Zwis składanka","0474":"Unoszenie bioder na prostych nogach w zwisie","0475":"Unoszenie nóg prosto w zwisie","0476":"Unoszenie bioder ze skrętem prosto w zwisie nóg","3636":"O ścianę wysoko kolanem","0484":"Unoszenie bioder z ugiętymi kolanami","1418":"Uścisk Keena do klatki","3234":"Rozpiętki z hantlami (Hyght)","0489":"Hiperekstensja","0488":"Hiperekstensja na ławce","3289":"Niemożliwe dipy","1471":"Gąsienica","3698":"Gąsienica (wariant 2)","0490":"Pompki wąskim chwytem na skosie dodatnim","0491":"Unoszenie bioder na skosie z prostymi nogami","0492":"Pompki na skosie z wyskokiem w głąb","0493":"Pompki na skosie dodatnim","3785":"Pompki na skosie na skrzyni","0494":"Pompki podchwytem na skosie dodatnim","3011":"Pompki na skosie z ruchem łopatek","0495":"Brzuszki ze skrętem na skosie dodatnim","1564":"Rozciąganie zginaczy bioder i czworogłowego","0496":"Odwrotne uginanie nóg z podparciem na ławce","2400":"Odwrotne uginanie nóg na wyciągu do podciągania","0499":"Wiosłowanie odwrócone","2300":"Wiosłowanie odwrócone z ugiętymi kolanami","2298":"Wiosłowanie odwrócone na ławce","0497":"Wiosłowanie odwrócone (wariant 2)","0498":"Wiosłowanie odwrócone z uchwytami","1419":"Rozciąganie żelaznego krzyża","1297":"Ściskanie klatki izometryczne","0500":"Wycieraczki izometryczne","0501":"Burpees z pajacykiem","3224":"Skoki pajacyki","0507":"Brzuszki scyzoryk","0508":"Brzuszki Jandy","2612":"Wyskok z linką na linie","0514":"Przysiad z wyskokiem","0513":"Przysiad z wyskokiem (wariant 2)","0517":"Młynek zaawansowany z kettlebell","0518":"Podrzut naprzemiennie w zwisie z kettlebell","0520":"Wyciskanie naprzemiennie z kettlebell","0519":"Wyciskanie naprzemiennie na podłodze z kettlebell","0521":"Wiosłowanie renegade naprzemiennie z kettlebell","0522":"Wiosłowanie naprzemiennie z kettlebell","0523":"Wyciskanie Arnolda z kettlebell","0524":"Wyciskanie w skłonie z kettlebell","0525":"Podrzut z kettlebell bottoms up z zwisu","0526":"Podrzut naprzemiennie dwuręcznie w zwisie z kettlebell","0527":"Podbicie dwuręcznie z kettlebell","0528":"Wyciskanie z odbiciem dwuręcznie z kettlebell","0529":"Rwanie dwuręcznie z kettlebell","0530":"Młynek dwuręcznie z kettlebell","0531":"Wyciskanie jednorącz na podłodze z kettlebell","0532":"Ósemka z kettlebell","0533":"Przysiad przedni z kettlebell","0534":"Przysiad goblet z kettlebell","0535":"Podrzut w zwisie z kettlebell","0536":"Wykrok z przekazaniem kettlebell","0537":"Podrzut jednorącz podbicie z kettlebell","1298":"Wyciskanie jednorącz na podłodze z kettlebell","0538":"Podbicie jednorącz z kettlebell","0539":"Wyciskanie żołnierskie jednorącz bokiem z kettlebell","0540":"Wyciskanie z odbiciem jednorącz z kettlebell","0541":"Wiosłowanie jednorącz z kettlebell","0542":"Rwanie jednorącz z kettlebell","0543":"Pirat z kettlebell","0544":"Przysiad pistol z kettlebell","0545":"Pompki pliometryczne z kettlebell","0546":"Wyciskanie siedząc z kettlebell","1438":"Wyciskanie żołnierskie obunóż siedząc z kettlebell","0547":"Wyciskanie naprzemienne z kettlebell","0548":"Wyciąganie wysoko sumo z kettlebell","0549":"Wymach z kettlebell","0550":"Trusterów z kettlebell","0551":"Tureckie podnoszenie się z kettlebell (styl przysiadu)","0552":"Podrzut obunóż z kettlebell","0553":"Wyciskanie żołnierskie obunóż z kettlebell","1345":"Wiosłowanie obunóż z kettlebell","0554":"Młynek z kettlebell","0555":"Wyrzut w siad","0558":"Podciąganie w wyrzucie z odbiciem","3640":"Spięcia z dotykaniem kolan","1420":"Przysiad z wyskokiem klęcząc ze sztangą","1346":"Rozciąganie najszerszego klęcząc","3239":"Deska klęcząc z dotykaniem barku","3211":"Pompki klęcząc","3288":"Dipy koreańskie","3418":"Podciąganie w pozycji L","3419":"Pozycja L na podłodze","0562":"Landmine 180","3237":"Unoszenie bokiem landmine","3300":"Plansza w przechyle","2271":"Lewy hak (boks)","0570":"Ciągnięcie nóg na płaskiej ławce","1576":"Rozciąganie dwugłowych nóg w górę","2287":"Wyciskanie nogami naprzemiennie w maszynie","0571":"Wiosłowanie siedząc wąskim chwytem naprzemiennie w maszynie","0572":"Podciąganie podchwytem w maszynie","0573":"Wyprost grzbietu w maszynie","0574":"Wiosłowanie w opadzie tułowia ze sztangą","3200":"Wiosłowanie w opadzie tułowia z drążkiem V w maszynie","0575":"Uginanie ramion w maszynie","2289":"Wyciskanie łydek w maszynie","0577":"Wyciskanie na klatkę w maszynie","0576":"Wyciskanie na klatkę w maszynie","0578":"Martwy ciąg w maszynie","1300":"Wyciskanie na klatkę na skosie ujemnym w maszynie","1253":"Wspięcia na palce osiołka w maszynie","0579":"Ściąganie drążka przodem w maszynie","0580":"Wzruszanie ramion bez chwytu w maszynie","1439":"Wzruszanie ramion bez chwytu w maszynie (wariant 2)","2288":"Chwytacz dłoni w maszynie","1615":"Uginanie na modlitewniku młotkowym chwytem w maszynie","0581":"Wiosłowanie wysoko w maszynie","2286":"Wyprost bioder w maszynie (wariant 2)","2611":"Wyciskanie nogami poziomo jednostronnie w maszynie","1299":"Wyciskanie na klatkę na skosie dodatnim w maszynie","1479":"Wyciskanie na klatkę na skosie dodatnim w maszynie (wariant 2)","0582":"Uginanie nóg klęcząc w maszynie","0583":"Klęcząc ze skrętem w maszynie","0584":"Unoszenie bokiem w maszynie","0585":"Prostowanie nóg w maszynie","0586":"Uginanie nóg leżąc w maszynie","3195":"Uginanie nóg leżąc dwu-jednonóż w maszynie","0587":"Wyciskanie żołnierskie w maszynie","0588":"Wiosłowanie siedząc wąskim chwytem w maszynie","0589":"Wiosłowanie w opadzie tułowia jednorącz ze sztangą","1356":"Wiosłowanie jednorącz bokiem wysoko w maszynie","1347":"Ściąganie drążka jednorącz bokiem szerokim w maszynie","0590":"Wyciskanie nad głowę jednorącz w maszynie","0591":"Dipy na triceps nachwytem w maszynie","0592":"Uginanie na modlitewniku w maszynie","1614":"Uginanie na modlitewniku w maszynie (wariant 2)","2285":"Ściąganie na wyprost w maszynie","2736":"Ściąganie drążka podchwytem bokiem w maszynie","1616":"Uginanie na modlitewniku podchwytem w maszynie","1348":"Wiosłowanie podchwytem pionowy w maszynie","0593":"Odwrotna hiperekstensja w maszynie","1349":"Wiosłowanie T-bar podchwytem w maszynie","2315":"Wspięcia na palce rotacyjne w maszynie","2335":"Wyciskanie łydek siedząc w maszynie","0594":"Wspięcia na palce siedząc w maszynie","1452":"Spięcia brzucha siedząc w maszynie","0595":"Spięcia brzucha siedząc w maszynie (z poduszką na klatkę)","3760":"Spięcia brzucha siedząc w maszynie (wariant 2)","1451":"Dipy siedząc w maszynie","0596":"Rozpiętki siedząc w maszynie","3759":"Skłon z prostymi nogami siedząc w maszynie","0597":"Odwodzenie bioder siedząc w maszynie","0598":"Przywodzenie bioder siedząc w maszynie","0599":"Uginanie nóg siedząc w maszynie","0600":"Spięcia z unoszeniem nóg siedząc w maszynie","0602":"Rozpiętki odwrotne siedząc w maszynie","0601":"Rozpiętki odwrotne siedząc neutralnym chwytem w maszynie","1350":"Wiosłowanie siedząc w maszynie","1385":"Wspięcia na palce siedząc w wyciskaniu nogami","0603":"Wyciskanie nad głowę w maszynie","0869":"Wyciskanie nad głowę w maszynie (wariant 2)","2318":"Wyciskanie nad głowę w maszynie (wariant 3)","0604":"Wzruszanie ramion w maszynie","0605":"Wspięcia na palce stojąc w maszynie","3758":"Wyciskanie na klatkę stojąc w maszynie","0606":"Wiosłowanie T-bar w maszynie","1351":"Wiosłowanie T-bar podchwytem w maszynie","0607":"Prostowanie ramion w maszynie","1313":"Wiosłowanie jednostronne w maszynie","0609":"Most londyński","3013":"Mostek biodrowy na podłodze nisko","1352":"Uginanie dolne w tył","3582":"Wykroki z wyskokiem","1688":"Skręty tułowia wykroki","0613":"Rozciąganie czworogłowych leżąc bokiem","2312":"Łokieć do kolana leżąc","0620":"Unoszenie nóg leżąc na płaskiej ławce","0865":"Unoszenie bioder leżąc nóg","1301":"Wyciskanie na klatkę wewnętrzny w maszynie","0624":"Marsz w przysiadzie o ścianę","1353":"Złapanie i rzut nad głowę na piłce z piłką lekarską","1302":"Podanie od klatki na piłce z piłką lekarską","1303":"Pchnięcie piłki lekarskiej od klatki z pozycji 3 punktów","1304":"Seria pchnięć piłki lekarskiej od klatki","1305":"Pojedyncze pchnięcie piłki lekarskiej od klatki","1312":"Pchnięcie piłki lekarskiej od klatki z wybiegiem","1701":"Pompki wąskim chwytem na piłce z piłką lekarską","1354":"Uderzenie nad głowę na piłce z piłką lekarską","1750":"Rzut leżąc na plecach klatki na piłce z piłką lekarską","0627":"Podciąganie mieszanym chwytem","3217":"Zmodyfikowane pompki hinduskie","1421":"Pompki zmodyfikowane do przedramion","0628":"Spacer potwora","0630":"Wspinaczka górska","0631":"Podciąganie w wyrzucie","1401":"Podciąganie w wyrzucie na drążku pionowym","2328":"Pompki na piłce gimnastycznej wąskim","1403":"Rozciąganie szyi bokiem","0634":"Spięcia ekscentryczne","1495":"Spięcia skośne (wariant 2)","0635":"Spięcia skośne na podłodze","0636":"Uginanie młotkowe ze sztangą olimpijską","0637":"Prostowanie ramion ze sztangą olimpijską","1355":"O ścianę jednorącz","0638":"Podciąganie podchwytem jednorącz","0639":"Dipy jednorącz","0640":"Rzut jednorącz o podłogę z piłką lekarską","1773":"Wiosłowanie jednorącz z ręcznikiem","1386":"Wspięcia na palce osiołka jednonóż","1387":"Wspięcia na palce jednonóż na podłodze","1476":"Przysiad jednonóż","0641":"Otis up","0642":"Pompki z kopnięciem nogi na zewnątrz","0643":"Rozciąganie tricepsa nad głową","3147":"Podciąganie miednicy","1422":"Podciąganie miednicy w mostek","1388":"Rozciąganie strzałkowych","3662":"Pompki z przejściem z pozycji składanki w kobrę","1306":"Pompki pliometryczne","1687":"Krok w tył z sięganiem nad głowę","1389":"Rozciąganie piszczelowego tylnego","3119":"Przysiad potty","3132":"Przysiad potty z podparciem","0648":"Podrzut mocny ze sztangą","3665":"Deska power point","3203":"Brzuszki więźnia","1707":"Skręty tułowia na piłce gimnastycznej leżąc przodem","0651":"Podciąganie neutralnym chwytem","0650":"Ciągnięcie do środka na piłce gimnastycznej","0652":"Podciąganie","1689":"Pchnięcie i ciągnięcie","3638":"Pchnięcie i bieg","1307":"Pompki na piłce bosu","0662":"Pompki","0653":"Pompki na piłce bosu","0655":"Pompki na piłce gimnastycznej","0656":"Pompki na piłce gimnastycznej","0659":"Pompki o ścianę","0658":"Pompki o ścianę (wariant 2)","0660":"Pompki wąskim chwytem z hantlami","0661":"Pompki z kopnięciem nogi do środka","0663":"Pompki na piłce z piłką lekarską","1467":"Pompki dolne ramionami","3145":"Pompki plus","0664":"Pompki z przejściem w deskę boczną","3533":"Czworogłowe","3201":"Ćwierćbrzuszki","3552":"Szybkie stopy (wariant 2)","0666":"Pompki jednorącz unoszenie","0668":"Mostek na skosie ujemnym w tył","0669":"Rozciąganie tylnego naramiennika","0670":"Podciąganie w tył","1582":"Pozycja wielkiego palca z linką (leżąc)","3236":"Wypychanie bioder z gumą oporową na kolanach","3007":"Prostowanie nóg z gumą oporową","3123":"Uginanie ramion siedząc z gumą oporową","3124":"Wyciskanie na klatkę siedząc z gumą oporową","3006":"Odwodzenie bioder siedząc z gumą oporową","3122":"Wyciskanie nad głowę siedząc z gumą oporową","3144":"Wiosłowanie z prostymi plecami siedząc z gumą oporową","0872":"Odwrotne spięcia","0672":"Dipy odwrotne","0673":"Ściąganie drążka do klatki podchwytem w maszynie","0674":"Podciąganie podchwytem","0675":"Odwrotna hiperekstensja na piłce gimnastycznej","1423":"Odwrotna hiperekstensja na płaskiej ławce","3663":"Odwrotna deska z uniesieniem nogi","0677":"Dipy na kołach","2571":"Kołysanie w rozciąganiu żaby","0678":"Podciąganie Rocky'ego (ściąganie)","2208":"Rozciąganie na rolerze w tył","2204":"Piła na rolerze z ciałem","2205":"Rozciąganie na rolerze biodrowy do klatki","2202":"Rozciąganie na rolerze biodrowy","2206":"Odwrotne spięcia na rolerze","2203":"Roler: barki siedząc (zginacze, depresory, retraktory)","2209":"Roler: barki siedząc jednonóż (zginacze, depresory, retraktory)","2207":"Rozciąganie na rolerze bokiem do klatki","0680":"Wspinaczka po linie na linie","0685":"Bieg","0684":"Bieg","1585":"Rozciąganie biegacza","0687":"Skręty rosyjskie","3012":"Dipy łopatkowe","3021":"Pompki łopatkowe","0688":"Łopatkowe podciąganie","3219":"Skoki nożyce","1390":"Rozciąganie łydek siedząc","1424":"Rozciąganie pośladków siedząc","0689":"Unoszenie nóg siedząc","0690":"Rozciąganie siedząc dolne w tył","2567":"Rozciąganie mięśnia gruszkowatego siedząc","0691":"Spięcia boczne siedząc o ścianę","1587":"Sekwencja pozycji szerokiego kąta siedząc","0697":"Odwrotne uginanie nóg z samopomocą","1766":"Odwrotne uginanie nóg z samopomocą","0696":"Odwrotne uginanie nóg z samopomocą na podłodze","3222":"Półprzysiad z wyskokiem","3656":"Bieg krótkim krokiem","1763":"Podciąganie chwytem barkowym","3699":"Dotknięcia barku","0699":"Pompki z dotknięciem barku","1774":"Mostek boczny z odwodzeniem bioder","0705":"Mostek bokiem (wariant 2)","0709":"Biodro bokiem na poręczach","0710":"Odwodzenie bioder bokiem","1358":"Rozciąganie leżąc na podłodze bokiem","3667":"Przywodzenie bioder leżąc bokiem","1775":"Deska boczna z przywodzeniem bioder","0716":"Rozciąganie szyi z pchnięciem bokiem","0717":"Pompki bokiem","0721":"Rozciąganie nadgarstka ciągnięciem bokiem","0720":"Podciąganie na boki","3213":"Dotykanie palców bokiem","0725":"Pompki jednorącz","3645":"Mostek jednonóż z wyprostowaną nogą","0727":"Wspięcia na palce jednonóż z hantlem","0730":"Ślizg na platformie jednonóż","1759":"Przysiad pistol jednonóż","1489":"Przysiad Sissy","0735":"Brzuszki (wariant 2)","3679":"Brzuszki klatki ramionami","3361":"Skoki łyżwiarza","2142":"Ergometr narciarski na SkiErgu","3671":"Krok narciarski","3304":"Skin the cat","1425":"Wyciskanie nogami jednonóż na sankach 45°","0738":"Wyciskanie łydek na sankach 45°","0739":"Wyciskanie nogami na sankach 45°","1464":"Wyciskanie nogami na sankach 45° (widok z tyłu)","1463":"Wyciskanie nogami na sankach 45° (widok z boku)","0740":"Wyciskanie nogami szeroko na sankach 45°","1391":"Wyciskanie łydek na suwnicy na sankach","0741":"Przysiad hack na sankach z bliska","0742":"Wspięcia na palce do przodu na sankach","0743":"Przysiad hack na saniach","2334":"Wyciskanie łydek leżąc na sankach","0744":"Przysiad leżąc na saniach","1392":"Wyciskanie łydek jednonóż na suwnicy","1496":"Uderzenia młotem w maszynie","0746":"Wzruszanie ramion w tył w suwnicy Smitha","0747":"Wyciskanie za kark w suwnicy Smitha","0748":"Wyciskanie na ławce w suwnicy Smitha","0749":"Skłon z prostymi nogami z ugiętymi kolanami w suwnicy Smitha","1359":"Wiosłowanie w opadzie tułowia w suwnicy Smitha","0750":"Przysiad na krześle w suwnicy Smitha","0751":"Wyciskanie na ławce wąskim chwytem w suwnicy Smitha","0752":"Martwy ciąg w suwnicy Smitha","0753":"Wyciskanie na ławce ujemnej w suwnicy Smitha","0754":"Wyciskanie podchwytem na skosie ujemnym w suwnicy Smitha","1433":"Przysiad przedni chwytem podrzutowym w suwnicy Smitha","3281":"Przysiad pełny w suwnicy Smitha","0755":"Przysiad hack w suwnicy Smitha","0756":"Unoszenie bioder w suwnicy Smitha","0757":"Wyciskanie na ławce skośnej w suwnicy Smitha","0758":"Wyciskanie podchwytem na skosie dodatnim w suwnicy Smitha","0759":"Unoszenie barku na skosie dodatnim w suwnicy Smitha","0760":"Wyciskanie nogami w suwnicy Smitha","1434":"Przysiad nisko na drążku w suwnicy Smitha","1683":"Uginanie ramion w suwnicy Smitha","1625":"Wyciskanie na ławce wąskim chwytem na skosie ujemnym w suwnicy Smitha","1752":"Prostowanie ramion na skosie dodatnim w suwnicy Smitha","1626":"Wyciskanie na ławce wąskim chwytem na skosie ujemnym podchwytem w suwnicy Smitha","0761":"Wiosłowanie wąskim w suwnicy Smitha","1360":"Wiosłowanie jednorącz w suwnicy Smitha","1393":"Wspięcia na palce jednonóż na podłodze w suwnicy Smitha","0762":"Wiosłowanie w tył w suwnicy Smitha","0763":"Odwrotne wspięcia na palce w suwnicy Smitha","1394":"Odwrotne wspięcia na palce w suwnicy Smitha","1361":"Wiosłowanie podchwytem w opadzie tułowia w suwnicy Smitha","0764":"Wyciskanie podchwytem w suwnicy Smitha","1395":"Wspięcia na palce jednonóż siedząc w suwnicy Smitha","0765":"Wyciskanie nad głowę siedząc w suwnicy Smitha","1426":"Uginanie nadgarstków siedząc w suwnicy Smitha","0766":"Wyciskanie nad głowę w suwnicy Smitha","0767":"Wzruszanie ramion w suwnicy Smitha","0768":"Przysiad rozkroczny jednonóż w suwnicy Smitha","0769":"Sprint wykroki w suwnicy Smitha","0770":"Przysiad w suwnicy Smitha","0771":"Uginanie nadgarstków stojąc w tył w suwnicy Smitha","0772":"Wyciskanie żołnierskie za głowę stojąc w suwnicy Smitha","0773":"Wspięcia na palce stojąc nóg w suwnicy Smitha","0774":"Wyciskanie żołnierskie stojąc w suwnicy Smitha","3142":"Przysiad sumo w suwnicy Smitha","1396":"Unoszenie palców w suwnicy Smitha","0775":"Wiosłowanie w pionie w suwnicy Smitha","1308":"Wyciskanie na ławce szerokim chwytem w suwnicy Smitha","1309":"Wyciskanie na ławce ujemnej szerokim chwytem w suwnicy Smitha","0776":"Ciąg rwania","0777":"Spell caster","1362":"Pozycja sfinksa","0778":"Pompki z pełzaniem pająka","1363":"Rozciąganie kręgosłupa","2329":"Skręt kręgosłupa","2368":"Przysiady rozkroczny","0786":"Przysiad podbicie ze sztangą","1705":"Przysiad na piłce bosu","1685":"Przysiad z sięganiem nad głowę","1686":"Przysiad z sięganiem nad głowę i skrętem","2297":"Spięcia brzucha na piłce gimnastycznej z rękami za głową","3291":"Wyciskanie Staldera","3669":"Stojący łucznik","0788":"Wyciskanie za kark stojąc ze sztangą","1490":"Wspięcia na palce stojąc na schodach","1397":"Łydki stojąc","1398":"Rozciąganie łydek stojąc","1599":"Rozciąganie dwugłowych i łydek stojąc z paskiem","0794":"Rozciąganie stojąc bokiem","1364":"Podciąganie miednicy stojąc","0795":"Uginanie nóg stojąc jednostronnie","0796":"Wyciąganie na rolerze stojąc na kole","3223":"Skok gwiazdy","2138":"Bieg na rowerze stacjonarnym (wariant 3)","0798":"Marsz na rowerze stacjonarnym","3314":"Maltese rozkroczny","3298":"Plansza rozkroczna","1427":"Odwodziciel bioder z prostymi nogami","0803":"Pompki superman","0805":"Wyrzut brzucha na zawieszeniu","0806":"Pompki na zawieszeniu","0807":"Odwrotne spięcia na zawieszeniu","0808":"Wiosłowanie na zawieszeniu","0809":"Przysiad rozkroczny na zawieszeniu","3433":"Kopnięcia pływaka (wariant 2)","3318":"Wymach 360","1753":"Dipy trzyławkowe","2459":"Przewracanie opony z oponą","0811":"Martwy ciąg na drążku z gryfem heksagonalnym","0814":"Dipy na triceps","0812":"Dipy na tricepsy z nogą na ławce","0813":"Dipy na tricepsy między ławkami","0815":"Dipy na tricepsy na podłodze","0816":"Wyciskanie tricepsów","0817":"Rozciąganie tricepsa","0871":"Spięcia zwinięte","0818":"Ściąganie drążka dwoma uchwytami neutralnym chwytem","1466":"Unoszenie bioder ze skrętem","2802":"Unoszenie nóg ze skrętem","2801":"Unoszenie nóg ze skrętem","3231":"Dotykanie palców dwoma rękami","1365":"Rozciąganie górne w tył","1366":"Pies z głową w górę","3420":"Pozycja V na podłodze","0826":"Unoszenie nóg pionowo na poręczach","2141":"Marsz na orbitreku","3655":"Marsz wykroki kolan wysoko","1460":"Marsz wykroki","3666":"Marsz na bieżni pod górę","2311":"Marsz na stepperze","0830":"Dipy na ławce z obciążeniem","2987":"Podciąganie wąskim chwytem z obciążeniem na klatce do dipów","3643":"Przysiady kozackie z obciążeniem","0832":"Spięcia brzucha z obciążeniem","3670":"Brzuszki na skosie ujemnym z obciążeniem","0833":"Wspięcia na palce osiołka z obciążeniem","1310":"Pompki z opadaniem z obciążeniem","2135":"Deska przodem z obciążeniem","0834":"Unoszenie przodem z obciążeniem","0866":"Unoszenie bioder w zwisie nóg z obciążeniem","0835":"Hiperekstensja z obciążeniem na piłce gimnastycznej","3641":"Wejście klęcząc z obciążeniem z wymachem","3644":"Wykroki z obciążeniem z wymachem","3286":"Podciąganie w wyrzucie z obciążeniem","3312":"Podciąganie w wyrzucie z obciążeniem na drążku","3290":"Podciąganie dłonią jednostronnie z obciążeniem","0840":"Spięcia brzucha nad głowę z obciążeniem na piłce gimnastycznej","0841":"Podciąganie z obciążeniem","0844":"Okrężne ruchy ramion z obciążeniem","0846":"Skręty rosyjskie z obciążeniem","0845":"Skręty rosyjskie z obciążeniem z nogami w górze","2371":"Skręty rosyjskie z obciążeniem (wariant 2)","0847":"Uginanie ramion siedząc z piłką lekarską na piłce gimnastycznej","0849":"Skręty tułowia siedząc z obciążeniem na piłce gimnastycznej","0850":"Skłon boczny z obciążeniem na piłce gimnastycznej","0851":"Przysiad Sissy z obciążeniem","0852":"Przysiad z obciążeniem","0853":"Uginanie stojąc z obciążeniem","0854":"Ściskanie dłoni stojąc z obciążeniem","3313":"Dipy na prostym drążku z obciążeniem","3642":"Rozciąganie wykroki z obciążeniem","0856":"Wyciskanie Svenda z obciążeniem","1754":"Trzy dipy na ławce z obciążeniem","1755":"Dipy na tricepsy z obciążeniem","1767":"Dipy na triceps na poręczach wysoko z obciążeniem","0857":"Wyciąganie na rolerze na kole","3637":"Bieg","1429":"Podciąganie szerokim chwytem","1367":"Podciąganie szerokim chwytem w tył","1311":"Pompki szerokim dłonią","2363":"Dipy na klatkę na poręczach szerokim chwytem wysoko","0858":"Sprinty","1604":"Najlepsze rozciąganie świata","1428":"Krążenia nadgarstków","0859":"Wałek na nadgarstki"};
+const CATALOG_VERSION = 'pl-names-2';
 
 const db = new Dexie('gymWK_GitHubPro_v20');
 db.version(1).stores({
@@ -365,7 +368,8 @@ let state = {
   sharedAudioCtx: null,
   flashTimeout: null,
   rnBodyAssets: null,
-  kbd: null
+  kbd: null,
+  restPanelOpen: false
 };
 
 // ============================================================================
@@ -1274,22 +1278,212 @@ function translateTargetToPolish(target = '', category = '') {
   return map[t] || map[c] || (target ? target.charAt(0).toUpperCase() + target.slice(1) : 'Inne');
 }
 
+// ============================================================================
+// NAZWY ĆWICZEŃ PO POLSKU
+// Tłumaczenie regułowe: sprzęt + ruch + modyfikatory. Wyjątki i częste nazwy są w EX_NAME_EXACT.
+// Nazwy, których nie rozpoznaje, zostają po angielsku (nic nie zgaduje się na siłę).
+// ============================================================================
+const EX_NAME_EXACT = {
+  'barbell bench press': 'Wyciskanie na ławce płaskiej ze sztangą',
+  'barbell deadlift': 'Martwy ciąg ze sztangą',
+  'barbell full squat': 'Przysiad ze sztangą',
+  'dumbbell biceps curl': 'Uginanie ramion z hantlami',
+  'pull up': 'Podciąganie na drążku',
+  'dumbbell lateral raise': 'Unoszenie hantli bokiem',
+  '3/4 sit up': 'Brzuszki 3/4',
+  'lat pulldown': 'Ściąganie drążka do klatki',
+  'push up': 'Pompki',
+  'plank': 'Deska',
+  'crunch': 'Brzuszki',
+  'leg press': 'Wyciskanie nogami w maszynie',
+  'leg extension': 'Prostowanie nóg w maszynie',
+  'leg curl': 'Uginanie nóg w maszynie'
+};
+
+// Sprzęt – kolejność ma znaczenie (dłuższe frazy pierwsze)
+const EQUIP_PL = [
+  ['smith machine', 'w suwnicy Smitha'],
+  ['ez barbell', 'ze sztangą EZ'],
+  ['body weight', ''],
+  ['stability ball', 'na piłce'],
+  ['barbell', 'ze sztangą'],
+  ['dumbbells', 'z hantlami'],
+  ['dumbbell', 'z hantlami'],
+  ['kettlebell', 'z kettlebell'],
+  ['cable', 'na wyciągu'],
+  ['leverage machine', 'w maszynie'],
+  ['lever', 'w maszynie'],
+  ['machine', 'w maszynie'],
+  ['band', 'z gumą'],
+  ['weighted', 'z obciążeniem'],
+  ['assisted', 'z asystą']
+];
+
+// Modyfikatory (pozycja, chwyt, stan ciała)
+const MODIFIERS_PL = [
+  ['close grip', 'wąskim chwytem'],
+  ['wide grip', 'szerokim chwytem'],
+  ['reverse grip', 'podchwytem'],
+  ['single arm', 'jednorącz'],
+  ['one arm', 'jednorącz'],
+  ['single leg', 'jednonóż'],
+  ['one leg', 'jednonóż'],
+  ['alternating', 'naprzemiennie'],
+  ['seated', 'siedząc'],
+  ['standing', 'stojąc'],
+  ['lying', 'leżąc'],
+  ['kneeling', 'klęcząc'],
+  ['bent over', 'w opadzie tułowia'],
+  ['incline', 'na skosie dodatnim'],
+  ['decline', 'na skosie ujemnym'],
+  ['overhead', 'nad głowę'],
+  ['lateral', 'bokiem'],
+  ['front', 'przodem']
+];
+
+// Ruchy (kolejność nie ma znaczenia – dopasowanie idzie od najdłuższej frazy)
+const MOVEMENTS_PL = {
+  'incline bench press': 'wyciskanie na ławce skośnej',
+  'decline bench press': 'wyciskanie na ławce ujemnej',
+  'bench press': 'wyciskanie na ławce',
+  'chest press': 'wyciskanie na klatkę',
+  'shoulder press': 'wyciskanie żołnierskie',
+  'overhead press': 'wyciskanie nad głowę',
+  'press': 'wyciskanie',
+  'biceps curl': 'uginanie ramion',
+  'hammer curl': 'uginanie młotkowe',
+  'reverse curl': 'uginanie odwrotne',
+  'wrist curl': 'uginanie nadgarstków',
+  'preacher curl': 'uginanie na modlitewniku',
+  'curl': 'uginanie',
+  'hack squat': 'przysiad hack',
+  'full squat': 'przysiad',
+  'squat': 'przysiad',
+  'bulgarian split squat': 'przysiad bułgarski',
+  'split squat': 'wykrok w przysiadzie',
+  'romanian deadlift': 'martwy ciąg rumuński',
+  'deadlift': 'martwy ciąg',
+  'good morning': 'skłon z prostymi nogami',
+  'back extension': 'wyprost grzbietu',
+  'hyperextension': 'hiperekstensja',
+  'row': 'wiosłowanie',
+  'upright row': 'wiosłowanie w pionie',
+  'lat pulldown': 'ściąganie drążka do klatki',
+  'pulldown': 'ściąganie drążka',
+  'pullover': 'ściąganie na wyprost',
+  'face pull': 'przyciąganie do twarzy',
+  'pull up': 'podciąganie',
+  'chin up': 'podciąganie nachwytem',
+  'lateral raise': 'unoszenie bokiem',
+  'front raise': 'unoszenie przodem',
+  'raise': 'unoszenie',
+  'leg raise': 'unoszenie nóg',
+  'chest fly': 'rozpiętki na klatkę',
+  'fly': 'rozpiętki',
+  'flye': 'rozpiętki',
+  'crossover': 'krzyżowanie wyciągów',
+  'skull crusher': 'wyciskanie czaszki',
+  'triceps extension': 'prostowanie ramion',
+  'pushdown': 'prostowanie ramion w dół',
+  'extension': 'prostowanie',
+  'kickback': 'odwodzenie w tył',
+  'dips': 'dipy',
+  'dip': 'dipy',
+  'push up': 'pompki',
+  'lunge': 'wykroki',
+  'step up': 'wejście na podwyższenie',
+  'calf raise': 'wspięcia na palce',
+  'hip thrust': 'wypychanie bioder',
+  'glute bridge': 'mostek biodrowy',
+  'leg press': 'wyciskanie nogami',
+  'leg extension': 'prostowanie nóg',
+  'leg curl': 'uginanie nóg',
+  'crunch': 'brzuszki',
+  'sit up': 'brzuszki',
+  'plank': 'deska',
+  'twist': 'skręty tułowia',
+  'rotation': 'rotacje',
+  'shrug': 'wzruszanie ramion',
+  'farmer walk': 'spacer farmera',
+  'wall sit': 'przysiad o ścianę',
+  'jump squat': 'przysiad z wyskokiem',
+  'burpee': 'burpees',
+  'mountain climber': 'wspinaczka górska'
+};
+const MOVEMENT_KEYS = Object.keys(MOVEMENTS_PL).sort((a, b) => b.length - a.length);
+
+const STOP_WORDS = ['the', 'with', 'and', 'a', 'an', 'of', 'to', 'using'];
+
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function translateExerciseName(enName) {
+  const original = String(enName || '').trim();
+  let key = original.toLowerCase().replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+  if (EX_NAME_EXACT[key]) return EX_NAME_EXACT[key];
+
+  // Prefiks typu „3/4” zostaje na końcu nazwy
+  let suffix = '';
+  const numPrefix = key.match(/^(\d+\/\d+)\s+(.+)$/);
+  if (numPrefix) {
+    suffix = numPrefix[1];
+    key = numPrefix[2];
+  }
+
+  let rest = key;
+  const cut = (phrase) => {
+    const re = new RegExp(`(^|\\s)${escapeRegExp(phrase)}(?=\\s|$)`);
+    if (!re.test(rest)) return false;
+    rest = rest.replace(re, ' ').replace(/\s+/g, ' ').trim();
+    return true;
+  };
+
+  let equip = '';
+  for (const [en, pl] of EQUIP_PL) {
+    if (cut(en)) { equip = pl; break; }
+  }
+
+  let move = '';
+  for (const en of MOVEMENT_KEYS) {
+    if (cut(en)) { move = MOVEMENTS_PL[en]; break; }
+  }
+  if (!move) return original;
+
+  const mods = [];
+  for (const [en, pl] of MODIFIERS_PL) {
+    if (cut(en)) mods.push(pl);
+  }
+
+  // Jeśli zostały nieprzetłumaczone słowa, wolimy oryginalną angielską nazwę
+  const leftover = rest.split(' ').filter(w => w && !STOP_WORDS.includes(w));
+  if (leftover.length) return original;
+
+  let text = [move, ...mods, equip].filter(Boolean).join(' ');
+  if (suffix) text += ` ${suffix}`;
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 function formatExerciseTitle(rawName = '') {
   return String(rawName).split(' ').map(w => w ? w.charAt(0).toUpperCase() + w.slice(1) : '').join(' ');
 }
 
 async function initCatalogOnly(forceReload = false) {
   const exCount = await db.exercises.count();
-  if (exCount >= 1000 && !forceReload) return;
+  const storedCatalogVersion = (await db.settings.get('catalogVersion'))?.value;
+  if (exCount >= 1000 && !forceReload && storedCatalogVersion === CATALOG_VERSION) return;
 
   const banner = document.getElementById('sync-banner');
   const bannerTxt = document.getElementById('sync-banner-text');
   if (banner) banner.classList.remove('hidden');
 
   try {
+    // Najpierw kopia lokalna obok pliku (data/, images/, videos/), potem repozytorium na GitHubie
     let response = await fetch('data/exercises.json').catch(() => null);
+    let assetBase = '';
     if (!response || !response.ok) {
       response = await fetch(`${REPO_RAW}/data/exercises.json`);
+      assetBase = REPO_RAW;
     }
     if (!response || !response.ok) throw new Error('Błąd pobierania');
 
@@ -1303,7 +1497,8 @@ async function initCatalogOnly(forceReload = false) {
     const catalog = exercisesData.map(ex => {
       const category = translateEquipmentToPolish(ex.equipment || '');
       const bodyPart = translateTargetToPolish(ex.target || '', ex.category || ex.body_part || '');
-      const name = formatExerciseTitle(ex.name || 'Ćwiczenie');
+      const nameEn = formatExerciseTitle(ex.name || 'Ćwiczenie');
+      const name = EX_NAME_PL[String(ex.id)] || translateExerciseName(nameEn);
 
       let tip = 'Kontroluj fazę opuszczania i pilnuj zakresu ruchu.';
       if (ex.instructions) {
@@ -1324,13 +1519,15 @@ async function initCatalogOnly(forceReload = false) {
       const cleanGifRel = (ex.gif_url || '').replace(/^\.?\//, '');
       const cleanImgRel = (ex.image || '').replace(/^\.?\//, '');
 
-      const rawGifUrl = cleanGifRel ? `${REPO_RAW}/${cleanGifRel}` : '';
-      const imageUrl = cleanImgRel ? `${REPO_RAW}/${cleanImgRel}` : '';
+      const base = assetBase ? `${assetBase}/` : '';
+      const rawGifUrl = cleanGifRel ? `${base}${cleanGifRel}` : '';
+      const imageUrl = cleanImgRel ? `${base}${cleanImgRel}` : '';
       const prevMeta = existingMetaMap[slug] || {};
 
       return {
         slug,
         name,
+        nameEn,
         category,
         bodyPart,
         secondaryMuscles,
@@ -1344,6 +1541,7 @@ async function initCatalogOnly(forceReload = false) {
 
     await db.exercises.clear();
     await db.exercises.bulkAdd(catalog);
+    await db.settings.put({ key: 'catalogVersion', value: CATALOG_VERSION });
 
     if (bannerTxt) bannerTxt.textContent = `✓ Załadowano ${catalog.length} ćwiczeń oraz mięśnie poboczne!`;
     setTimeout(() => { if (banner) banner.classList.add('hidden'); }, 1800);
@@ -1514,6 +1712,131 @@ async function renderCurrentView() {
 // ============================================================================
 // WIDOK 1: HOME
 // ============================================================================
+// ============================================================================
+// POSTĘP TRENINGÓW: tonaż, wykresy liniowe, kafelki (Home i zakładka Plany)
+// ============================================================================
+let svgUid = 0;
+
+// Tonaż treningu: suma ciężar × powtórzenia, bez serii rozgrzewkowych (R)
+function workoutTonnage(w) {
+  let total = 0;
+  (w.exercises || []).forEach(ex => (ex.sets || []).forEach(s => {
+    if ((s.type || 'N') === 'R') return;
+    total += (Number(s.weight) || 0) * (Number(s.reps) || 0);
+  }));
+  return Math.round(total);
+}
+
+function fmtKg(v) {
+  return Math.round(v).toLocaleString('pl-PL');
+}
+
+function renderTrendSvg(values, color) {
+  if (values.length < 2) {
+    return `<div class="w-full h-full flex items-center justify-center text-[10px] text-gray-500 text-center">${values.length ? 'Potrzeba 2 treningów' : 'Brak treningów'}</div>`;
+  }
+  const W = 120;
+  const H = 56;
+  const PAD = 5;
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const span = (max - min) || 1;
+  const pts = values.map((v, i) => [
+    PAD + i * (W - 2 * PAD) / (values.length - 1),
+    H - PAD - ((v - min) / span) * (H - 2 * PAD)
+  ]);
+  const line = pts.map((p, i) => `${i ? 'L' : 'M'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  const last = pts[pts.length - 1];
+  const area = `${line} L${last[0].toFixed(1)},${H} L${pts[0][0].toFixed(1)},${H} Z`;
+  const gid = 'trendGrad' + (++svgUid);
+  return `
+    <svg viewBox="0 0 ${W} ${H}" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${color}" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d="${area}" fill="url(#${gid})"/>
+      <path d="${line}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" style="filter: drop-shadow(0 0 4px ${color});"/>
+      <circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2.8" fill="${color}"/>
+    </svg>`;
+}
+
+function renderProgressTile({ title, values, footer, wide = false }) {
+  const hasTrend = values.length >= 2 && values[0] > 0;
+  const pct = hasTrend ? ((values[values.length - 1] - values[0]) / values[0]) * 100 : null;
+  const up = pct !== null && pct > 0;
+  const down = pct !== null && pct < 0;
+  const color = up ? '#32d74b' : (down ? '#ff7a18' : '#9ca3af');
+  const pctText = pct === null ? '—' : `${pct > 0 ? '+' : ''}${pct.toFixed(1)}%`;
+  const arrow = up ? '▲' : (down ? '▼' : '•');
+  const sizeCls = wide ? 'col-span-2 aspect-[2/1]' : 'aspect-square';
+  return `
+    <div class="bg-bgCard rounded-3xl p-3 flex flex-col justify-between overflow-hidden ${sizeCls}">
+      <div class="text-[11px] font-bold text-white leading-tight truncate">${title}</div>
+      <div class="flex-1 min-h-0 my-1.5">${renderTrendSvg(values, color)}</div>
+      <div class="flex items-end justify-between gap-1">
+        <div class="min-w-0">
+          <div class="text-lg font-extrabold leading-none" style="color:${color}">${pctText}</div>
+          <div class="text-[9px] text-gray-400 mt-1 truncate">${footer}</div>
+        </div>
+        <span class="text-[11px] font-bold shrink-0" style="color:${color}">${arrow}</span>
+      </div>
+    </div>`;
+}
+
+function renderRoutineProgressSquare(title, workouts) {
+  const sorted = [...workouts].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+  const values = sorted.map(w => workoutTonnage(w)).filter(v => v > 0);
+  const footer = values.length
+    ? `${values.length} tr. · ostatnio ${fmtKg(values[values.length - 1])} kg`
+    : 'Brak treningów';
+  return renderProgressTile({ title, values, footer });
+}
+
+// Początek tygodnia (poniedziałek) dla daty w formacie YYYY-MM-DD
+function weekStartIso(dateStr) {
+  const [y, m, d] = String(dateStr).split('-').map(Number);
+  const dt = new Date(y, (m || 1) - 1, d || 1);
+  dt.setDate(dt.getDate() - ((dt.getDay() + 6) % 7));
+  return toLocalIso(dt);
+}
+
+// Tonaż zsumowany po tygodniach, w kolejności chronologicznej
+function buildWeeklyTonnage(workouts) {
+  const byWeek = {};
+  workouts.forEach(w => {
+    const key = weekStartIso(w.date);
+    byWeek[key] = (byWeek[key] || 0) + workoutTonnage(w);
+  });
+  return Object.keys(byWeek).sort().map(k => byWeek[k]);
+}
+
+function renderPlanProgressSection(planRoutines, allWorkouts) {
+  if (!planRoutines.length) return '';
+  const planIds = new Set(planRoutines.map(r => r.id));
+  const routineTiles = planRoutines.map(r =>
+    renderRoutineProgressSquare(r.name, allWorkouts.filter(w => w.routineId === r.id))
+  ).join('');
+  const weekly = buildWeeklyTonnage(allWorkouts.filter(w => planIds.has(w.routineId)));
+  const weeklyTile = renderProgressTile({
+    title: 'Suma tygodniowa planu',
+    values: weekly,
+    footer: weekly.length ? `${weekly.length} tyg. · ostatni ${fmtKg(weekly[weekly.length - 1])} kg` : 'Brak treningów',
+    wide: true
+  });
+  return `
+    <div class="flex justify-between items-center mb-2">
+      <span class="text-xs font-bold uppercase text-striveTeal">Postęp treningów</span>
+      <span class="text-[10px] text-gray-400">zmiana od startu</span>
+    </div>
+    <div class="grid grid-cols-2 gap-3 mb-4">
+      ${routineTiles}
+      ${weeklyTile}
+    </div>`;
+}
+
 async function renderHomeView() {
   const workouts = await db.workouts.toArray();
   workouts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
@@ -1597,6 +1920,26 @@ async function renderHomeView() {
     true
   );
 
+  const routineProgressSquares = routines
+    .map(r => ({ r, ws: workouts.filter(w => w.routineId === r.id) }))
+    .sort((a, b) => b.ws.length - a.ws.length)
+    .slice(0, 5)
+    .map(({ r, ws }) => renderRoutineProgressSquare(r.name, ws))
+    .join('');
+  const homeProgressGridHtml = `
+    <div class="grid grid-cols-2 gap-3 mb-1">
+      <div onclick="navigate('profile'); setTimeout(()=>openMeasurementsModal(),100)" class="bg-bgCard rounded-3xl p-3 aspect-square flex flex-col justify-between cursor-pointer active:scale-[0.98] transition overflow-hidden">
+        <div><span class="liquid-orange-btn text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">Waga i Sylwetka</span></div>
+        <div>
+          <div class="text-2xl font-extrabold text-white tracking-tight leading-none">${latestWeight}</div>
+          <div class="text-xs text-striveTeal font-semibold mt-1">${weightDiffHtml}</div>
+        </div>
+        <div class="text-[9px] text-gray-400">Dotknij, aby wpisać pomiar</div>
+      </div>
+      ${routineProgressSquares}
+    </div>
+    <p class="text-center text-[11px] text-gray-400 mb-3">Kafelki rutyn: zmiana tonażu od pierwszego treningu</p>`;
+
   const lastWorkout = workouts[0];
   const lastWorkoutHtml = lastWorkout ? `
     <div onclick="navigate('calendar')" class="liquid-pill rounded-3xl p-4 cursor-pointer active:scale-[0.99] transition">
@@ -1639,14 +1982,7 @@ async function renderHomeView() {
 
     ${weeklyMuscleHeatmapHtml}
 
-    <div onclick="navigate('profile'); setTimeout(()=>openMeasurementsModal(),100)" class="bg-bgCard rounded-3xl p-4 mb-1 relative overflow-hidden cursor-pointer min-h-[104px] flex flex-col justify-between active:scale-[0.99] transition">
-      <div><span class="liquid-orange-btn text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">Waga i Sylwetka</span></div>
-      <div class="text-right mt-3">
-        <div class="text-2xl font-extrabold text-white tracking-tight">${latestWeight}</div>
-        <div class="text-xs text-striveTeal font-semibold">${weightDiffHtml}</div>
-      </div>
-    </div>
-    <p class="text-center text-[11px] text-gray-400 mb-3">Dotknij, aby wpisać pomiar lub dodać zdjęcia z galerii</p>
+    ${homeProgressGridHtml}
 
     <div class="grid grid-cols-2 gap-3 mb-4">
       <div onclick="editStickyNote()" class="liquid-pill rounded-3xl p-3.5 flex flex-col justify-between min-h-[148px] cursor-pointer active:scale-[0.98] transition">
@@ -1712,11 +2048,18 @@ async function renderPlansView() {
   const todayShort = DAYS_SHORT[(today.getDay() + 6) % 7];
   const planRoutines = (activePlan.routineIds || []).map(id => routines.find(r => r.id === id)).filter(Boolean);
 
-  let defaultRoutine = planRoutines.find(r => r.assignedDay === todayShort)
-    || planRoutines[(activePlan.nextIndex || 0) % Math.max(1, planRoutines.length)]
-    || routines[0];
+  // Trening na dziś: rutyna przypisana do dnia; jeśli są rutyny „Dowolny dzień”, rotacja po nich.
+  // Brak obu = dzień nietreningowy.
+  const dayRoutine = planRoutines.find(r => r.assignedDay === todayShort);
+  const flexRoutines = planRoutines.filter(r => !r.assignedDay);
+  const explicitRoutine = routines.find(r => r.id === Number(state.selectedTodayRoutineId)) || null;
+  const defaultRoutine = dayRoutine
+    || (flexRoutines.length ? flexRoutines[(activePlan.nextIndex || 0) % flexRoutines.length] : null);
+  const isRestDay = !explicitRoutine && !defaultRoutine && routines.length > 0;
+  const selectedRoutine = explicitRoutine || defaultRoutine || routines[0] || null;
 
-  const selectedRoutine = routines.find(r => r.id === Number(state.selectedTodayRoutineId)) || defaultRoutine;
+  const allWorkouts = await db.workouts.toArray();
+  const planProgressHtml = renderPlanProgressSection(planRoutines, allWorkouts);
 
   const scheduleRow = DAYS_SHORT.map(d => {
     const isToday = d === todayShort;
@@ -1750,31 +2093,44 @@ async function renderPlansView() {
     <div class="grid grid-cols-7 gap-1 mb-5">${scheduleRow}</div>
 
     <div class="bg-bgCard rounded-3xl p-4 mb-4">
-      <div class="flex justify-between items-center mb-2">
-        <span class="text-xs font-bold uppercase text-striveOrange">Wybierz trening na dziś:</span>
-        <span class="text-[11px] text-gray-300">${selectedRoutine && selectedRoutine.assignedDay ? `Dzień: ${selectedRoutine.assignedDay}` : 'Elastyczny'}</span>
-      </div>
-
-      ${routines.length ? `
-        <div class="flex flex-col gap-2.5">
-          <select onchange="state.selectedTodayRoutineId = this.value; renderCurrentView()"
-            class="w-full bg-bgInput rounded-2xl px-3.5 py-3 text-sm font-bold text-white focus:outline-none">
-            ${routines.map(r => `
-              <option value="${r.id}" ${selectedRoutine && selectedRoutine.id === r.id ? 'selected' : ''}>
-                ${r.name} ${r.assignedDay ? `[Przypisany: ${r.assignedDay}]` : ''} (${(r.exercises || []).length} ćw.)
-              </option>
-            `).join('')}
-          </select>
-
-          <div class="flex gap-2">
-            <button onclick="skipTodayRoutine(${activePlan.id})" class="flex-1 bg-white/10 text-white text-xs font-bold py-3 rounded-2xl active:scale-95 transition">Pomiń</button>
-            <button onclick="startWorkout(${selectedRoutine.id})" class="flex-[2] liquid-orange-btn text-white text-sm font-bold py-3 rounded-2xl active:scale-95 transition">
-              🏋️ Trenuj: ${selectedRoutine.name}
-            </button>
-          </div>
+      ${isRestDay && !state.restPanelOpen ? `
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-xs font-bold uppercase text-striveTeal">Dzień nietreningowy</span>
+          <span class="text-[11px] text-gray-300">${todayShort} · brak treningu</span>
         </div>
-      ` : `<p class="text-xs text-gray-400">Brak rutyn. Dodaj pierwszą rutynę w zakładce „Rutyny”.</p>`}
+        <p class="text-xs text-gray-400 mb-3">Na dziś nie ma zaplanowanego treningu.</p>
+        <button onclick="state.restPanelOpen = true; renderCurrentView()"
+          class="w-full liquid-pill text-white text-sm font-bold py-3 rounded-2xl active:scale-95 transition">Odpocznij 🔋</button>
+      ` : `
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-xs font-bold uppercase text-striveOrange">${isRestDay ? 'Trening poza planem:' : 'Wybierz trening na dziś:'}</span>
+          <span class="text-[11px] text-gray-300">${selectedRoutine && selectedRoutine.assignedDay ? `Dzień: ${selectedRoutine.assignedDay}` : 'Elastyczny'}</span>
+        </div>
+
+        ${routines.length ? `
+          <div class="flex flex-col gap-2.5">
+            <select onchange="state.selectedTodayRoutineId = this.value; renderCurrentView()"
+              class="w-full bg-bgInput rounded-2xl px-3.5 py-3 text-sm font-bold text-white focus:outline-none">
+              ${routines.map(r => `
+                <option value="${r.id}" ${selectedRoutine && selectedRoutine.id === r.id ? 'selected' : ''}>
+                  ${r.name} ${r.assignedDay ? `[Przypisany: ${r.assignedDay}]` : ''} (${(r.exercises || []).length} ćw.)
+                </option>
+              `).join('')}
+            </select>
+
+            <div class="flex gap-2">
+              ${isRestDay
+                ? `<button onclick="state.restPanelOpen = false; renderCurrentView()" class="flex-1 bg-white/10 text-white text-xs font-bold py-3 rounded-2xl active:scale-95 transition">Zwiń</button>`
+                : `<button onclick="skipTodayRoutine(${activePlan.id})" class="flex-1 bg-white/10 text-white text-xs font-bold py-3 rounded-2xl active:scale-95 transition">Pomiń</button>`}
+              <button onclick="startWorkout(${selectedRoutine.id})" class="flex-[2] liquid-orange-btn text-white text-sm font-bold py-3 rounded-2xl active:scale-95 transition">
+                🏋️ Trenuj: ${selectedRoutine.name}
+              </button>
+            </div>
+          </div>
+        ` : `<p class="text-xs text-gray-400">Brak rutyn. Dodaj pierwszą rutynę w zakładce „Rutyny”.</p>`}
+      `}
     </div>
+    ${planProgressHtml}
   `;
 }
 
